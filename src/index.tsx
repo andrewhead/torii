@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import App from './App';
+import Santoku from './Santoku';
 import './index.css';
 
 window.addEventListener('message', (event) => {
@@ -8,16 +8,16 @@ window.addEventListener('message', (event) => {
 });
 
 declare global {
-  interface Window { app: App; }
+  interface Window { santoku: Santoku; }
 }
 
 ReactDOM.render(
-  <App ref={(component) => { if (component !== null) { window.app = component; }}} />,
+  <Santoku ref={(santoku) => { if (santoku !== null) { window.santoku = santoku; }}} />,
   document.getElementById('root') as HTMLElement
 );
 
 setTimeout(() => {
-  if (window.app !== undefined) {
-    window.app.setState({ message: "Updated message" });
+  if (window.santoku !== undefined) {
+    window.santoku.setState({ message: "Updated message" });
   }
 }, 3000);

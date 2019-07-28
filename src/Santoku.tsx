@@ -3,14 +3,18 @@ import './Santoku.css';
 
 import logo from './logo.svg';
 
+interface SantokuProps {
+  ref?(component: Santoku | null): void;
+}
+
 interface SantokuState {
   message: string
 }
 
-class Santoku extends React.Component<{}, SantokuState> {
+class Santoku extends React.Component<SantokuProps, SantokuState> {
 
-  constructor() {
-    super({});
+  constructor(props: SantokuProps) {
+    super(props);
     this.state = {
       message: "Starter message"
     };

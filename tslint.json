@@ -3,8 +3,10 @@
   "linterOptions": {
     "exclude": [
       "config/**/*.js",
-	  "node_modules/**/*.ts",
-	  "ext-src/**/*.ts"
+      "node_modules/**/*.ts"
     ]
+  },
+  "rules": {
+    "interface-name": false
   }
 }

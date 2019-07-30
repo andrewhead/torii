@@ -1,24 +1,23 @@
-import * as React from 'react';
-import './Santoku.css';
-
-import logo from './logo.svg';
+import * as React from 'react'
+import { connect, Provider } from 'react-redux'
+import logo from './logo.svg'
+import './Santoku.css'
+import { SantokuState } from './store'
+import { updateIndex, updateText } from './store/line/actions'
+import { Line } from './store/line/types'
 
 interface SantokuProps {
-  ref?(component: Santoku | null): void;
+  line: Line
+  updateIndex: typeof updateIndex
+  updateText: typeof updateText
+  ref?(component: Santoku | null): void
 }
 
-interface SantokuState {
-  message: string
-}
+const mapStateToProps = (state: SantokuState) => ({
+  line: state.line
+})
 
-class Santoku extends React.Component<SantokuProps, SantokuState> {
-
-  constructor(props: SantokuProps) {
-    super(props);
-    this.state = {
-      message: "Starter message"
-    };
-  }
+class Santoku extends React.Component<SantokuProps> {
 
   public render() {
     return (
@@ -30,12 +29,15 @@ class Santoku extends React.Component<SantokuProps, SantokuState> {
         <p className="Santoku-intro">
           To get started, edit <code>src/Santoku.tsx</code> and save to reload.
         </p>
-        <p>
-          Additional message: { this.state.message }
+        <p className="line" onClick={() => this.props.updateText("The text was updated with Redux.") }>
+          Additional message: { this.props.line.text }
         </p>
       </div>
     );
   }
 }
 
-export default Santoku;
+export default connect(
+  mapStateToProps,
+  { updateIndex, updateText }
+)(Santoku);

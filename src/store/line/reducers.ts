@@ -25,3 +25,5 @@ export function lineReducer(
             return state
     }
 }
+
+export default lineReducer

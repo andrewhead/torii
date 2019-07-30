@@ -9,25 +9,9 @@ window.addEventListener('message', (event) => {
   console.log("Message received");
 });
 
-/*
-declare global {
-  interface Window { santoku: Santoku; }
-}
-*/
-
 ReactDOM.render(
   <Provider store={store}>
     <Santoku />
   </Provider>,
   document.getElementById('root') as HTMLElement
 );
-
-/* ref={(santoku) => { if (santoku !== null) { window.santoku = santoku; }}} />, */
-
-/*
-setTimeout(() => {
-  if (window.santoku !== undefined) {
-    window.santoku.setState({ message: "Updated message" });
-  }
-}, 3000);
-*/

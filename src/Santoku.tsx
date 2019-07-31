@@ -1,14 +1,13 @@
-import * as React from 'react'
-import { connect, Provider } from 'react-redux'
-import logo from './logo.svg'
-import './Santoku.css'
-import { SantokuState } from './store'
-import { updatePath, updateText } from './store/lines/actions'
-import { Line } from './store/lines/types'
+import * as React from 'react';
+import { connect } from 'react-redux';
+import logo from './logo.svg';
+import './Santoku.css';
+import { SantokuState } from './store';
+import { updateText } from './store/lines/actions';
+import { Line } from './store/lines/types';
 
 interface SantokuProps {
   line: Line
-  updateIndex: typeof updatePath
   updateText: typeof updateText
 }
 

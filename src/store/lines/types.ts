@@ -18,19 +18,19 @@ export interface Location {
   index: number;
 }
 
-export interface Line {
-  location: Location;
-  versions: LineVersionId[];
-}
-
-export type LineId = string;
-
 export type AllLineVersion = LineVersionId[];
 export interface LineVersionsById { [lineVersionId: string]: LineVersion };
 export interface LineVersions {
   byId: LineVersionsById
   allLineVersions: AllLineVersion
 }
+
+export interface Line {
+  location: Location;
+  versions: LineVersionId[];
+}
+
+export type LineId = string;
 
 export type AllLines = LineId[];
 export interface LinesById { [lineId: string]: Line };

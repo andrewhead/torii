@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+// Script from https://github.com/rebornix/vscode-webview-react
 // Disables code splitting into chunks
 // See https://github.com/facebook/create-react-app/issues/5306#issuecomment-433425838
 

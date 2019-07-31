@@ -3,12 +3,12 @@ import { connect, Provider } from 'react-redux'
 import logo from './logo.svg'
 import './Santoku.css'
 import { SantokuState } from './store'
-import { updateIndex, updateText } from './store/line/actions'
-import { Line } from './store/line/types'
+import { updatePath, updateText } from './store/lines/actions'
+import { Line } from './store/lines/types'
 
 interface SantokuProps {
   line: Line
-  updateIndex: typeof updateIndex
+  updateIndex: typeof updatePath
   updateText: typeof updateText
 }
 
@@ -35,5 +35,5 @@ export const Santoku = (props: SantokuProps) => {
 
 export default connect(
   mapStateToProps,
-  { updateIndex, updateText }
+  { updateIndex: updatePath, updateText }
 )(Santoku);

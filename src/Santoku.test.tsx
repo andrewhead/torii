@@ -5,15 +5,33 @@ import { Santoku } from './Santoku';
 
 Enzyme.configure({ adapter: new Adapter() })
 
+const defaultState = {
+  lineVersions: {
+    allLineVersions: [],
+    byId: {}
+  },
+  lines: {
+    allLines: [],
+    byId: {}
+  },
+  steps: {
+    allSteps: [],
+    byId: {}
+  }
+}
+
 function setup() {
   const props = {
-    line: {
-      index: -1,
-      path: '',
-      text: '',
-      version: -1
-    },
-    updateText: jest.fn()
+    ...defaultState,
+    steps: {
+      allSteps: ["0"],
+      byId: {
+        0: {
+          linesAdded: [],
+          linesRemoved: []
+        }
+      }
+    }
   }
   const enzymeWrapper = shallow(<Santoku {...props} />)
   return {
@@ -21,9 +39,11 @@ function setup() {
   }
 }
 
-xdescribe('Santoku', () => {
+describe('Santoku', () => {
   it('should render self and subcomponents', () => {
     const { enzymeWrapper } = setup()
-    expect(enzymeWrapper.find('p.line').text()).toBe("Additional message: ")
+    const snippets = enzymeWrapper.find('Snippet');
+    expect(snippets.length).toBe(1);
+    expect(snippets.getElement().key).toEqual("0");
   })
 })

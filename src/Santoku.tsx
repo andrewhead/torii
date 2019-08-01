@@ -1,24 +1,17 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import './Santoku.css';
-import { Snippet } from './Snippet';
-import { SantokuState } from './store';
+import * as React from "react";
+import { connect } from "react-redux";
+import "./Santoku.css";
+import { Snippet } from "./Snippet";
+import { PresentState, toPresentState } from "./store";
 
-const mapStateToProps = (state: SantokuState) => (state)
-
-export const Santoku = (props: SantokuState) => {
+export const Santoku = (props: PresentState) => {
   return (
     <div className="Santoku">
-      {Array.from(
-        new Array(props.steps.allSteps.present.length),
-        () => (
-           <Snippet /> 
-        )
-      )}
+      {props.steps.allSteps.map(stepId => (
+        <Snippet key={stepId} />
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default connect(
-  mapStateToProps
-)(Santoku);
+export default connect(toPresentState)(Santoku);

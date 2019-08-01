@@ -20,11 +20,11 @@ export interface Location {
   index: number;
 }
 
-export type AllLineVersion = LineVersionId[];
+export type AllLineVersions = LineVersionId[];
 export interface LineVersionsById { [lineVersionId: string]: LineVersion };
 export interface LineVersions {
   byId: LineVersionsById
-  allLineVersions: AllLineVersion
+  allLineVersions: AllLineVersions
 }
 
 export interface Line {

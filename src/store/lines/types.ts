@@ -1,3 +1,5 @@
+import { AnyAction } from "redux";
+
 export const UPDATE_TEXT = "UPDATE_TEXT";
 export const UPDATE_PATH = "UPDATE_PATH";
 export const REMOVE_LINE = "REMOVE_LINE";
@@ -81,3 +83,7 @@ export type LineActionTypes =
   | InsertLineAction
   | RemoveLineAtLocationAction
   | UpdateTextAtLocationAction;
+
+export function isLineActionType(action: AnyAction): action is LineActionTypes {
+  return (action as LineActionTypes).type !== undefined;
+}

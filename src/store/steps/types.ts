@@ -1,3 +1,4 @@
+import { AnyAction } from "redux";
 import { LineId, LineVersionId } from "../lines/types";
 
 export const ADD_LINE = "ADD_LINE";
@@ -19,16 +20,20 @@ export interface Steps {
   allSteps: AllSteps;
 }
 
-export interface AddLineAction {
+export interface AddLineAction extends AnyAction {
   type: typeof ADD_LINE;
   lineVersionId: LineVersionId;
   stepId: StepId;
 }
 
-export interface PatchLineAction {
+export interface PatchLineAction extends AnyAction {
   type: typeof PATCH_LINE;
   lineId: LineId;
   stepId: StepId;
 }
 
 export type StepActionTypes = AddLineAction | PatchLineAction;
+
+export function isStepActionType(action: AnyAction): action is StepActionTypes {
+  return (action as StepActionTypes).type !== undefined;
+}

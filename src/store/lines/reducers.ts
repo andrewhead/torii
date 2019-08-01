@@ -1,21 +1,25 @@
-import { combineReducers } from "redux";
-import { LineActionTypes, Lines, LineVersionsById, UpdateTextAction, UPDATE_TEXT } from "./types";
+import { AnyAction, combineReducers } from "redux";
+import undoable from "redux-undo";
+import { AllLines, AllLineVersion as AllLineVersions, isLineActionType, LinesById, LineVersionsById, UpdateTextAction, UPDATE_TEXT } from "./types";
 
-const initialLines: Lines = {
-  allLines: [],
-  byId: {}
-};
-
-export function linesReducer(
-  state = initialLines,
-  action: LineActionTypes
-): Lines {
-  switch (action.type) {
-    case UPDATE_TEXT:
-    default:
-      return state;
-  }
+export function allLinesReducer(
+  state: AllLines = [],
+  action: AnyAction
+): AllLines {
+  return state;
 }
+
+export function linesByIdReducer(
+  state = {},
+  action: AnyAction
+): LinesById {
+  return state;
+}
+
+export const undoableLinesReducer = combineReducers({
+  allLines: undoable<AllLines>(allLinesReducer),
+  byId: undoable<LinesById>(linesByIdReducer)
+});
 
 function updateText(state: LineVersionsById, action: UpdateTextAction) {
   const { lineVersionId, text } = action;
@@ -30,19 +34,29 @@ function updateText(state: LineVersionsById, action: UpdateTextAction) {
   };
 }
 
-export function lineVersionsByIdReducer(
-  state = {},
-  action: LineActionTypes
-): LineVersionsById {
-  switch (action.type) {
-    case UPDATE_TEXT:
-      return updateText(state, action);
-    default:
-      return state;
-  }
+export function allLineVersionsReducer(
+  state: AllLineVersions = [],
+  action: AnyAction
+): AllLineVersions {
+  return state;
 }
 
-export const lineVersionsReducer = combineReducers({
-  byId: lineVersionsByIdReducer,
-  // allLineVersions: allLineVersionsReducer
+export function lineVersionsByIdReducer(
+  state = {},
+  action: AnyAction
+): LineVersionsById {
+  if (isLineActionType(action)) {
+    switch (action.type) {
+      case UPDATE_TEXT:
+        return updateText(state, action);
+      default:
+        return state;
+    }
+  }
+  return state;
+}
+
+export const undoableLineVersionsReducer = combineReducers({
+  allLineVersions: undoable<AllLineVersions>(allLineVersionsReducer),
+  byId: undoable<LineVersionsById>(lineVersionsByIdReducer)
 });

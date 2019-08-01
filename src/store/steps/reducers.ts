@@ -4,6 +4,8 @@ import {
   AddLineAction,
   ADD_LINE,
   AllSteps,
+  CreateStepAction,
+  CREATE_STEP,
   isStepActionType,
   StepsById
 } from "./types";
@@ -19,7 +21,23 @@ export function allStepsReducer(
   state: AllSteps = [],
   action: AnyAction
 ): AllSteps {
+  if (isStepActionType(action)) {
+    switch (action.type) {
+      case CREATE_STEP:
+        return insertStepInAllLines(state, action);
+      default:
+        return state;
+    }
+  }
   return state;
+}
+
+function insertStepInAllLines(state: AllSteps, action: CreateStepAction) {
+  const { id, index } = action;
+  return state
+    .slice(0, index)
+    .concat(id)
+    .concat(state.slice(index, state.length));
 }
 
 export function stepsByIdReducer(state = {}, action: AnyAction): StepsById {
@@ -27,11 +45,23 @@ export function stepsByIdReducer(state = {}, action: AnyAction): StepsById {
     switch (action.type) {
       case ADD_LINE:
         return addLine(state, action);
+      case CREATE_STEP:
+        return insertStepInById(state, action);
       default:
         return state;
     }
   }
   return state;
+}
+
+function insertStepInById(state: StepsById, action: CreateStepAction) {
+  return {
+    ...state,
+    [action.stepId]: {
+      linesAdded: [],
+      linesRemoved: []
+    }
+  };
 }
 
 function addLine(state: StepsById, action: AddLineAction) {

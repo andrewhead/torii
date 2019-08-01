@@ -3,7 +3,8 @@ import { AnyAction } from "redux";
 export const UPDATE_TEXT = "UPDATE_TEXT";
 export const UPDATE_PATH = "UPDATE_PATH";
 export const REMOVE_LINE = "REMOVE_LINE";
-export const INSERT_LINE = "INSERT_LINE";
+export const CREATE_LINE = "CREATE_LINE";
+export const ADD_LINE_VERSION = "ADD_LINE_VERSION";
 
 export const REMOVE_LINE_AT_LOCATION = "REMOVE_LINE_AT_LOCATION";
 export const UPDATE_TEXT_AT_LOCATION = "UPDATE_TEXT_AT_LOCATION_AND_VERSION";
@@ -38,6 +39,10 @@ export type AllLines = LineId[];
 export interface LinesById { [lineId: string]: Line };
 export interface Lines {
   byId: LinesById
+  /**
+   * Order of lines in allLines is meaningless, as these lines will be from many different files.
+   * Use the location property of lines if you want to sort them.
+   */
   allLines: AllLines
 }
 
@@ -60,10 +65,13 @@ export interface UpdatePathAction {
   newPath: string;
 }
 
-export interface InsertLineAction {
-  type: typeof INSERT_LINE;
+export interface CreateLineAction {
+  type: typeof CREATE_LINE;
+  id: LineId;
+  initialVersionId?: LineVersionId;
+  initialVersionText?: string;
+  insert: boolean;
   location: Location;
-  version: number;
 }
 
 export interface RemoveLineAction {
@@ -80,10 +88,10 @@ export type LineActionTypes =
   | UpdateTextAction
   | UpdatePathAction
   | RemoveLineAction
-  | InsertLineAction
+  | CreateLineAction
   | RemoveLineAtLocationAction
   | UpdateTextAtLocationAction;
 
-export function isLineActionType(action: AnyAction): action is LineActionTypes {
+export function isLineAction(action: AnyAction): action is LineActionTypes {
   return (action as LineActionTypes).type !== undefined;
 }

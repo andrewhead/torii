@@ -1,12 +1,12 @@
 import { AnyAction, combineReducers } from "redux";
 import undoable from "redux-undo";
 import {
-  AddLineAction,
-  ADD_LINE,
+  AddLineToStepAction,
+  ADD_LINE_TO_STEP,
   AllSteps,
   CreateStepAction,
   CREATE_STEP,
-  isStepActionType,
+  isStepAction,
   StepsById
 } from "./types";
 
@@ -21,7 +21,7 @@ export function allStepsReducer(
   state: AllSteps = [],
   action: AnyAction
 ): AllSteps {
-  if (isStepActionType(action)) {
+  if (isStepAction(action)) {
     switch (action.type) {
       case CREATE_STEP:
         return insertStepInAllLines(state, action);
@@ -41,9 +41,9 @@ function insertStepInAllLines(state: AllSteps, action: CreateStepAction) {
 }
 
 export function stepsByIdReducer(state = {}, action: AnyAction): StepsById {
-  if (isStepActionType(action)) {
+  if (isStepAction(action)) {
     switch (action.type) {
-      case ADD_LINE:
+      case ADD_LINE_TO_STEP:
         return addLine(state, action);
       case CREATE_STEP:
         return insertStepInById(state, action);
@@ -64,7 +64,7 @@ function insertStepInById(state: StepsById, action: CreateStepAction) {
   };
 }
 
-function addLine(state: StepsById, action: AddLineAction) {
+function addLine(state: StepsById, action: AddLineToStepAction) {
   const { stepId, lineVersionId } = action;
   const step = state[stepId];
   const linesAdded = step.linesAdded;

@@ -20,7 +20,7 @@ describe("actions", () => {
     const expectedAction = {
       lineVersionId,
       stepId,
-      type: types.ADD_LINE
+      type: types.ADD_LINE_TO_STEP
     };
     expect(actions.addLine(stepId, lineVersionId)).toEqual(expectedAction);
   });

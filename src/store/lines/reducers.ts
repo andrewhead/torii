@@ -1,6 +1,16 @@
 import { AnyAction, combineReducers } from "redux";
 import undoable from "redux-undo";
-import { AllLines, AllLineVersions, CreateLineAction, CREATE_LINE, isLineAction, LinesById, LineVersionsById, UpdateTextAction, UPDATE_TEXT } from "./types";
+import {
+  AllLines,
+  AllLineVersions,
+  CreateLineAction,
+  CREATE_LINE,
+  isLineAction,
+  LinesById,
+  LineVersionsById,
+  UpdateTextAction,
+  UPDATE_TEXT
+} from "./types";
 
 function addLineToAllLines(state: AllLines, action: CreateLineAction) {
   return state.concat(action.id);
@@ -28,20 +38,29 @@ function addLineToLinesById(state: LinesById, action: CreateLineAction) {
       if (updatedState.hasOwnProperty(otherLineId)) {
         const otherLine = updatedState[otherLineId];
         const otherLineLocation = otherLine.location;
-        if (otherLineLocation.path === action.location.path && otherLineLocation.index >= action.location.index) {
+        if (
+          otherLineLocation.path === action.location.path &&
+          otherLineLocation.index >= action.location.index
+        ) {
           updatedState[otherLineId] = {
             ...otherLine,
-            location: { ...otherLineLocation, index: otherLineLocation.index + 1 }
+            location: {
+              ...otherLineLocation,
+              index: otherLineLocation.index + 1
+            }
           };
         }
       }
     }
   }
   updatedState[action.id] = {
-      location: action.location,
-      versions: []
+    location: action.location,
+    versions: []
   };
-  if (action.initialVersionId !== undefined && action.initialVersionText !== undefined) {
+  if (
+    action.initialVersionId !== undefined &&
+    action.initialVersionText !== undefined
+  ) {
     updatedState[action.id].versions = [action.initialVersionId];
   }
   return updatedState;
@@ -68,7 +87,10 @@ function addLineVersionToAllLineVersions(
   state: AllLineVersions,
   action: CreateLineAction
 ) {
-  if (action.initialVersionId !== undefined && action.initialVersionText !== undefined) {
+  if (
+    action.initialVersionId !== undefined &&
+    action.initialVersionText !== undefined
+  ) {
     return state.concat(action.initialVersionId);
   }
   return state;

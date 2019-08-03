@@ -57,7 +57,7 @@ export function stepsByIdReducer(state = {}, action: AnyAction): StepsById {
 function insertStepInById(state: StepsById, action: CreateStepAction) {
   return {
     ...state,
-    [action.stepId]: {
+    [action.id]: {
       linesAdded: [],
       linesRemoved: []
     }

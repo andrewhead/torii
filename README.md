@@ -7,7 +7,24 @@ and tips on how to integrate it into VSCode.
 VSCode integration is not handled in this repository. The
 Santoku editor is meant to be pluggable into arbitrary IDEs.
 To see the code that integrates it with VSCode, check out
-https://github.com/andrewhead/vscode-santoku.
+https://github.com/andrewhead/vscode-santoku and 
+https://github.com/andrewhead/santoku-editor-adapter.
+
+To run the Santoku tutorial editor in your integrated
+development environment of choice, build the project (see
+instructions below), open the `index.html` in an embedded
+browser in the environment, and run JavaScript initializing
+the `EditorAdapter` with a `EditorConnector` that allows
+communication with the IDE. The JavaScript will look like,
+roughly:
+
+```javascript
+new EditorAdapter(new MyEditorConnector(options));
+```
+
+For an example of initializing a EditorAdapter with an
+IDE-specific connector, see the code in the webview for the
+VSCode extension in https://github.com/andrewhead/vscode-santoku.
 
 ## Development
 

@@ -1,11 +1,10 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import { State, toPresentState } from "santoku-store";
+import "./Santoku.scss";
 import { Snippet } from "./Snippet";
-import { PresentState, toPresentState } from "./store";
 
-import './Santoku.scss';
-
-export const Santoku = (props: PresentState) => {
+export const Santoku = (props: State) => {
   return (
     <div className="Santoku">
       {props.steps.allSteps.map(stepId => (

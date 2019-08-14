@@ -1,49 +1,46 @@
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import * as React from 'react';
-import { Santoku } from './Santoku';
+import Enzyme, { shallow } from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
+import * as React from "react";
+import { DeepPartial } from "redux";
+import { Text } from "santoku-store";
+import { Santoku } from "./Santoku";
 
-Enzyme.configure({ adapter: new Adapter() })
+Enzyme.configure({ adapter: new Adapter() });
 
-const defaultState = {
-  lineVersions: {
-    allLineVersions: [],
-    byId: {}
-  },
-  lines: {
-    allLines: [],
-    byId: {}
-  },
-  steps: {
-    allSteps: [],
-    byId: {}
-  }
+function createText(partialState?: DeepPartial<Text>): Text {
+  const emptyState = {
+    chunkVersions: { all: [], byId: {} },
+    chunks: { all: [], byId: {} },
+    snippets: { all: [], byId: {} },
+    visibilityRules: {}
+  };
+  return Object.assign({}, emptyState, partialState);
 }
 
 function setup() {
   const props = {
-    ...defaultState,
-    steps: {
-      allSteps: ["0"],
-      byId: {
-        0: {
-          linesAdded: [],
-          linesRemoved: []
+    text: createText({
+      snippets: {
+        all: ["0"],
+        byId: {
+          0: {
+            chunkVersionsAdded: []
+          }
         }
       }
-    }
-  }
-  const enzymeWrapper = shallow(<Santoku {...props} />)
+    })
+  };
+  const enzymeWrapper = shallow(<Santoku {...props} />);
   return {
     enzymeWrapper
-  }
+  };
 }
 
-describe('Santoku', () => {
-  it('should render self and subcomponents', () => {
-    const { enzymeWrapper } = setup()
-    const snippets = enzymeWrapper.find('Snippet');
+describe("Santoku", () => {
+  it("should render self and subcomponents", () => {
+    const { enzymeWrapper } = setup();
+    const snippets = enzymeWrapper.find("Snippet");
     expect(snippets.length).toBe(1);
     expect(snippets.getElement().key).toEqual("0");
-  })
-})
+  });
+});

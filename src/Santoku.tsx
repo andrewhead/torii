@@ -1,17 +1,23 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { State, toPresentState } from "santoku-store";
+import { State, Text } from "santoku-store";
 import "./Santoku.scss";
 import { Snippet } from "./Snippet";
 
-export const Santoku = (props: State) => {
+export function Santoku(props: SantokuProps) {
   return (
     <div className="Santoku">
-      {props.steps.allSteps.map(stepId => (
-        <Snippet key={stepId} />
+      {props.text.snippets.all.map(snippetId => (
+        <Snippet key={snippetId} />
       ))}
     </div>
   );
-};
+}
 
-export default connect(toPresentState)(Santoku);
+interface SantokuProps {
+  text: Text;
+}
+
+export default connect((state: State) => {
+  return { text: state.text.present };
+})(Santoku);

@@ -17,7 +17,7 @@ export function getSnippetText(state: Text, snippetId: SnippetId): SnippetText {
     snippetText.paths.push(path);
     snippetText.byPath[path] = {
       reasons: lineTexts.map(lt => lt.reason),
-      text: textUtils.join(lineTexts.map(lt => lt.text))
+      text: textUtils.join(...lineTexts.map(lt => lt.text))
     };
   }
   return snippetText;

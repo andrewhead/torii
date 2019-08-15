@@ -1,0 +1,11 @@
+.code-preview {
+  /*
+   * Check the declaration of the markers for full control over the appearance of lines. For
+   * example, the marker may have been declared to be "in front" of the text, which will make
+   * the text partly invisible.
+   */
+  .requested-visible {
+    background-color: white;
+    opacity: 0.5;
+  }
+}

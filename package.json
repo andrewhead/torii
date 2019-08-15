@@ -18,6 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "./scripts/build-non-split.js",
+    /* Build project with embedded source map using 'eval-source-map' */
+    "build:debug": "./scripts/build-non-split.js --debug",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

@@ -9,7 +9,7 @@ import { getSnippetText, SnippetText } from "./selectors/snippet";
  * statements above the other imports, which need to be run first.
  */
 // tslint:disable-next-line: no-var-requires
-require("brace/mode/javascript");
+require("brace/mode/java");
 // tslint:disable-next-line: no-var-requires
 require("brace/theme/github");
 
@@ -23,6 +23,7 @@ export function Snippet(props: SnippetProps) {
           theme="github"
           key={path}
           value={props.snippetText.byPath[path].text}
+          maxLines={15}
         />
       ))}
     </div>

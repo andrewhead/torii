@@ -1,21 +1,23 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "Debug Tests",
-        "type": "node",
-        "request": "launch",
-        "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
-        "args": [
-          "test",
-          "--runInBand",
-          "--no-cache",
-          "--watchAll=false"
-        ],
-        "cwd": "${workspaceRoot}",
-        "protocol": "inspector",
-        "console": "integratedTerminal",
-        "internalConsoleOptions": "neverOpen"
-      }
-    ]
-  }
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
+      "//": "moduleNameMapper argument required for Jest to run tests using react-monaco-editor",
+      "args": [
+        "test",
+        "--moduleNameMapper={ \"monaco-editor\": \"<rootDir>/src/test/mock_modules/monaco-editor\" }",
+        "--runInBand",
+        "--no-cache",
+        "--watchAll=false"
+      ],
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

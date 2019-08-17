@@ -1,23 +1,76 @@
+import * as monacoTypes from "monaco-editor/esm/vs/editor/editor.api";
 import * as React from "react";
-import AceEditor from "react-ace";
-import { IMarker } from "react-ace/lib/types";
+import { useEffect, useState } from "react";
+import MonacoEditor from "react-monaco-editor";
 import { Reason } from "./selectors/snippet";
 
-/*
- * Use 'require' instead of 'import' as automatic organization of imports in VSCode puts these
- * statements above the other imports, which need to be run first.
- */
-// tslint:disable-next-line: no-var-requires
-require("brace/mode/java");
-// tslint:disable-next-line: no-var-requires
-require("brace/theme/github");
+type MonacoApiType = typeof monacoTypes;
+type IStandaloneCodeEditor = monacoTypes.editor.IStandaloneCodeEditor;
 
 /**
- * Chosen to approximately match the default VSCode font size.
+ * The design of this code preview was based on PullJosh's prototype of a controlled component
+ * for react-monaco-editor: https://codesandbox.io/s/883y2zmp6l. Code on CodeSandbox is released
+ * implicitly under MIT license: https://codesandbox.io/legal/terms.
  */
-const FONT_SIZE = 16;
-
 export function CodePreview(props: CodePreviewProps) {
+  const [editor, setEditor] = useState<IStandaloneCodeEditor | undefined>(undefined);
+  const [monacoApi, setMonacoApi] = useState<MonacoApiType | undefined>(undefined);
+
+  useEffect(() => {
+    if (editor === undefined) {
+      return;
+    }
+
+    editor.setValue(props.text);
+
+    /*
+     * Dynamically adjust the height of the editor to its content. Based on the fix suggested in
+     * https://github.com/microsoft/monaco-editor/issues/103#issuecomment-438872047.
+     */
+    const lineHeight = editor.getConfiguration().lineHeight;
+    const container = editor.getDomNode();
+    const textModel = editor.getModel();
+    const horizontalScrollBarHeight = editor.getConfiguration().layoutInfo
+      .horizontalScrollbarHeight;
+    if (textModel !== null) {
+      const lineCount = textModel.getLineCount();
+      if (container !== null) {
+        container.style.height = `${lineCount * lineHeight + horizontalScrollBarHeight}px`;
+        /*
+         * Force adjustment of editor height.
+         */
+        editor.layout();
+      }
+    }
+  });
+
+  return (
+    <MonacoEditor
+      theme="vscode"
+      editorDidMount={(e: IStandaloneCodeEditor, m) => {
+        setEditor(e);
+        setMonacoApi(m);
+      }}
+      value={props.text}
+      onChange={value => {
+        // TODO(andrewhead): Replace with setting value of the text.
+      }}
+      options={{
+        /*
+         * Height of editor will be determined dynamically; the editor should never scroll at all.
+         */
+        scrollBeyondLastLine: false
+      }}
+    />
+  );
+}
+
+interface CodePreviewProps {
+  text: string;
+  reasons: Reason[];
+}
+
+/*
   const markers = props.reasons
     .map(
       (reason, i): IMarker | undefined => {
@@ -26,10 +79,10 @@ export function CodePreview(props: CodePreviewProps) {
               className: "requested-visible",
               endCol: Number.POSITIVE_INFINITY,
               endRow: i,
-              /*
-               * Place marker in front because we want to use it to partially hide code: it's
-               * to occlude code by putting the marker in front of it.
-               */
+              // /*
+              //  * Place marker in front because we want to use it to partially hide code: it's
+              //  * to occlude code by putting the marker in front of it.
+              //  
               inFront: true,
               startCol: 0,
               startRow: i,
@@ -39,25 +92,4 @@ export function CodePreview(props: CodePreviewProps) {
       }
     )
     .filter(m => m !== undefined);
-  return (
-    <AceEditor
-      /* TODO set mode based on file extension */
-      mode="java"
-      theme="github"
-      className="code-preview"
-      value={props.text}
-      /*
-       * Setting max lines makes editor height reactive. Setting it to positive infinity means
-       * that the editor will show all the lines in a snippet without a user needing to scroll.
-       */
-      maxLines={Number.POSITIVE_INFINITY}
-      fontSize={FONT_SIZE}
-      markers={markers as IMarker[]}
-    />
-  );
-}
-
-interface CodePreviewProps {
-  text: string;
-  reasons: Reason[];
-}
+    */

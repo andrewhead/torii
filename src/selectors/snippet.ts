@@ -1,4 +1,3 @@
-import _ from "lodash";
 import {
   Chunk,
   ChunkVersionId,
@@ -158,9 +157,7 @@ function getSnippetSelectionsFromReferenceImplementation(
   return state.selections
     .filter(s => s.relativeTo.source === SourceType.REFERENCE_IMPLEMENTATION && s.path === path)
     .map(s => textUtils.intersect(s, chunkRange))
-    .filter(function isNotEmpty(s) {
-      return !_.isEqual(s.anchor, s.active);
-    })
+    .filter((s): s is Selection => s !== null)
     .map(s => getSnippetSelectionFromSelection(s, -chunkOffset + 1 + offsetInSnippet));
 }
 

@@ -48,6 +48,16 @@ export function CodePreview(props: CodePreviewProps) {
        */
       if (selectionsChanged && monacoSelections.length > 0) {
         editor.setSelections(monacoSelections);
+      } else if (monacoSelections.length === 0) {
+        /**
+         * It's not possible to setSelections to an empty list of selections for Monaco editor,
+         * as the editor will throw an error. Instead, remove the selection by collapsing the
+         * first selection to the start of the line.
+         */
+        if (currentMonacoSelections !== null && currentMonacoSelections.length > 0) {
+          const firstSelection = currentMonacoSelections[0].collapseToStart();
+          editor.setSelection(firstSelection);
+        }
       }
     }
   }

@@ -6,6 +6,8 @@
   "rules": {
     "interface-name": false,
     "jsx-no-lambda": false,
-    "no-namespace": false
+    "no-namespace": false,
+    "object-literal-sort-keys": false,
+    "array-type": false
   }
 }

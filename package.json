@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "publisher": "andrewhead",
   "dependencies": {
+    "lodash": "^4.17.15",
     "react": "^16.3.2",
-    "react-ace": "^7.0.2",
     "react-dom": "^16.3.2",
+    "react-monaco-editor": "^0.30.0",
     "react-redux": "^7.1.0",
     "redux": "^4.0.4",
     "redux-undo": "^1.0.0-beta9-9-7",
@@ -18,15 +19,19 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "./scripts/build-non-split.js",
-    /* Build project with embedded source map using 'eval-source-map' */
+    "//": "Build project with embedded source map using 'eval-source-map'",
     "build:debug": "./scripts/build-non-split.js --debug",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test --env=jsdom --moduleNameMapper='{ \"monaco-editor\": \"<rootDir>/src/test/mock_modules/monaco-editor\" }'",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
+    "//": [
+      "monaco-editor only included for type information. Do not use this package for functionality; use for types only."
+    ],
     "@types/enzyme": "^3.10.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^23.3.13",
+    "@types/lodash": "^4.14.137",
     "@types/node": "^10.1.2",
     "@types/react": "^16.3.14",
     "@types/react-dom": "^16.0.5",
@@ -35,6 +40,7 @@
     "@types/uuid": "^3.4.5",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
+    "monaco-editor": "^0.17.1",
     "node-sass": "^4.12.0",
     "react-scripts": "^2.1.3",
     "redux-devtools-extension": "^2.13.8",

@@ -1,13 +1,22 @@
+import _ from "lodash";
 import {
   Chunk,
-  ChunkId,
   ChunkVersionId,
-  Path,
+  Selection,
   SnippetId,
+  SourceType,
   Text,
   textUtils,
   visibility
 } from "santoku-store";
+import {
+  ChunkVersionOffsets,
+  ChunkVersionsByPath,
+  LineText,
+  Reason,
+  SnippetSelection,
+  SnippetText
+} from "./types";
 
 export function getSnippetText(state: Text, snippetId: SnippetId): SnippetText {
   const sortedChunkVersions = getSortedChunkVersions(state, snippetId);
@@ -17,22 +26,12 @@ export function getSnippetText(state: Text, snippetId: SnippetId): SnippetText {
     snippetText.paths.push(path);
     snippetText.byPath[path] = {
       reasons: lineTexts.map(lt => lt.reason),
-      text: textUtils.join(...lineTexts.map(lt => lt.text))
+      text: textUtils.join(...lineTexts.map(lt => lt.text)),
+      selections: getSnippetSelections(state, sortedChunkVersions[path]),
+      chunkVersionOffsets: getChunkVersionOffsets(state, sortedChunkVersions[path])
     };
   }
   return snippetText;
-}
-
-export interface SnippetText {
-  paths: Path[];
-  byPath: {
-    [path: string]: PathSnippetText;
-  };
-}
-
-interface PathSnippetText {
-  text: string;
-  reasons: Reason[];
 }
 
 /**
@@ -102,6 +101,90 @@ function getTextForPath(
   return lineTexts;
 }
 
+/**
+ * Assumes all chunk versions IDs are present in the state.
+ */
+function getSnippetSelections(
+  state: Text,
+  orderedChunkVersions: ChunkVersionId[]
+): SnippetSelection[] {
+  let offset = 0;
+  const snippetSelections = [];
+  for (const chunkVersionId of orderedChunkVersions) {
+    snippetSelections.push(
+      ...getSnippetSelectionsForChunkVersion(state, chunkVersionId, offset),
+      ...getSnippetSelectionsFromReferenceImplementation(state, chunkVersionId, offset)
+    );
+    const chunkVersionText = state.chunkVersions.byId[chunkVersionId].text;
+    offset += textUtils.toLines(chunkVersionText).length;
+  }
+  return snippetSelections;
+}
+
+function getSnippetSelectionsForChunkVersion(
+  state: Text,
+  chunkVersionId: ChunkVersionId,
+  offset: number
+) {
+  return state.selections
+    .filter(
+      s =>
+        s.relativeTo.source === SourceType.CHUNK_VERSION &&
+        s.relativeTo.chunkVersionId === chunkVersionId
+    )
+    .map(s => getSnippetSelectionFromSelection(s, offset));
+}
+
+function getSnippetSelectionsFromReferenceImplementation(
+  state: Text,
+  chunkVersionId: ChunkVersionId,
+  offsetInSnippet: number
+) {
+  const { chunk: chunkId, text: chunkText } = state.chunkVersions.byId[chunkVersionId];
+  const chunk = state.chunks.byId[chunkId];
+  const versionIndex = chunk.versions.indexOf(chunkVersionId);
+  /*
+   * A selection in a reference implementation should only map to unchanged copies in the snippet.
+   */
+  if (versionIndex !== 0) {
+    return [];
+  }
+  const { line: chunkOffset, path } = chunk.location;
+  const lineCount = textUtils.toLines(chunkText).length;
+  const chunkRange = {
+    start: { line: chunkOffset, character: 0 },
+    end: { line: chunkOffset + lineCount - 1, character: Number.POSITIVE_INFINITY }
+  };
+  return state.selections
+    .filter(s => s.relativeTo.source === SourceType.REFERENCE_IMPLEMENTATION && s.path === path)
+    .map(s => textUtils.intersect(s, chunkRange))
+    .filter(function isNotEmpty(s) {
+      return !_.isEqual(s.anchor, s.active);
+    })
+    .map(s => getSnippetSelectionFromSelection(s, -chunkOffset + 1 + offsetInSnippet));
+}
+
+function getSnippetSelectionFromSelection(selection: Selection, offset: number) {
+  return {
+    anchor: { ...selection.anchor, line: selection.anchor.line + offset },
+    active: { ...selection.active, line: selection.active.line + offset }
+  };
+}
+
+function getChunkVersionOffsets(
+  state: Text,
+  orderedChunkVersions: ChunkVersionId[]
+): ChunkVersionOffsets {
+  let line = 1;
+  const chunkVersionOffsets = [];
+  for (const chunkVersionId of orderedChunkVersions) {
+    chunkVersionOffsets.push({ line, chunkVersionId });
+    const chunkVersionText = state.chunkVersions.byId[chunkVersionId].text;
+    line += textUtils.toLines(chunkVersionText).length;
+  }
+  return chunkVersionOffsets;
+}
+
 function isAddedInSnippet(state: Text, chunkVersionId: ChunkVersionId, snippetId: SnippetId) {
   return state.snippets.byId[snippetId].chunkVersionsAdded.indexOf(chunkVersionId) !== -1;
 }
@@ -120,29 +203,9 @@ function getVisibility(
   return undefined;
 }
 
-interface LineText {
-  text: string;
-  chunkId: ChunkId;
-  chunkVersionId: ChunkVersionId;
-  /**
-   * Offset of line within chunk version text. Starts at 0.
-   */
-  offset: number;
-  reason: Reason;
-}
-
 /**
  * Assumes a valid 'chunkVersionId' that is already in 'state'.
  */
 function getChunk(state: Text, chunkVersionId: ChunkVersionId): Chunk {
   return state.chunks.byId[state.chunkVersions.byId[chunkVersionId].chunk];
-}
-
-interface ChunkVersionsByPath {
-  [path: string]: ChunkVersionId[];
-}
-
-export enum Reason {
-  ADDED,
-  REQUESTED_VISIBLE
 }

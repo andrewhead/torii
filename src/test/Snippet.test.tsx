@@ -2,7 +2,7 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { CodePreview } from "../CodePreview";
-import { Reason, SnippetText } from "../selectors/snippet";
+import { Reason, SnippetText } from "../selectors/types";
 import { Snippet } from "../Snippet";
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -12,7 +12,9 @@ function setup() {
     byPath: {
       path: {
         reasons: [Reason.ADDED],
-        text: "Text"
+        text: "Text",
+        selections: [],
+        chunkVersionOffsets: [{ line: 1, chunkVersionId: "chunk-version-0" }]
       }
     },
     paths: ["path"]
@@ -24,10 +26,13 @@ function setup() {
   };
 }
 
+/**
+ * There's a very limited
+ */
 describe("Snippet", () => {
   it("should render CodePreview", () => {
     const { wrapper } = setup();
-    const codePreviews = wrapper.find(CodePreview);
-    expect(codePreviews.length).toBe(1);
+    const codePreview = wrapper.find(CodePreview);
+    expect(codePreview.length).toBe(1);
   });
 });

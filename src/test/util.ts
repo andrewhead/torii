@@ -10,7 +10,8 @@ export function createText(partialState?: DeepPartial<Text>): Text {
     chunkVersions: { all: [], byId: {} },
     chunks: { all: [], byId: {} },
     snippets: { all: [], byId: {} },
-    visibilityRules: {}
+    visibilityRules: {},
+    selections: []
   };
   return Object.assign({}, emptyState, partialState);
 }

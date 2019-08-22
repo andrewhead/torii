@@ -6,6 +6,7 @@
 
 const rewire = require("rewire");
 const defaults = rewire("react-scripts/scripts/build.js");
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 let config = defaults.__get__("config");
 
 /**
@@ -19,10 +20,15 @@ if (debug) {
   config.devtool = "eval-source-map";
 }
 
+config.optimization.runtimeChunk = false;
+
+if (config.plugins === undefined) {
+  config.plugins = [];
+}
+config.plugins.push(new MonacoWebpackPlugin());
+
 config.optimization.splitChunks = {
   cacheGroups: {
     default: false
   }
 };
-
-config.optimization.runtimeChunk = false;

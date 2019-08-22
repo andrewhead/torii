@@ -1,13 +1,13 @@
 import * as monacoTypes from "monaco-editor/esm/vs/editor/editor.api";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MonacoEditor from "react-monaco-editor";
-import { actions, Path, Selection, store } from "santoku-store";
-import { SourceType } from "santoku-store/dist/text/types";
+import { actions, Path, Range, Selection, SourcedRange, SourceType, store } from "santoku-store";
 import { ChunkVersionOffsets, Reason, SnippetSelection } from "./selectors/types";
 
 type MonacoApiType = typeof monacoTypes;
 type IStandaloneCodeEditor = monacoTypes.editor.IStandaloneCodeEditor;
+type IModelDeltaDecoration = monacoTypes.editor.IModelDeltaDecoration;
 
 /**
  * The design of this code preview was based on PullJosh's prototype of a controlled component
@@ -17,23 +17,47 @@ type IStandaloneCodeEditor = monacoTypes.editor.IStandaloneCodeEditor;
 export function CodePreview(props: CodePreviewProps) {
   const [editor, setEditor] = useState<IStandaloneCodeEditor | undefined>(undefined);
   const [monacoApi, setMonacoApi] = useState<MonacoApiType | undefined>(undefined);
+  const [decorations, setDecorations] = useState<string[]>([]);
 
   useEffect(() => {
     updateValue();
     updateSelections();
+    updateDecorations();
     updateEditorHeight();
   });
 
+  useEffect(() => {
+    updateLanguage();
+  }, [props.path, editor]);
+
   function updateValue() {
-    if (editor !== undefined) {
+    if (editor !== undefined && editor.hasTextFocus() === false) {
       if (editor.getValue() !== props.text) {
         editor.setValue(props.text);
       }
     }
   }
 
-  function updateSelections() {
+  function updateLanguage() {
     if (editor !== undefined && monacoApi !== undefined) {
+      const model = editor.getModel();
+      if (model !== null) {
+        /**
+         * Use Monaco to detect the language of a model from a path.
+         */
+        const throwawayModel = monacoApi.editor.createModel(
+          "",
+          undefined,
+          monacoApi.Uri.from({ scheme: "file", path: props.path })
+        );
+        monacoApi.editor.setModelLanguage(model, throwawayModel.getModeId());
+        throwawayModel.dispose();
+      }
+    }
+  }
+
+  function updateSelections() {
+    if (editor !== undefined && editor.hasTextFocus() === false && monacoApi !== undefined) {
       const currentMonacoSelections = editor.getSelections();
       const monacoSelections = props.selections.map(s =>
         getMonacoSelectionFromSimpleSelection(monacoApi, s)
@@ -42,10 +66,7 @@ export function CodePreview(props: CodePreviewProps) {
         currentMonacoSelections === null
           ? monacoSelections.length > 0
           : !monacoApi.Selection.selectionsArrEqual(monacoSelections, currentMonacoSelections);
-      /*
-       * TODO(andrewhead): Clear selections when set to 0 (only seems to be the case when
-       * the editors are initialized).
-       */
+
       if (selectionsChanged && monacoSelections.length > 0) {
         editor.setSelections(monacoSelections);
       } else if (monacoSelections.length === 0) {
@@ -60,6 +81,33 @@ export function CodePreview(props: CodePreviewProps) {
         }
       }
     }
+  }
+
+  function updateDecorations() {
+    if (editor === undefined) {
+      return;
+    }
+    const newDecorations = props.reasons
+      .map(
+        (reason, i): IModelDeltaDecoration | undefined => {
+          return reason === Reason.REQUESTED_VISIBLE
+            ? {
+                options: {
+                  inlineClassName: "requested-visible",
+                  isWholeLine: true
+                },
+                range: {
+                  startLineNumber: i,
+                  endLineNumber: i,
+                  startColumn: 1,
+                  endColumn: Number.POSITIVE_INFINITY
+                }
+              }
+            : undefined;
+        }
+      )
+      .filter((m): m is IModelDeltaDecoration => m !== undefined);
+    setDecorations(editor.deltaDecorations(decorations, newDecorations));
   }
 
   function updateEditorHeight() {
@@ -87,49 +135,114 @@ export function CodePreview(props: CodePreviewProps) {
     }
   }
 
+  const onDidChangeModelContent = useCallback(
+    (event: monacoTypes.editor.IModelContentChangedEvent) => {
+      if (editor !== undefined && editor.hasTextFocus() === true) {
+        for (const change of event.changes) {
+          const range = getRangeFromMonacoRange(change.range);
+          const sourcedRange = getSourcedRangeFromRange(
+            range,
+            props.path,
+            props.chunkVersionOffsets
+          );
+          if (sourcedRange !== null) {
+            store.dispatch(actions.text.edit(sourcedRange, change.text));
+          }
+        }
+      }
+    },
+    [props.path, props.chunkVersionOffsets]
+  );
+
+  const onDidChangeCursorSelection = useCallback(
+    (event: monacoTypes.editor.ICursorSelectionChangedEvent) => {
+      if (monacoApi !== undefined && editor !== undefined && editor.hasTextFocus() === true) {
+        store.dispatch(
+          actions.text.setSelections(
+            ...[event.selection]
+              .concat(event.secondarySelections)
+              .map(monacoSelection => {
+                return getSnippetSelectionFromMonacoSelection(monacoApi, monacoSelection);
+              })
+              .map(snippetSelection => {
+                return getSelectionFromSnippetSelection(
+                  snippetSelection,
+                  props.path,
+                  props.chunkVersionOffsets
+                );
+              })
+              .filter((s): s is Selection => s !== null)
+          )
+        );
+      }
+    },
+    [props.path, props.chunkVersionOffsets]
+  );
+
   return (
     <MonacoEditor
       theme="vscode"
+      // language="javascript"
       editorDidMount={(e: IStandaloneCodeEditor, m) => {
         setEditor(e);
         setMonacoApi(m);
-        e.onDidChangeCursorSelection(
-          onDidChangeCursorSelection(m, props.path, props.chunkVersionOffsets)
-        );
-      }}
-      value={props.text}
-      onChange={value => {
-        // TODO(andrewhead): Replace with setting value of the text.
+        e.onDidChangeModelContent(onDidChangeModelContent);
+        e.onDidChangeCursorSelection(onDidChangeCursorSelection);
       }}
       options={{
         /*
          * Height of editor will be determined dynamically; the editor should never scroll.
          */
-        scrollBeyondLastLine: false
+        scrollBeyondLastLine: false,
+        /*
+         * Remove visual distractors from the margins of the editor.
+         */
+        minimap: { enabled: false },
+        overviewRulerLanes: 0
       }}
     />
   );
 }
 
-function onDidChangeCursorSelection(
-  monacoApi: MonacoApiType,
+/*
+function getLanguage(path: Path): string | null {
+  const pathTokens = path.split(".");
+  if (pathTokens.length < 2) {
+    return null;
+  }
+  let extension = pathTokens.pop();
+  if (extension === undefined) {
+    return null;
+  }
+  extension = extension.toLowerCase();
+
+}
+*/
+
+function getRangeFromMonacoRange(monacoRange: monacoTypes.IRange): Range {
+  return {
+    start: { line: monacoRange.startLineNumber, character: monacoRange.startColumn - 1 },
+    end: { line: monacoRange.endLineNumber, character: monacoRange.endColumn - 1 }
+  };
+}
+
+function getSourcedRangeFromRange(
+  range: Range,
   path: Path,
   chunkVersionOffsets: ChunkVersionOffsets
-) {
-  return (event: monacoTypes.editor.ICursorSelectionChangedEvent) => {
-    store.dispatch(
-      actions.text.setSelections(
-        ...[event.selection, ...event.secondarySelections]
-          .map(monacoSelection => {
-            return getSnippetSelectionFromMonacoSelection(monacoApi, monacoSelection);
-          })
-          .map(snippetSelection => {
-            return getSelectionFromSnippetSelection(snippetSelection, path, chunkVersionOffsets);
-          })
-          .filter((s): s is Selection => s !== null)
-      )
-    );
-  };
+): SourcedRange | null {
+  for (let i = chunkVersionOffsets.length - 1; i >= 0; i--) {
+    const { line, chunkVersionId } = chunkVersionOffsets[i];
+    if (range.start.line >= line) {
+      return {
+        start: { ...range.start, line: range.start.line - line + 1 },
+        end: { ...range.end, line: range.end.line - line + 1 },
+        path,
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId }
+      };
+    }
+  }
+  return null;
 }
 
 /**
@@ -191,27 +304,3 @@ interface CodePreviewProps {
   chunkVersionOffsets: ChunkVersionOffsets;
   path: Path;
 }
-
-/*
-  const markers = props.reasons
-    .map(
-      (reason, i): IMarker | undefined => {
-        return reason === Reason.REQUESTED_VISIBLE
-          ? {
-              className: "requested-visible",
-              endCol: Number.POSITIVE_INFINITY,
-              endRow: i,
-              // /*
-              //  * Place marker in front because we want to use it to partially hide code: it's
-              //  * to occlude code by putting the marker in front of it.
-              //  
-              inFront: true,
-              startCol: 0,
-              startRow: i,
-              type: "fullLine"
-            }
-          : undefined;
-      }
-    )
-    .filter(m => m !== undefined);
-    */

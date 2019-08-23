@@ -4,8 +4,8 @@ import {
   Selection,
   SnippetId,
   SourceType,
-  Text,
   textUtils,
+  Undoable,
   visibility
 } from "santoku-store";
 import {
@@ -17,7 +17,7 @@ import {
   SnippetText
 } from "./types";
 
-export function getSnippetText(state: Text, snippetId: SnippetId): SnippetText {
+export function getSnippetText(state: Undoable, snippetId: SnippetId): SnippetText {
   const sortedChunkVersions = getSortedChunkVersions(state, snippetId);
   const snippetText: SnippetText = { paths: [], byPath: {} };
   for (const path of Object.keys(sortedChunkVersions)) {
@@ -36,7 +36,7 @@ export function getSnippetText(state: Text, snippetId: SnippetId): SnippetText {
 /**
  * Gets sorted lists of chunk versions in this snippet, grouped by path.
  */
-function getSortedChunkVersions(state: Text, snippetId: SnippetId): ChunkVersionsByPath {
+function getSortedChunkVersions(state: Undoable, snippetId: SnippetId): ChunkVersionsByPath {
   const snippet = state.snippets.byId[snippetId];
   const chunkVersionIds = [...snippet.chunkVersionsAdded];
   const snippetVisibilityRules = state.visibilityRules[snippetId];
@@ -66,7 +66,7 @@ function getSortedChunkVersions(state: Text, snippetId: SnippetId): ChunkVersion
 }
 
 function getTextForPath(
-  state: Text,
+  state: Undoable,
   sortedChunkVersions: ChunkVersionId[],
   snippetId: SnippetId
 ): LineText[] {
@@ -104,7 +104,7 @@ function getTextForPath(
  * Assumes all chunk versions IDs are present in the state.
  */
 function getSnippetSelections(
-  state: Text,
+  state: Undoable,
   orderedChunkVersions: ChunkVersionId[]
 ): SnippetSelection[] {
   let offset = 0;
@@ -121,7 +121,7 @@ function getSnippetSelections(
 }
 
 function getSnippetSelectionsForChunkVersion(
-  state: Text,
+  state: Undoable,
   chunkVersionId: ChunkVersionId,
   offset: number
 ) {
@@ -135,7 +135,7 @@ function getSnippetSelectionsForChunkVersion(
 }
 
 function getSnippetSelectionsFromReferenceImplementation(
-  state: Text,
+  state: Undoable,
   chunkVersionId: ChunkVersionId,
   offsetInSnippet: number
 ) {
@@ -169,7 +169,7 @@ function getSnippetSelectionFromSelection(selection: Selection, offset: number) 
 }
 
 function getChunkVersionOffsets(
-  state: Text,
+  state: Undoable,
   orderedChunkVersions: ChunkVersionId[]
 ): ChunkVersionOffsets {
   let line = 1;
@@ -182,12 +182,12 @@ function getChunkVersionOffsets(
   return chunkVersionOffsets;
 }
 
-function isAddedInSnippet(state: Text, chunkVersionId: ChunkVersionId, snippetId: SnippetId) {
+function isAddedInSnippet(state: Undoable, chunkVersionId: ChunkVersionId, snippetId: SnippetId) {
   return state.snippets.byId[snippetId].chunkVersionsAdded.indexOf(chunkVersionId) !== -1;
 }
 
 function getVisibility(
-  state: Text,
+  state: Undoable,
   snippetId: SnippetId,
   chunkVersionId: ChunkVersionId,
   line: number
@@ -203,6 +203,6 @@ function getVisibility(
 /**
  * Assumes a valid 'chunkVersionId' that is already in 'state'.
  */
-function getChunk(state: Text, chunkVersionId: ChunkVersionId): Chunk {
+function getChunk(state: Undoable, chunkVersionId: ChunkVersionId): Chunk {
   return state.chunks.byId[state.chunkVersions.byId[chunkVersionId].chunk];
 }

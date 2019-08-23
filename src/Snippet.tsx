@@ -29,7 +29,7 @@ interface SnippetProps {
 export default connect(
   (state: State, ownProps: SnippetOwnProps): SnippetProps => {
     return {
-      snippetText: getSnippetText(state.text.present, ownProps.id)
+      snippetText: getSnippetText(state.undoable.present, ownProps.id)
     };
   }
 )(Snippet);

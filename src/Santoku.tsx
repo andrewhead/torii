@@ -1,23 +1,24 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { State, Text } from "santoku-store";
+import { Cells, State } from "santoku-store";
+import { Cell } from "./Cell";
 import "./Santoku.scss";
-import Snippet from "./Snippet";
 
 export function Santoku(props: SantokuProps) {
   return (
     <div className="Santoku">
-      {props.text.snippets.all.map(snippetId => (
-        <Snippet id={snippetId} key={snippetId} />
-      ))}
+      {props.cells.all.map((id, index) => {
+        const cell = props.cells.byId[id];
+        return <Cell contentId={cell.contentId} contentType={cell.type} index={index} key={id} />;
+      })}
     </div>
   );
 }
 
 interface SantokuProps {
-  text: Text;
+  cells: Cells;
 }
 
 export default connect((state: State) => {
-  return { text: state.text.present };
+  return { cells: state.undoable.present.cells };
 })(Santoku);

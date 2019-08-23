@@ -1,7 +1,6 @@
 import { SourceType, testUtils, visibility } from "santoku-store";
 import { getSnippetText } from "../../../src/selectors/snippet";
 import { Reason } from "../../selectors/types";
-import { createText } from "../util";
 
 const FILE_PATH = "file-path";
 
@@ -18,7 +17,7 @@ describe("getEditorText", () => {
   });
 
   it("should have line visiblities", () => {
-    const text = createText({
+    const text = testUtils.createUndoable({
       snippets: {
         all: ["snippet-0", "snippet-1"],
         byId: {

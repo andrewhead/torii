@@ -10,14 +10,16 @@ type IStandaloneCodeEditor = monacoTypes.editor.IStandaloneCodeEditor;
 type IModelDeltaDecoration = monacoTypes.editor.IModelDeltaDecoration;
 
 /**
- * The design of this code preview was based on PullJosh's prototype of a controlled component
+ * The design of this code preview is roughly based on PullJosh's prototype of a controlled component
  * for react-monaco-editor: https://codesandbox.io/s/883y2zmp6l. Code on CodeSandbox is released
  * implicitly under MIT license: https://codesandbox.io/legal/terms.
  */
 export function CodePreview(props: CodePreviewProps) {
-  const [editor, setEditor] = useState<IStandaloneCodeEditor | undefined>(undefined);
-  const [monacoApi, setMonacoApi] = useState<MonacoApiType | undefined>(undefined);
+  const [editor, setEditor] = useState<IStandaloneCodeEditor | undefined>();
+  const [monacoApi, setMonacoApi] = useState<MonacoApiType | undefined>();
   const [decorations, setDecorations] = useState<string[]>([]);
+  const [editCallback, setEditCallback] = useState<monacoTypes.IDisposable | undefined>();
+  const [selectionCallback, setSelectionCallback] = useState<monacoTypes.IDisposable | undefined>();
 
   useEffect(() => {
     updateValue();
@@ -151,7 +153,7 @@ export function CodePreview(props: CodePreviewProps) {
         }
       }
     },
-    [props.path, props.chunkVersionOffsets]
+    [editor, props.path, props.chunkVersionOffsets]
   );
 
   const onDidChangeCursorSelection = useCallback(
@@ -176,7 +178,23 @@ export function CodePreview(props: CodePreviewProps) {
         );
       }
     },
-    [props.path, props.chunkVersionOffsets]
+    [editor, monacoApi, props.path, props.chunkVersionOffsets]
+  );
+
+  useEffect(
+    function setListeners() {
+      if (monacoApi !== undefined && editor !== undefined) {
+        if (selectionCallback !== undefined) {
+          selectionCallback.dispose();
+        }
+        setSelectionCallback(editor.onDidChangeCursorSelection(onDidChangeCursorSelection));
+        if (editCallback !== undefined) {
+          editCallback.dispose();
+        }
+        setEditCallback(editor.onDidChangeModelContent(onDidChangeModelContent));
+      }
+    },
+    [editor, monacoApi, onDidChangeCursorSelection, onDidChangeModelContent]
   );
 
   return (
@@ -186,8 +204,6 @@ export function CodePreview(props: CodePreviewProps) {
       editorDidMount={(e: IStandaloneCodeEditor, m) => {
         setEditor(e);
         setMonacoApi(m);
-        e.onDidChangeModelContent(onDidChangeModelContent);
-        e.onDidChangeCursorSelection(onDidChangeCursorSelection);
       }}
       options={{
         /*
@@ -203,21 +219,6 @@ export function CodePreview(props: CodePreviewProps) {
     />
   );
 }
-
-/*
-function getLanguage(path: Path): string | null {
-  const pathTokens = path.split(".");
-  if (pathTokens.length < 2) {
-    return null;
-  }
-  let extension = pathTokens.pop();
-  if (extension === undefined) {
-    return null;
-  }
-  extension = extension.toLowerCase();
-
-}
-*/
 
 function getRangeFromMonacoRange(monacoRange: monacoTypes.IRange): Range {
   return {

@@ -2,8 +2,7 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import MonacoEditor from "react-monaco-editor";
-import { textUtils } from "santoku-store";
-import { SourceType } from "santoku-store/dist/text/types";
+import { SourceType, textUtils } from "santoku-store";
 import { CodePreview, getSelectionFromSnippetSelection } from "../CodePreview";
 import { Reason } from "../selectors/types";
 
@@ -34,12 +33,11 @@ function setup() {
  * initialize MonacoEditor in the tests. For any important logic that maps from props to
  * editor state and back, make helper functions and test those.
  */
-describe("Snippet", () => {
-  it("should render MonacoEditor with the text", () => {
+describe("CodePreview", () => {
+  it("should render MonacoEditor", () => {
     const { wrapper } = setup();
     const editorComponent = wrapper.find(MonacoEditor);
     expect(editorComponent.length).toBe(1);
-    expect(editorComponent.prop("value")).toEqual("Line 1\nLine 2");
   });
 });
 

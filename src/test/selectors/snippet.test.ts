@@ -1,5 +1,4 @@
-import { testUtils, visibility } from "santoku-store";
-import { SourceType } from "santoku-store/dist/text/types";
+import { SourceType, testUtils, visibility } from "santoku-store";
 import { getSnippetText } from "../../../src/selectors/snippet";
 import { Reason } from "../../selectors/types";
 import { createText } from "../util";

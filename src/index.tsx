@@ -1,4 +1,6 @@
 import * as React from "react";
+import { DndProvider } from "react-dnd";
+import HTML5Backend from "react-dnd-html5-backend";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import * as santokuEditorAdapterClasses from "santoku-editor-adapter";
@@ -14,7 +16,9 @@ declare global {
 
 ReactDOM.render(
   <Provider store={store}>
-    <Santoku />
+    <DndProvider backend={HTML5Backend}>
+      <Santoku />
+    </DndProvider>
   </Provider>,
   document.getElementById("root") as HTMLElement
 );

@@ -8,10 +8,14 @@ import { connected } from "./util";
 Enzyme.configure({ adapter: new Adapter() });
 
 function setup() {
+  // To test test drag-and-drop behavior of cells, you will need to test DraggableCell.
+  // You may need to provide a drag-and-drop test context, like so:
+  // const CellContext = wrapInTestContext(DraggableCell);
+  const id = "cell-id";
   const contentId = "content-id";
   const contentType = ContentType.SNIPPET;
   const index = 1;
-  const wrapper = shallow(<Cell {...{ contentId, contentType, index }} />);
+  const wrapper = shallow(<Cell {...{ id, contentId, contentType, index }} />);
   return { wrapper };
 }
 
@@ -23,7 +27,7 @@ function setup() {
 describe("Cell", () => {
   it("should render its content", () => {
     const { wrapper } = setup();
-    const editorComponent = wrapper.find(connected("Snippet"));
-    expect(editorComponent.length).toBe(1);
+    const snippet = wrapper.find(connected("Snippet"));
+    expect(snippet.length).toBe(1);
   });
 });

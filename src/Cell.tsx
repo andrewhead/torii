@@ -11,8 +11,9 @@ import {
   DropTargetMonitor,
   XYCoord
 } from "react-dnd";
-import { actions, CellId, ContentId, ContentType, store } from "santoku-store";
+import { actions, Cell as CellState, CellId, ContentType, store } from "santoku-store";
 import { DragItemTypes } from "./drag-and-drop";
+import Output from "./Output";
 import Snippet from "./Snippet";
 
 interface DraggableCellProps extends CellProps {
@@ -44,7 +45,21 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
 export function Cell(props: CellProps) {
   return (
     <div className="cell">
-      {props.contentType === ContentType.SNIPPET && <Snippet id={props.contentId} />}
+      {(() => {
+        switch (props.cell.type) {
+          case ContentType.SNIPPET:
+            return <Snippet id={props.cell.contentId} />;
+          case ContentType.OUTPUT:
+            return (
+              <Output
+                snippetId={props.cell.contentId.snippetId}
+                commandId={props.cell.contentId.commandId}
+              />
+            );
+          default:
+            return null;
+        }
+      })()}
     </div>
   );
 }
@@ -58,8 +73,7 @@ interface CellDragInfo {
 interface CellProps {
   id: CellId;
   index: number;
-  contentId: ContentId;
-  contentType: ContentType;
+  cell: CellState;
 }
 
 interface CellInstance {
@@ -120,7 +134,6 @@ export default DropTarget(
     DragItemTypes.CELL,
     {
       beginDrag: (props: CellProps): CellDragInfo => {
-        console.log("Drag began", props);
         return { id: props.id, index: props.index, type: DragItemTypes.CELL };
       }
     },

@@ -4,10 +4,12 @@ import * as React from "react";
 import { CodePreview } from "../CodePreview";
 import { Reason, SnippetText } from "../selectors/types";
 import { Snippet } from "../Snippet";
+import { connected } from "./util";
 
 Enzyme.configure({ adapter: new Adapter() });
 
 function setup() {
+  const id = "snippet-id";
   const snippetText: SnippetText = {
     byPath: {
       path: {
@@ -19,20 +21,23 @@ function setup() {
     },
     paths: ["path"]
   };
-  const props = { snippetText };
+  const props = { id, snippetText };
   const wrapper = shallow(<Snippet {...props} />);
   return {
     wrapper
   };
 }
 
-/**
- * There's a very limited
- */
 describe("Snippet", () => {
   it("should render CodePreview", () => {
     const { wrapper } = setup();
     const codePreview = wrapper.find(CodePreview);
     expect(codePreview.length).toBe(1);
+  });
+
+  it("should render an OutputPalette", () => {
+    const { wrapper } = setup();
+    const outputPalette = wrapper.find(connected("OutputPalette"));
+    expect(outputPalette.length).toBe(1);
   });
 });

@@ -6,7 +6,7 @@ const FILE_PATH = "file-path";
 
 describe("getEditorText", () => {
   it("should have lines from chunk versions, in order", () => {
-    const text = testUtils.createSnippetWithChunkVersions(
+    const text = testUtils.createChunks(
       { line: 3, text: ["Line 3", "Line 4"].join("\n") },
       { line: 1, text: ["Line 1", "Line 2"].join("\n") }
     );
@@ -67,9 +67,9 @@ describe("getEditorText", () => {
   });
 
   it("should have adjusted selections", () => {
-    const text = testUtils.createSnippetWithChunkVersions(
-      { id: "chunk-version-0", line: 1, text: ["Line 1", "Line 2"].join("\n") },
-      { id: "chunk-version-1", line: 3, text: ["Line 3", "Line 4"].join("\n") }
+    const text = testUtils.createChunks(
+      { chunkVersionId: "chunk-version-0", line: 1, text: ["Line 1", "Line 2"].join("\n") },
+      { chunkVersionId: "chunk-version-1", line: 3, text: ["Line 3", "Line 4"].join("\n") }
     );
     text.selections = [
       {
@@ -91,9 +91,9 @@ describe("getEditorText", () => {
   });
 
   it("should adjust selections from the reference implementation", () => {
-    const text = testUtils.createSnippetWithChunkVersions(
-      { id: "chunk-version-0", line: 1, text: ["Line 1", "Line 2"].join("\n") },
-      { id: "chunk-version-1", line: 3, text: ["Line 3", "Line 4"].join("\n") }
+    const text = testUtils.createChunks(
+      { chunkVersionId: "chunk-version-0", line: 1, text: ["Line 1", "Line 2"].join("\n") },
+      { chunkVersionId: "chunk-version-1", line: 3, text: ["Line 3", "Line 4"].join("\n") }
     );
     text.selections = [
       /*
@@ -127,9 +127,9 @@ describe("getEditorText", () => {
   });
 
   it("should have a map from chunk offset to line number", () => {
-    const text = testUtils.createSnippetWithChunkVersions(
-      { id: "chunk-version-0", line: 1, text: "Line 1" },
-      { id: "chunk-version-1", line: 11, text: "Line 11" }
+    const text = testUtils.createChunks(
+      { chunkVersionId: "chunk-version-0", line: 1, text: "Line 1" },
+      { chunkVersionId: "chunk-version-1", line: 11, text: "Line 11" }
     );
     const editorText = getSnippetText(text, testUtils.TEST_SNIPPET_ID);
     expect(editorText.byPath[FILE_PATH]).toMatchObject({

@@ -74,7 +74,7 @@ function getTextForPath(
   for (const chunkVersionId of sortedChunkVersions) {
     const chunkVersion = state.chunkVersions.byId[chunkVersionId];
     const { chunk: chunkId, text: chunkVersionText } = chunkVersion;
-    const lines = textUtils.toLines(chunkVersionText);
+    const lines = textUtils.split(chunkVersionText);
     const isAddedInThisSnippet = isAddedInSnippet(state, chunkVersionId, snippetId);
     const linesAddedForChunkVersion = 0;
 
@@ -115,7 +115,7 @@ function getSnippetSelections(
       ...getSnippetSelectionsFromReferenceImplementation(state, chunkVersionId, offset)
     );
     const chunkVersionText = state.chunkVersions.byId[chunkVersionId].text;
-    offset += textUtils.toLines(chunkVersionText).length;
+    offset += textUtils.split(chunkVersionText).length;
   }
   return snippetSelections;
 }
@@ -149,7 +149,7 @@ function getSnippetSelectionsFromReferenceImplementation(
     return [];
   }
   const { line: chunkOffset, path } = chunk.location;
-  const lineCount = textUtils.toLines(chunkText).length;
+  const lineCount = textUtils.split(chunkText).length;
   const chunkRange = {
     start: { line: chunkOffset, character: 0 },
     end: { line: chunkOffset + lineCount - 1, character: Number.POSITIVE_INFINITY }
@@ -177,7 +177,7 @@ function getChunkVersionOffsets(
   for (const chunkVersionId of orderedChunkVersions) {
     chunkVersionOffsets.push({ line, chunkVersionId });
     const chunkVersionText = state.chunkVersions.byId[chunkVersionId].text;
-    line += textUtils.toLines(chunkVersionText).length;
+    line += textUtils.split(chunkVersionText).length;
   }
   return chunkVersionOffsets;
 }

@@ -2,7 +2,7 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { OutputPalette } from "../OutputPalette";
-import { connected } from "./util";
+import { connected, styled, withTheme } from "./util";
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -19,7 +19,7 @@ function setup() {
 describe("OutputPalette", () => {
   it("should render OutputButtons", () => {
     const { wrapper } = setup();
-    const outputButtons = wrapper.find(connected("OutputButton"));
+    const outputButtons = wrapper.find(connected(styled(withTheme("OutputButton"))));
     expect(outputButtons.length).toBe(2);
   });
 });

@@ -36,13 +36,15 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
     useImperativeHandle<{}, CellInstance>(ref, () => ({
       getNode: () => elementRef.current
     }));
+    const propsWithoutStyles = { ...props };
+    delete propsWithoutStyles.className;
     return (
       <div
         ref={elementRef}
         className={`cell-container ${props.isDragging === true && "drag"}
           ${props.className !== undefined && props.className}`}
       >
-        <Cell {...props} />
+        <Cell {...propsWithoutStyles} />
       </div>
     );
   }
@@ -50,8 +52,16 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
 
 export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   cursor: "move",
-  marginLeft: theme.spacing(2),
+  marginLeft: theme.spacing(4),
   marginRight: theme.spacing(2),
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+  borderLeftStyle: "solid",
+  borderLeftWidth: theme.spacing(1),
+  borderLeftColor: "transparent",
+  "&:hover": {
+    borderLeftColor: theme.palette.secondaryScale[50]
+  },
   marginTop: theme.spacing(1),
   "&:not(:first-child)": {
     marginTop: "0"
@@ -70,7 +80,7 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
 
 export function Cell(props: CellProps) {
   return (
-    <div className={`cell ${props.className !== undefined && props.className}`}>
+    <div className="cell">
       {(() => {
         switch (props.cell.type) {
           case ContentType.SNIPPET:

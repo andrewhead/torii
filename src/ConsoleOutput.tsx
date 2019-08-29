@@ -1,4 +1,4 @@
-import { styled } from "@material-ui/core";
+import { LinearProgress, styled } from "@material-ui/core";
 import * as React from "react";
 import { useEffect, useRef } from "react";
 import { Output } from "santoku-store";
@@ -14,7 +14,12 @@ export function ConsoleOutput(props: ConsoleOutputProps) {
 
   return (
     <div className={`console-output ${props.className !== undefined && props.className}`}>
-      <pre ref={preRef} />
+      <div className="buffer">
+        <pre ref={preRef} />
+        {props.output.state !== "finished" && (
+          <LinearProgress className="progress" color="secondary" />
+        )}
+      </div>
     </div>
   );
 }
@@ -24,17 +29,34 @@ interface ConsoleOutputProps {
   className?: string;
 }
 
-export default styled(ConsoleOutput)(({ theme }) => ({
-  "& pre": {
-    fontFamily: theme.typography.code.fontFamily + " !important",
-    fontSize: theme.typography.code.fontSize,
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.grey[100],
-    padding: theme.spacing(1) + "px !important",
-    /*
-     * TODO(andrewhead): Determine automatically from Monaco margin.
-     */
-    marginLeft: "85px"
-  }
-}));
+export default styled(ConsoleOutput)(({ theme }) => {
+  /*
+   * TODO(andrewhead): Determine automatically from Monaco margin.
+   */
+  const marginLeft = 85;
+  return {
+    "& .buffer": {
+      backgroundColor: theme.palette.primaryScale[900],
+      borderRadius: theme.shape.borderRadius,
+      marginLeft,
+      /*
+       * TODO(andrewhead): Determine automatically from Moncao horizontal scrollbar height.
+       */
+      marginBottom: theme.spacing(2)
+    },
+    "& pre": {
+      margin: 0,
+      padding: theme.spacing(2) + "px !important",
+      fontFamily: theme.typography.code.fontFamily + " !important",
+      fontSize: theme.typography.code.fontSize,
+      color: theme.palette.getContrastText(theme.palette.primaryScale[900])
+    },
+    position: "relative",
+    "& .progress": {
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+      width: `calc(100% - ${marginLeft}px)`
+    }
+  };
+});

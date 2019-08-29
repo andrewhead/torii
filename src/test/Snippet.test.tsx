@@ -3,7 +3,7 @@ import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { Reason, SnippetText } from "../selectors/types";
 import { Snippet } from "../Snippet";
-import { connected, styled } from "./util";
+import { connected, styled, withTheme } from "./util";
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -30,7 +30,7 @@ function setup() {
 describe("Snippet", () => {
   it("should render CodePreview", () => {
     const { wrapper } = setup();
-    const codePreview = wrapper.find(styled("CodePreview"));
+    const codePreview = wrapper.find(styled(withTheme("CodePreview")));
     expect(codePreview.length).toBe(1);
   });
 

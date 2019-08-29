@@ -1,4 +1,4 @@
-import { styled, Theme } from "@material-ui/core";
+import { styled, Theme, withTheme } from "@material-ui/core";
 import * as monacoTypes from "monaco-editor/esm/vs/editor/editor.api";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -317,17 +317,14 @@ interface CodePreviewProps {
   theme?: Theme;
 }
 
-export default styled(CodePreview)(
-  {
-    /*
-     * Check the declaration of the markers for full control over the appearance of lines. For
-     * example, the marker may have been declared to be "in front" of the text, which will make
-     * the text partly invisible.
-     */
-    "& .requested-visible": {
-      backgroundColor: "white",
-      opacity: 0.5
-    }
-  },
-  { withTheme: true }
-);
+export default styled(withTheme(CodePreview))({
+  /*
+   * Check the declaration of the markers for full control over the appearance of lines. For
+   * example, the marker may have been declared to be "in front" of the text, which will make
+   * the text partly invisible.
+   */
+  "& .requested-visible": {
+    backgroundColor: "white",
+    opacity: 0.5
+  }
+});

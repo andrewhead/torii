@@ -1,4 +1,4 @@
-import { styled, useTheme } from "@material-ui/core";
+import { styled, Theme } from "@material-ui/core";
 import * as monacoTypes from "monaco-editor/esm/vs/editor/editor.api";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import { actions, Path, Range, Selection, SourcedRange, SourceType, store } from
 import { ChunkVersionOffsets, Reason, SnippetSelection } from "./selectors/types";
 
 type MonacoApiType = typeof monacoTypes;
+type IEditorConstructionOptions = monacoTypes.editor.IEditorConstructionOptions;
 type IStandaloneCodeEditor = monacoTypes.editor.IStandaloneCodeEditor;
 type IModelDeltaDecoration = monacoTypes.editor.IModelDeltaDecoration;
 
@@ -196,32 +197,34 @@ export function CodePreview(props: CodePreviewProps) {
     [editor, monacoApi, onDidChangeCursorSelection, onDidChangeModelContent]
   );
 
-  const theme = useTheme();
+  const editorOptions: IEditorConstructionOptions = {
+    /*
+     * Height of editor will be determined dynamically; the editor should never scroll.
+     */
+    scrollBeyondLastLine: false,
+    /*
+     * Remove visual distractors from the margins of the editor.
+     */
+    minimap: { enabled: false },
+    overviewRulerLanes: 0
+  };
+
+  if (props.theme !== undefined) {
+    const { fontFamily, fontSize } = props.theme.typography.code;
+    editorOptions.fontFamily = fontFamily;
+    if (typeof fontSize === "number") {
+      editorOptions.fontSize = fontSize;
+    }
+  }
 
   return (
     <MonacoEditor
       theme="vscode"
-      // language="javascript"
       editorDidMount={(e: IStandaloneCodeEditor, m) => {
         setEditor(e);
         setMonacoApi(m);
       }}
-      options={{
-        /*
-         * Height of editor will be determined dynamically; the editor should never scroll.
-         */
-        scrollBeyondLastLine: false,
-        /*
-         * Remove visual distractors from the margins of the editor.
-         */
-        minimap: { enabled: false },
-        overviewRulerLanes: 0,
-        fontFamily: theme.typography.code.fontFamily,
-        fontSize:
-          typeof theme.typography.code.fontSize === "number"
-            ? theme.typography.code.fontSize
-            : undefined
-      }}
+      options={editorOptions}
     />
   );
 }
@@ -310,16 +313,21 @@ interface CodePreviewProps {
   selections: SnippetSelection[];
   chunkVersionOffsets: ChunkVersionOffsets;
   path: Path;
+  className?: string;
+  theme?: Theme;
 }
 
-export default styled(CodePreview)({
-  /*
-   * Check the declaration of the markers for full control over the appearance of lines. For
-   * example, the marker may have been declared to be "in front" of the text, which will make
-   * the text partly invisible.
-   */
-  "& .requested-visible": {
-    backgroundColor: "white",
-    opacity: 0.5
-  }
-});
+export default styled(CodePreview)(
+  {
+    /*
+     * Check the declaration of the markers for full control over the appearance of lines. For
+     * example, the marker may have been declared to be "in front" of the text, which will make
+     * the text partly invisible.
+     */
+    "& .requested-visible": {
+      backgroundColor: "white",
+      opacity: 0.5
+    }
+  },
+  { withTheme: true }
+);

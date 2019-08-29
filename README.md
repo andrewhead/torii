@@ -7,7 +7,7 @@ and tips on how to integrate it into VSCode.
 VSCode integration is not handled in this repository. The
 Santoku editor is meant to be pluggable into arbitrary IDEs.
 To see the code that integrates it with VSCode, check out
-https://github.com/andrewhead/vscode-santoku and 
+https://github.com/andrewhead/vscode-santoku and
 https://github.com/andrewhead/santoku-editor-adapter.
 
 To run the Santoku tutorial editor in your integrated
@@ -41,3 +41,12 @@ subset of the functionality...), run:
 ```bash
 npm run start
 ```
+
+### Development Conventions
+
+- Apply styles using the `styled` function.
+- Unit tests should test unstyled components.
+- Themes should be be applied in `styled` functions. If a
+  component needs access to a theme, pass it in as a
+  property. The `useTheme` hook breaks in unit tests
+  that use shallow rendering for components.

@@ -1,3 +1,4 @@
+import { styled } from "@material-ui/core";
 import * as React from "react";
 import { useImperativeHandle, useRef } from "react";
 import {
@@ -20,6 +21,7 @@ interface DraggableCellProps extends CellProps {
   connectDragSource: ConnectDragSource;
   connectDropTarget: ConnectDropTarget;
   isDragging: boolean;
+  className?: string;
 }
 
 /**
@@ -35,27 +37,46 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
       getNode: () => elementRef.current
     }));
     return (
-      <div ref={elementRef} className={`cell-container ${props.isDragging ? "drag" : ""}`}>
+      <div
+        ref={elementRef}
+        className={`cell-container ${props.isDragging === true && "drag"}
+          ${props.className !== undefined && props.className}`}
+      >
         <Cell {...props} />
       </div>
     );
   }
 );
 
+export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
+  cursor: "move",
+  marginLeft: theme.spacing(2),
+  marginRight: theme.spacing(2),
+  marginTop: theme.spacing(1),
+  "&:not(:first-child)": {
+    marginTop: "0"
+  },
+  /*
+   * Hack to correct the drag previews. Without this, in VSCode, a drag preview included any
+   * selected editor, along with all selected editors below it. For details on why this worked,
+   * and whether this bug has been fixed, see:
+   * https://github.com/react-dnd/react-dnd/issues/832#issuecomment-442071628
+   */
+  transform: "translate3d(0, 0, 0)",
+  "&.drag": {
+    opacity: 0
+  }
+}));
+
 export function Cell(props: CellProps) {
   return (
-    <div className="cell">
+    <div className={`cell ${props.className !== undefined && props.className}`}>
       {(() => {
         switch (props.cell.type) {
           case ContentType.SNIPPET:
             return <Snippet id={props.cell.contentId} />;
           case ContentType.OUTPUT:
-            return (
-              <Output
-                snippetId={props.cell.contentId.snippetId}
-                commandId={props.cell.contentId.commandId}
-              />
-            );
+            return <Output id={props.cell.contentId} />;
           default:
             return null;
         }
@@ -74,6 +95,7 @@ interface CellProps {
   id: CellId;
   index: number;
   cell: CellState;
+  className?: string;
 }
 
 interface CellInstance {
@@ -141,5 +163,5 @@ export default DropTarget(
       connectDragSource: connector.dragSource(),
       isDragging: monitor.isDragging()
     })
-  )(DraggableCell)
+  )(StyledDraggableCell)
 );

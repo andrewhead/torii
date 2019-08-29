@@ -7,13 +7,16 @@ import { OutputButton } from "../OutputButton";
 Enzyme.configure({ adapter: new Adapter() });
 
 function setup() {
-  const snippetId = "snippet-id";
+  const id = {
+    snippetId: "snippet-id",
+    commandId: "command-id"
+  };
   const output: Output = {
     commandId: "command-id",
     state: "started",
     type: "console"
   };
-  const props = { snippetId, output };
+  const props = { id, output };
   const wrapper = shallow(<OutputButton {...props} />);
   return {
     wrapper

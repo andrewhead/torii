@@ -1,10 +1,9 @@
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
-import { CodePreview } from "../CodePreview";
 import { Reason, SnippetText } from "../selectors/types";
 import { Snippet } from "../Snippet";
-import { connected } from "./util";
+import { connected, styled } from "./util";
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -31,13 +30,13 @@ function setup() {
 describe("Snippet", () => {
   it("should render CodePreview", () => {
     const { wrapper } = setup();
-    const codePreview = wrapper.find(CodePreview);
+    const codePreview = wrapper.find(styled("CodePreview"));
     expect(codePreview.length).toBe(1);
   });
 
   it("should render an OutputPalette", () => {
     const { wrapper } = setup();
-    const outputPalette = wrapper.find(connected("OutputPalette"));
+    const outputPalette = wrapper.find(connected(styled("OutputPalette")));
     expect(outputPalette.length).toBe(1);
   });
 });

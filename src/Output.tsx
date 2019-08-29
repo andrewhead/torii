@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { CommandId, Output as OutputState, SnippetId, State } from "santoku-store";
-import { ConsoleOutput } from "./ConsoleOutput";
+import { Output as OutputState, OutputId, State } from "santoku-store";
+import ConsoleOutput from "./ConsoleOutput";
 import { getOutput } from "./selectors/output-button";
 
 export function Output(props: OutputProps) {
@@ -13,8 +13,7 @@ export function Output(props: OutputProps) {
 }
 
 interface OutputOwnProps {
-  snippetId: SnippetId;
-  commandId: CommandId;
+  id: OutputId;
 }
 
 interface OutputProps {
@@ -24,7 +23,7 @@ interface OutputProps {
 export default connect(
   (state: State, ownProps: OutputOwnProps): OutputProps => {
     return {
-      output: getOutput(state, ownProps.snippetId, ownProps.snippetId)
+      output: getOutput(state, ownProps.id)
     };
   }
 )(Output);

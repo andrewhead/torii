@@ -1,17 +1,29 @@
+import { styled } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
-import { CommandId, SnippetId, State } from "santoku-store";
+import { CommandId, OutputId, SnippetId, State } from "santoku-store";
 import OutputButton from "./OutputButton";
+import { getCommandIds } from "./selectors/output-palette";
 
 export function OutputPalette(props: OutputPaletteProps) {
   return (
-    <div className="output-palette">
-      {props.commandIds.map(commandId => (
-        <OutputButton key={commandId} snippetId={props.snippetId} commandId={commandId} />
-      ))}
+    <div className={`output-palette ${props.className !== undefined && props.className}`}>
+      {props.commandIds.map(commandId => {
+        const outputId: OutputId = {
+          snippetId: props.snippetId,
+          commandId
+        };
+        return <OutputButton key={commandId} id={outputId} />;
+      })}
     </div>
   );
 }
+
+const StyledOutputPalette = styled(OutputPalette)(({ theme }) => ({
+  position: "absolute",
+  bottom: theme.spacing(1),
+  right: theme.spacing(1)
+}));
 
 interface OutputPaletteOwnProps {
   snippetId: SnippetId;
@@ -20,13 +32,14 @@ interface OutputPaletteOwnProps {
 interface OutputPaletteProps {
   snippetId: SnippetId;
   commandIds: CommandId[];
+  className?: string;
 }
 
 export default connect(
   (state: State, ownProps: OutputPaletteOwnProps): OutputPaletteProps => {
     return {
-      snippetId: "",
-      commandIds: []
+      snippetId: ownProps.snippetId,
+      commandIds: getCommandIds(state, ownProps.snippetId)
     };
   }
-)(OutputPalette);
+)(StyledOutputPalette);

@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@material-ui/styles";
 import * as React from "react";
 import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
@@ -7,6 +8,7 @@ import * as santokuEditorAdapterClasses from "santoku-editor-adapter";
 import { store } from "santoku-store";
 import "./index.css";
 import Santoku from "./Santoku";
+import createTheme from "./theme";
 
 declare global {
   interface Window {
@@ -14,10 +16,14 @@ declare global {
   }
 }
 
+const theme = createTheme();
+
 ReactDOM.render(
   <Provider store={store}>
     <DndProvider backend={HTML5Backend}>
-      <Santoku />
+      <ThemeProvider theme={theme}>
+        <Santoku />
+      </ThemeProvider>
     </DndProvider>
   </Provider>,
   document.getElementById("root") as HTMLElement

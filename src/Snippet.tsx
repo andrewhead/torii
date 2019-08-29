@@ -1,7 +1,8 @@
+import { styled } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
-import { CodePreview } from "./CodePreview";
+import CodePreview from "./CodePreview";
 import OutputPalette from "./OutputPalette";
 import { getSnippetText } from "./selectors/snippet";
 import { SnippetText } from "./selectors/types";
@@ -11,7 +12,7 @@ import { SnippetText } from "./selectors/types";
  */
 export function Snippet(props: SnippetProps) {
   return (
-    <div className="snippet">
+    <div className={`snippet ${props.className !== undefined && props.className}`}>
       <div className="code-previews">
         {props.snippetText.paths.map((path: Path) => (
           <CodePreview key={path} path={path} {...props.snippetText.byPath[path]} />
@@ -22,6 +23,21 @@ export function Snippet(props: SnippetProps) {
   );
 }
 
+const StyledSnippet = styled(Snippet)({
+  /*
+   * Allows absolute positioning of the output palette.
+   */
+  position: "relative",
+  "& .output-palette": {
+    visibility: "hidden"
+  },
+  "&:hover": {
+    "& .output-palette": {
+      visibility: "visible"
+    }
+  }
+});
+
 interface SnippetOwnProps {
   id: SnippetId;
 }
@@ -29,6 +45,7 @@ interface SnippetOwnProps {
 interface SnippetProps {
   id: SnippetId;
   snippetText: SnippetText;
+  className?: string;
 }
 
 export default connect(
@@ -38,4 +55,4 @@ export default connect(
       snippetText: getSnippetText(state.undoable.present, ownProps.id)
     };
   }
-)(Snippet);
+)(StyledSnippet);

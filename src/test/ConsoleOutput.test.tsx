@@ -1,4 +1,4 @@
-import Enzyme, { shallow } from "enzyme";
+import Enzyme, { mount } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { Output } from "santoku-store";
@@ -18,10 +18,11 @@ function setup() {
     }
   };
   const props = { output };
-  const wrapper = shallow(<ConsoleOutput {...props} />);
-  return {
-    wrapper
-  };
+  /*
+   * Full element rendered to test text initialization.
+   */
+  const wrapper = mount(<ConsoleOutput {...props} />);
+  return { wrapper };
 }
 
 describe("ConsoleOutput", () => {

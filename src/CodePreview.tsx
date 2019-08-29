@@ -1,3 +1,4 @@
+import { styled, useTheme } from "@material-ui/core";
 import * as monacoTypes from "monaco-editor/esm/vs/editor/editor.api";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -90,24 +91,22 @@ export function CodePreview(props: CodePreviewProps) {
       return;
     }
     const newDecorations = props.reasons
-      .map(
-        (reason, i): IModelDeltaDecoration | undefined => {
-          return reason === Reason.REQUESTED_VISIBLE
-            ? {
-                options: {
-                  inlineClassName: "requested-visible",
-                  isWholeLine: true
-                },
-                range: {
-                  startLineNumber: i,
-                  endLineNumber: i,
-                  startColumn: 1,
-                  endColumn: Number.POSITIVE_INFINITY
-                }
+      .map((reason, i): IModelDeltaDecoration | undefined => {
+        return reason === Reason.REQUESTED_VISIBLE
+          ? {
+              options: {
+                inlineClassName: "requested-visible",
+                isWholeLine: true
+              },
+              range: {
+                startLineNumber: i,
+                endLineNumber: i,
+                startColumn: 1,
+                endColumn: Number.POSITIVE_INFINITY
               }
-            : undefined;
-        }
-      )
+            }
+          : undefined;
+      })
       .filter((m): m is IModelDeltaDecoration => m !== undefined);
     setDecorations(editor.deltaDecorations(decorations, newDecorations));
   }
@@ -197,6 +196,8 @@ export function CodePreview(props: CodePreviewProps) {
     [editor, monacoApi, onDidChangeCursorSelection, onDidChangeModelContent]
   );
 
+  const theme = useTheme();
+
   return (
     <MonacoEditor
       theme="vscode"
@@ -214,7 +215,12 @@ export function CodePreview(props: CodePreviewProps) {
          * Remove visual distractors from the margins of the editor.
          */
         minimap: { enabled: false },
-        overviewRulerLanes: 0
+        overviewRulerLanes: 0,
+        fontFamily: theme.typography.code.fontFamily,
+        fontSize:
+          typeof theme.typography.code.fontSize === "number"
+            ? theme.typography.code.fontSize
+            : undefined
       }}
     />
   );
@@ -305,3 +311,15 @@ interface CodePreviewProps {
   chunkVersionOffsets: ChunkVersionOffsets;
   path: Path;
 }
+
+export default styled(CodePreview)({
+  /*
+   * Check the declaration of the markers for full control over the appearance of lines. For
+   * example, the marker may have been declared to be "in front" of the text, which will make
+   * the text partly invisible.
+   */
+  "& .requested-visible": {
+    backgroundColor: "white",
+    opacity: 0.5
+  }
+});

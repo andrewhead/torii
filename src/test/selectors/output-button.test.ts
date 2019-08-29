@@ -2,18 +2,21 @@ import { Output, stateUtils } from "santoku-store";
 import { getOutput } from "../../selectors/output-button";
 
 describe("getOutput", () => {
-  it("gets output for a snippet and command", () => {
-    const output = { commandId: "command-id", state: "started", type: "console" } as Output;
+  it("gets output with an ID", () => {
+    const snippetId = "snippet-id";
+    const commandId = "command-id";
+    const output = { commandId, state: "started", type: "console" } as Output;
     const state = stateUtils.createState({
       outputs: {
-        all: ["snippet-id"],
+        all: [snippetId],
         byId: {
-          "snippet-id": {
-            "command-id": output
+          [snippetId]: {
+            [commandId]: output
           }
         }
       }
     });
-    expect(getOutput(state, "snippet-id", "command-id")).toEqual(output);
+    const outputId = { snippetId, commandId };
+    expect(getOutput(state, outputId)).toEqual(output);
   });
 });

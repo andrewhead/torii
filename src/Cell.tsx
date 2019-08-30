@@ -12,17 +12,12 @@ import {
   DropTargetMonitor,
   XYCoord
 } from "react-dnd";
-import { actions, Cell as CellState, CellId, ContentType, store } from "santoku-store";
+import { connect } from "react-redux";
+import { actions, Cell as CellState, CellId, ContentType, State, store } from "santoku-store";
 import { DragItemTypes } from "./drag-and-drop";
 import Output from "./Output";
+import { getCell, isSelected } from "./selectors/cell";
 import Snippet from "./Snippet";
-
-interface DraggableCellProps extends CellProps {
-  connectDragSource: ConnectDragSource;
-  connectDropTarget: ConnectDropTarget;
-  isDragging: boolean;
-  className?: string;
-}
 
 /**
  * A 'cell' containing tutorial content. Can contain text, code, output, etc.
@@ -41,8 +36,11 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
     return (
       <div
         ref={elementRef}
-        className={`cell-container ${props.isDragging === true && "drag"}
+        className={`cell-container
+          ${props.selected === true && "selected"}
+          ${props.isDragging === true && "drag"}
           ${props.className !== undefined && props.className}`}
+        onClick={() => store.dispatch(actions.ui.selectCell(props.id))}
       >
         <Cell {...propsWithoutStyles} />
       </div>
@@ -52,14 +50,17 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
 
 export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   cursor: "move",
-  marginLeft: theme.spacing(4),
-  marginRight: theme.spacing(2),
+  marginLeft: theme.spacing(3),
+  marginRight: theme.spacing(3),
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(1),
   borderLeftStyle: "solid",
   borderLeftWidth: theme.spacing(1),
   borderLeftColor: "transparent",
-  "&:hover": {
+  "&.selected": {
+    borderLeftColor: theme.palette.secondaryScale[300]
+  },
+  "&:hover:not(.selected)": {
     borderLeftColor: theme.palette.secondaryScale[50]
   },
   marginTop: theme.spacing(1),
@@ -101,11 +102,24 @@ interface CellDragInfo {
   type: string;
 }
 
+interface DraggableCellProps extends CellProps {
+  connectDragSource: ConnectDragSource;
+  connectDropTarget: ConnectDropTarget;
+  isDragging: boolean;
+  selected: boolean;
+  className?: string;
+}
+
 interface CellProps {
   id: CellId;
   index: number;
   cell: CellState;
   className?: string;
+}
+
+interface CellInitProps {
+  id: CellId;
+  index: number;
 }
 
 interface CellInstance {
@@ -116,62 +130,68 @@ interface CellInstance {
  * Based on drag-and-drop behavior from React-DnD simple list example. See
  * https://github.com/react-dnd/react-dnd/blob/master/packages/documentation/examples-decorators/src/04-sortable/simple/Card.tsx
  */
-export default DropTarget(
-  DragItemTypes.CELL,
-  {
-    hover: (draggedCell: CellDragInfo, monitor: DropTargetMonitor, component: CellInstance) => {
-      if (component === null) {
-        return;
-      }
-
-      const node = component.getNode();
-      if (node === null) {
-        return;
-      }
-
-      const dragIndex = monitor.getItem().index;
-      const hoverIndex = draggedCell.index;
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-
-      const hoverBoundingRect = node.getBoundingClientRect();
-      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-      /*
-       * Note from the React-DnD example:
-       * Only perform the move when the mouse has crossed half of the items height
-       * When dragging downwards, only move when the cursor is below 50%
-       * When dragging upwards, only move when the cursor is above 50%
-       */
-      if (hoverIndex > dragIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-      if (hoverIndex < dragIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-
-      store.dispatch(actions.cells.move(monitor.getItem().id, hoverIndex));
-      monitor.getItem().index = hoverIndex;
-      draggedCell.index = hoverIndex;
-    }
-  },
-  (connector: DropTargetConnector) => ({
-    connectDropTarget: connector.dropTarget()
-  })
-)(
-  DragSource(
+export default connect((state: State, ownProps: CellInitProps) => {
+  const { id } = ownProps;
+  return { ...ownProps, cell: getCell(state, id), selected: isSelected(state, id) };
+})(
+  DropTarget(
     DragItemTypes.CELL,
     {
-      beginDrag: (props: CellProps): CellDragInfo => {
-        return { id: props.id, index: props.index, type: DragItemTypes.CELL };
+      hover: (draggedCell: CellDragInfo, monitor: DropTargetMonitor, component: CellInstance) => {
+        if (component === null) {
+          return;
+        }
+
+        const node = component.getNode();
+        if (node === null) {
+          return;
+        }
+
+        const dragIndex = monitor.getItem().index;
+        const hoverIndex = draggedCell.index;
+        if (dragIndex === hoverIndex) {
+          return;
+        }
+
+        const hoverBoundingRect = node.getBoundingClientRect();
+        const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+        const clientOffset = monitor.getClientOffset();
+        const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+        /*
+         * Note from the React-DnD example:
+         * Only perform the move when the mouse has crossed half of the items height
+         * When dragging downwards, only move when the cursor is below 50%
+         * When dragging upwards, only move when the cursor is above 50%
+         */
+        if (hoverIndex > dragIndex && hoverClientY < hoverMiddleY) {
+          return;
+        }
+        if (hoverIndex < dragIndex && hoverClientY > hoverMiddleY) {
+          return;
+        }
+
+        store.dispatch(actions.cells.move(monitor.getItem().id, hoverIndex));
+        monitor.getItem().index = hoverIndex;
+        draggedCell.index = hoverIndex;
       }
     },
-    (connector: DragSourceConnector, monitor: DragSourceMonitor) => ({
-      connectDragSource: connector.dragSource(),
-      isDragging: monitor.isDragging()
+    (connector: DropTargetConnector) => ({
+      connectDropTarget: connector.dropTarget()
     })
-  )(StyledDraggableCell)
+  )(
+    DragSource(
+      DragItemTypes.CELL,
+      {
+        beginDrag: (props: CellProps): CellDragInfo => {
+          store.dispatch(actions.ui.selectCell(props.id));
+          return { id: props.id, index: props.index, type: DragItemTypes.CELL };
+        }
+      },
+      (connector: DragSourceConnector, monitor: DragSourceMonitor) => ({
+        connectDragSource: connector.dragSource(),
+        isDragging: monitor.isDragging()
+      })
+    )(StyledDraggableCell)
+  )
 );

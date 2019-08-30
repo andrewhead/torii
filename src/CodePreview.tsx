@@ -148,7 +148,7 @@ export function CodePreview(props: CodePreviewProps) {
             props.chunkVersionOffsets
           );
           if (sourcedRange !== null) {
-            store.dispatch(actions.text.edit(sourcedRange, change.text));
+            store.dispatch(actions.code.edit(sourcedRange, change.text));
           }
         }
       }
@@ -160,7 +160,7 @@ export function CodePreview(props: CodePreviewProps) {
     (event: monacoTypes.editor.ICursorSelectionChangedEvent) => {
       if (monacoApi !== undefined && editor !== undefined && editor.hasTextFocus() === true) {
         store.dispatch(
-          actions.text.setSelections(
+          actions.code.setSelections(
             ...[event.selection]
               .concat(event.secondarySelections)
               .map(monacoSelection => {

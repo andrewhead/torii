@@ -10,7 +10,7 @@ function setup() {
   const snippetId = "snippet-0";
   const commandIds = ["command-0", "command-1"];
   const props = { snippetId, commandIds };
-  const wrapper = shallow(<OutputPalette {...props} />);
+  const wrapper = shallow(<OutputPalette {...props} cellIndex={0} />);
   return {
     wrapper
   };

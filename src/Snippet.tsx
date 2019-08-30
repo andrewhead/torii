@@ -18,7 +18,7 @@ export function Snippet(props: SnippetProps) {
           <CodePreview key={path} path={path} {...props.snippetText.byPath[path]} />
         ))}
       </div>
-      <OutputPalette snippetId={props.id} />
+      <OutputPalette snippetId={props.id} cellIndex={props.cellIndex} />
     </div>
   );
 }
@@ -40,11 +40,13 @@ const StyledSnippet = styled(Snippet)({
 
 interface SnippetOwnProps {
   id: SnippetId;
+  cellIndex: number;
 }
 
 interface SnippetProps {
   id: SnippetId;
   snippetText: SnippetText;
+  cellIndex: number;
   className?: string;
 }
 
@@ -52,6 +54,7 @@ export default connect(
   (state: State, ownProps: SnippetOwnProps): SnippetProps => {
     return {
       id: ownProps.id,
+      cellIndex: ownProps.cellIndex,
       snippetText: getSnippetText(state.undoable.present, ownProps.id)
     };
   }

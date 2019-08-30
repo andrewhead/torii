@@ -19,7 +19,7 @@ describe("OutputButton", () => {
       state: "started",
       type: "console"
     };
-    const wrapper = shallow(<OutputButton id={id} output={output} />);
+    const wrapper = shallow(<OutputButton id={id} output={output} cellIndex={0} />);
     const progress = wrapper.find(styled(withTheme("ContrastCircularProgress")));
     expect(progress.length).toBe(1);
   });

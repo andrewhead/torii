@@ -85,7 +85,7 @@ export function Cell(props: CellProps) {
       {(() => {
         switch (props.cell.type) {
           case ContentType.SNIPPET:
-            return <Snippet id={props.cell.contentId} />;
+            return <Snippet id={props.cell.contentId} cellIndex={props.index} />;
           case ContentType.OUTPUT:
             return <Output id={props.cell.contentId} />;
           default:

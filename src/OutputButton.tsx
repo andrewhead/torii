@@ -11,7 +11,13 @@ export function OutputButton(props: OutputButtonProps) {
       variant="contained"
       color="secondary"
       className={`output-button ${props.className !== undefined && props.className}`}
-      onClick={() => store.dispatch(actions.cells.insertOutput(props.id, 0))}
+      onClick={e => {
+        store.dispatch(actions.cells.insertOutput(props.cellIndex + 1, props.id));
+        /*
+         * Prevent click from bubbling up to parent, where it would trigger selection of this cell.
+         */
+        e.stopPropagation();
+      }}
     >
       {props.output.type === "console" && "Console output"}
       {props.output.type === "html" && "HTML"}
@@ -54,11 +60,13 @@ const StyledContrastCircularProgress = styled(withTheme(ContrastCircularProgress
 
 interface OutputButtonOwnProps {
   id: OutputId;
+  cellIndex: number;
 }
 
 interface OutputButtonProps {
   id: OutputId;
   output: Output;
+  cellIndex: number;
   theme?: Theme;
   className?: string;
 }
@@ -67,6 +75,7 @@ export default connect(
   (state: State, ownProps: OutputButtonOwnProps): OutputButtonProps => {
     return {
       id: ownProps.id,
+      cellIndex: ownProps.cellIndex,
       output: getOutput(state, ownProps.id)
     };
   }

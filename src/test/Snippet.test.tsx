@@ -21,7 +21,7 @@ function setup() {
     paths: ["path"]
   };
   const props = { id, snippetText };
-  const wrapper = shallow(<Snippet {...props} />);
+  const wrapper = shallow(<Snippet {...props} cellIndex={0} />);
   return {
     wrapper
   };

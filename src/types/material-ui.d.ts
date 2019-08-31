@@ -6,12 +6,25 @@ declare module "@material-ui/core/styles/createMuiTheme" {
   interface Theme {
     typography: Typography;
     palette: Palette;
+    spaces: Spaces;
   }
 
   interface ThemeOptions {
     palette?: PaletteOptions;
     typography?: TypographyOptions;
+    spaces: SpacesOptions;
   }
+
+  interface Spaces {
+    cell: CellSpaces;
+  }
+
+  interface CellSpaces {
+    paddingTop: number;
+    paddingBottom: number;
+  }
+
+  interface SpacesOptions extends Spaces {}
 }
 
 /**

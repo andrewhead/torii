@@ -79,7 +79,6 @@ interface TextProps {
 }
 
 const StyledText = styled(Text)(({ theme }) => ({
-  marginLeft: 72,
   fontFamily: theme.typography.text.fontFamily + " !important",
   border: "none",
   "& .mde-header": {
@@ -122,11 +121,7 @@ const StyledText = styled(Text)(({ theme }) => ({
   },
   "& .grip": {
     display: "none"
-  },
-  /*
-   * TODO(andrewhead): Determine automatically from Moncao horizontal scrollbar height.
-   */
-  marginBottom: theme.spacing(1)
+  }
 }));
 
 export default connect(

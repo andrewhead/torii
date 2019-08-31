@@ -319,7 +319,7 @@ interface CodePreviewProps {
   theme?: Theme;
 }
 
-export default styled(withTheme(CodePreview))({
+export default styled(withTheme(CodePreview))(({ theme }) => ({
   /*
    * Check the declaration of the markers for full control over the appearance of lines. For
    * example, the marker may have been declared to be "in front" of the text, which will make
@@ -328,4 +328,4 @@ export default styled(withTheme(CodePreview))({
   "& .requested-visible": {
     opacity: 0.5
   }
-});
+}));

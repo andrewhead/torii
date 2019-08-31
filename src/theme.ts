@@ -1,12 +1,13 @@
 import { blue, grey } from "@material-ui/core/colors";
 import createMuiTheme, { ThemeOptions } from "@material-ui/core/styles/createMuiTheme";
 
+const defaultTheme = createMuiTheme();
+
 export default function createTheme(options?: ThemeOptions) {
-  options = options || {};
   const primaryScale = grey;
   const secondaryScale = blue;
   return createMuiTheme({
-    ...options,
+    ...(options || {}),
     palette: {
       primary: {
         main: primaryScale[200],
@@ -20,6 +21,12 @@ export default function createTheme(options?: ThemeOptions) {
         dark: secondaryScale[700]
       },
       secondaryScale
+    },
+    spaces: {
+      cell: {
+        paddingTop: defaultTheme.spacing(1),
+        paddingBottom: defaultTheme.spacing(2)
+      }
     },
     typography: {
       code: {
@@ -40,7 +47,7 @@ export default function createTheme(options?: ThemeOptions) {
         fontFamily: 'Lato, "Segoe UI", Roboto, Helvetica, Arial,sans-serif',
         fontWeight: "normal",
         fontStyle: "normal",
-        color: "black",
+        color: defaultTheme.typography.body1.color,
         fontSize: 18
       }
     }

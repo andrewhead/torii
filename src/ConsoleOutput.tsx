@@ -30,19 +30,10 @@ interface ConsoleOutputProps {
 }
 
 export default styled(ConsoleOutput)(({ theme }) => {
-  /*
-   * TODO(andrewhead): Determine automatically from Monaco margin.
-   */
-  const marginLeft = 72;
   return {
     "& .buffer": {
       backgroundColor: theme.palette.primaryScale[900],
-      borderRadius: theme.shape.borderRadius,
-      marginLeft,
-      /*
-       * TODO(andrewhead): Determine automatically from Moncao horizontal scrollbar height.
-       */
-      marginBottom: theme.spacing(1)
+      borderRadius: theme.shape.borderRadius
     },
     "& pre": {
       margin: 0,
@@ -56,7 +47,7 @@ export default styled(ConsoleOutput)(({ theme }) => {
       position: "absolute",
       bottom: 0,
       right: 0,
-      width: `calc(100% - ${marginLeft}px)`
+      width: "100%"
     }
   };
 });

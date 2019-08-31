@@ -51,10 +51,11 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
 
 export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   cursor: "move",
+  paddingTop: theme.spaces.cell.paddingTop,
+  paddingBottom: theme.spaces.cell.paddingBottom,
   marginLeft: theme.spacing(2),
   marginRight: theme.spacing(3),
-  paddingTop: theme.spacing(1),
-  paddingBottom: theme.spacing(1),
+  paddingLeft: theme.spacing(2),
   borderLeftStyle: "solid",
   borderLeftWidth: theme.spacing(1),
   borderLeftColor: "transparent",
@@ -63,10 +64,6 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   },
   "&:hover:not(.selected)": {
     borderLeftColor: theme.palette.secondaryScale[50]
-  },
-  marginTop: theme.spacing(1),
-  "&:not(:first-child)": {
-    marginTop: "0"
   },
   /*
    * Hack to correct the drag previews. Without this, in VSCode, a drag preview included any

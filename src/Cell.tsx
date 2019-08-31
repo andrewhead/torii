@@ -18,6 +18,7 @@ import { DragItemTypes } from "./drag-and-drop";
 import Output from "./Output";
 import { getCell, isSelected } from "./selectors/cell";
 import Snippet from "./Snippet";
+import Text from "./Text";
 
 /**
  * A 'cell' containing tutorial content. Can contain text, code, output, etc.
@@ -50,7 +51,7 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
 
 export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   cursor: "move",
-  marginLeft: theme.spacing(3),
+  marginLeft: theme.spacing(2),
   marginRight: theme.spacing(3),
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(1),
@@ -86,6 +87,8 @@ export function Cell(props: CellProps) {
         switch (props.cell.type) {
           case ContentType.SNIPPET:
             return <Snippet id={props.cell.contentId} cellIndex={props.index} />;
+          case ContentType.TEXT:
+            return <Text id={props.cell.contentId} focused={props.selected} />;
           case ContentType.OUTPUT:
             return <Output id={props.cell.contentId} />;
           default:
@@ -106,7 +109,6 @@ interface DraggableCellProps extends CellProps {
   connectDragSource: ConnectDragSource;
   connectDropTarget: ConnectDropTarget;
   isDragging: boolean;
-  selected: boolean;
   className?: string;
 }
 
@@ -114,6 +116,7 @@ interface CellProps {
   id: CellId;
   index: number;
   cell: CellState;
+  selected: boolean;
   className?: string;
 }
 

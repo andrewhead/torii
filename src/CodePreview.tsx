@@ -218,14 +218,16 @@ export function CodePreview(props: CodePreviewProps) {
   }
 
   return (
-    <MonacoEditor
-      theme="vscode"
-      editorDidMount={(e: IStandaloneCodeEditor, m) => {
-        setEditor(e);
-        setMonacoApi(m);
-      }}
-      options={editorOptions}
-    />
+    <div className={`${props.className !== undefined && props.className}`}>
+      <MonacoEditor
+        theme="vscode"
+        editorDidMount={(e: IStandaloneCodeEditor, m) => {
+          setEditor(e);
+          setMonacoApi(m);
+        }}
+        options={editorOptions}
+      />
+    </div>
   );
 }
 
@@ -324,7 +326,6 @@ export default styled(withTheme(CodePreview))({
    * the text partly invisible.
    */
   "& .requested-visible": {
-    backgroundColor: "white",
     opacity: 0.5
   }
 });

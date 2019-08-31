@@ -17,11 +17,15 @@ Enzyme.configure({ adapter: new Adapter() });
  * const CellContext = wrapInTestContext(DraggableCell);
  */
 describe("Cell", () => {
+  function createCell(cell: CellState, id: any, index: number) {
+    return shallow(<Cell {...{ id, cell, index }} selected={true} />);
+  }
+
   it("renders snippets", () => {
     const cell = { type: ContentType.SNIPPET, contentId: "snippet-id" } as CellState;
     const id = "cell-id";
     const index = 1;
-    const wrapper = shallow(<Cell {...{ id, cell, index }} />);
+    const wrapper = createCell(cell, id, index);
     const snippet = wrapper.find(connected(styled("Snippet")));
     expect(snippet.length).toBe(1);
   });
@@ -36,8 +40,20 @@ describe("Cell", () => {
     } as CellState;
     const id = "cell-id";
     const index = 1;
-    const wrapper = shallow(<Cell {...{ id, cell, index }} />);
+    const wrapper = createCell(cell, id, index);
     const output = wrapper.find(connected("Output"));
     expect(output.length).toBe(1);
+  });
+
+  it("renders text", () => {
+    const cell = {
+      type: ContentType.TEXT,
+      contentId: "text-id"
+    } as CellState;
+    const id = "cell-id";
+    const index = 1;
+    const wrapper = createCell(cell, id, index);
+    const text = wrapper.find(connected(styled("Text")));
+    expect(text.length).toBe(1);
   });
 });

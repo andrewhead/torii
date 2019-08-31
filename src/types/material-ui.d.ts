@@ -35,9 +35,11 @@ declare module "@material-ui/core/styles/createPalette" {
 declare module "@material-ui/core/styles/createTypography" {
   interface Typography {
     code: TypographyStyle;
+    text: TypographyStyle;
   }
 
   interface TypographyOptions {
     code?: TypographyStyle;
+    text?: TypographyStyle;
   }
 }

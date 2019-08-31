@@ -33,7 +33,7 @@ export default styled(ConsoleOutput)(({ theme }) => {
   /*
    * TODO(andrewhead): Determine automatically from Monaco margin.
    */
-  const marginLeft = 85;
+  const marginLeft = 72;
   return {
     "& .buffer": {
       backgroundColor: theme.palette.primaryScale[900],
@@ -42,7 +42,7 @@ export default styled(ConsoleOutput)(({ theme }) => {
       /*
        * TODO(andrewhead): Determine automatically from Moncao horizontal scrollbar height.
        */
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(1)
     },
     "& pre": {
       margin: 0,

@@ -3,7 +3,7 @@ import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import MonacoEditor from "react-monaco-editor";
 import { SourceType, textUtils } from "santoku-store";
-import { CodePreview, getSelectionFromSnippetSelection } from "../CodePreview";
+import { CodeEditor, getSelectionFromSnippetSelection } from "../CodeEditor";
 import { Reason } from "../selectors/types";
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -21,7 +21,7 @@ function setup() {
    * https://github.com/react-monaco-editor/react-monaco-editor/issues/172).
    */
   const wrapper = shallow(
-    <CodePreview
+    <CodeEditor
       {...{ text, reasons, selections, path, chunkVersionOffsets }}
       edit={jest.fn()}
       setSelections={jest.fn()}
@@ -37,7 +37,7 @@ function setup() {
  * initialize MonacoEditor in the tests. For any important logic that maps from props to
  * editor state and back, make helper functions and test those.
  */
-describe("CodePreview", () => {
+describe("CodeEditor", () => {
   it("should render MonacoEditor", () => {
     const { wrapper } = setup();
     const editorComponent = wrapper.find(MonacoEditor);

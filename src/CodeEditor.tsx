@@ -13,11 +13,14 @@ type IStandaloneCodeEditor = monacoTypes.editor.IStandaloneCodeEditor;
 type IModelDeltaDecoration = monacoTypes.editor.IModelDeltaDecoration;
 
 /**
- * The design of this code preview is roughly based on PullJosh's prototype of a controlled component
+ * A code editor that shows a program built from multiple chunks. Maps edits and selections to
+ * changes in the global store.
+ *
+ * The design of this code editor is roughly based on PullJosh's prototype of a controlled component
  * for react-monaco-editor: https://codesandbox.io/s/883y2zmp6l. Code on CodeSandbox is released
  * implicitly under MIT license: https://codesandbox.io/legal/terms.
  */
-export function CodePreview(props: CodePreviewProps) {
+export function CodeEditor(props: CodeEditorProps) {
   const [editor, setEditor] = useState<IStandaloneCodeEditor | undefined>();
   const [monacoApi, setMonacoApi] = useState<MonacoApiType | undefined>();
   const [decorations, setDecorations] = useState<string[]>([]);
@@ -308,7 +311,7 @@ function getMonacoSelectionFromSimpleSelection(
   );
 }
 
-interface CodePreviewProps extends CodePreviewActions {
+interface CodeEditorProps extends EditorActions {
   text: string;
   reasons: Reason[];
   selections: SnippetSelection[];
@@ -318,17 +321,17 @@ interface CodePreviewProps extends CodePreviewActions {
   theme?: Theme;
 }
 
-interface CodePreviewActions {
+interface EditorActions {
   edit: typeof actions.code.edit;
   setSelections: typeof actions.code.setSelections;
 }
 
-const codePreviewActionCreators = {
+const editorActionCreators = {
   edit: actions.code.edit,
   setSelections: actions.code.setSelections
 };
 
-const StyledCodePreview = styled(withTheme(CodePreview))(({ theme }) => ({
+const StyledCodeEditor = styled(withTheme(CodeEditor))(({ theme }) => ({
   /*
    * Check the declaration of the markers for full control over the appearance of lines. For
    * example, the marker may have been declared to be "in front" of the text, which will make
@@ -341,5 +344,5 @@ const StyledCodePreview = styled(withTheme(CodePreview))(({ theme }) => ({
 
 export default connect(
   undefined,
-  codePreviewActionCreators
-)(StyledCodePreview);
+  editorActionCreators
+)(StyledCodeEditor);

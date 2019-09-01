@@ -2,7 +2,7 @@ import { styled } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
-import CodePreview from "./CodePreview";
+import CodeEditor from "./CodeEditor";
 import OutputPalette from "./OutputPalette";
 import { getSnippetText } from "./selectors/snippet";
 import { SnippetText } from "./selectors/types";
@@ -15,7 +15,7 @@ export function Snippet(props: SnippetProps) {
     <div className={`snippet ${props.className !== undefined && props.className}`}>
       <div className="code-previews">
         {props.snippetText.paths.map((path: Path) => (
-          <CodePreview key={path} path={path} {...props.snippetText.byPath[path]} />
+          <CodeEditor key={path} path={path} {...props.snippetText.byPath[path]} />
         ))}
       </div>
       <OutputPalette snippetId={props.id} cellIndex={props.cellIndex} />

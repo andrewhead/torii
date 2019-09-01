@@ -30,7 +30,7 @@ describe("OutputButton", () => {
       state: "started",
       type: "console"
     };
-    const wrapper = shallow(<OutputButton id={id} output={output} />);
+    const wrapper = shallow(<OutputButton id={id} output={output} cellIndex={0} />);
     expect(wrapper.text()).toEqual("Console output");
   });
 });

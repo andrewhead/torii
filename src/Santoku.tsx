@@ -15,6 +15,11 @@ export function Santoku(props: SantokuProps) {
           <Toolbar />
         </AppBar>
       </ElevationScroll>
+      {/*
+       * Toolbar is included twice, once in the floating element above, and the second time right
+       * below. The second one isn't visible, but it holds the place of the toolbar so that no
+       * cells appear beneath the floating toolbar when scrolled to the top.
+       */}
       <Toolbar />
       <div className="cells">
         {props.cellIds.map((id, index) => {
@@ -32,7 +37,7 @@ function ElevationScroll(props: ElevationScrollProps) {
   });
 
   return React.cloneElement(props.children, {
-    elevation: trigger ? 4 : 0
+    elevation: trigger ? 2 : 0
   });
 }
 

@@ -26,6 +26,9 @@ export default function createTheme(options?: ThemeOptions) {
       cell: {
         paddingTop: defaultTheme.spacing(1),
         paddingBottom: defaultTheme.spacing(2)
+      },
+      text: {
+        padding: defaultTheme.spacing(1)
       }
     },
     typography: {

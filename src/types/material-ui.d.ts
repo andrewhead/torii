@@ -16,7 +16,12 @@ declare module "@material-ui/core/styles/createMuiTheme" {
   }
 
   interface Spaces {
+    text: TextSpaces;
     cell: CellSpaces;
+  }
+
+  interface TextSpaces {
+    padding: number;
   }
 
   interface CellSpaces {

@@ -1,4 +1,4 @@
-import { styled } from "@material-ui/core/styles";
+import { styled, Theme, withTheme } from "@material-ui/core/styles";
 import * as React from "react";
 import { RefObject, useEffect, useRef, useState } from "react";
 import ReactMde from "react-mde";
@@ -8,62 +8,62 @@ import { actions, State, store, TextId } from "santoku-store";
 import Showdown from "showdown";
 import { getValue } from "./selectors/text";
 
-const converter = new Showdown.Converter({
-  tables: true,
-  simplifiedAutoLink: true,
-  strikethrough: true
-});
-
-function updateTextAreaHeight(textAreaRef: RefObject<HTMLTextAreaElement>) {
-  const textarea = textAreaRef.current;
-  if (textarea !== null) {
-    textarea.style.height = "1px";
-    textarea.style.height = 8 + textarea.scrollHeight + "px";
-  }
-}
-
 export function Text(props: TextProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
   const [selectedTab, setSelectedTab] = useState<"write" | "preview">("write");
 
   useEffect(() => {
-    if (props.focused === false) {
-      setSelectedTab("preview");
-    } else if (props.focused === true) {
-      setSelectedTab("write");
-    }
+    setSelectedTab(props.focused ? "write" : "preview");
   }, [props.focused]);
 
   useEffect(() => {
     if (selectedTab === "write") {
-      if (ref.current !== null) {
-        ref.current.focus();
-        updateTextAreaHeight(ref);
-      }
+      focusTextArea(ref);
+      resizeTextArea(ref);
     }
   }, [selectedTab]);
 
-  const editor = (
+  return (
     <ReactMde
+      value={props.value || ""}
       className={`${props.focused && "focused"}
         ${props.className !== undefined && props.className}`}
-      value={props.value || ""}
       onChange={value => {
         store.dispatch(actions.texts.setText(props.id, value));
-        updateTextAreaHeight(ref);
+        resizeTextArea(ref);
       }}
       selectedTab={selectedTab}
       onTabChange={setSelectedTab}
-      generateMarkdownPreview={markdown => Promise.resolve(converter.makeHtml(markdown))}
+      generateMarkdownPreview={markdown => Promise.resolve(markdownRenderer.makeHtml(markdown))}
       textAreaProps={{ ref }}
-      minEditorHeight={49}
       minPreviewHeight={0}
     />
   );
+}
 
-  updateTextAreaHeight(ref);
+const markdownRenderer = new Showdown.Converter({
+  tables: true,
+  simplifiedAutoLink: true,
+  strikethrough: true
+});
 
-  return editor;
+function focusTextArea(textAreaRef: RefObject<HTMLTextAreaElement>) {
+  const textarea = textAreaRef.current;
+  if (textarea !== null) {
+    textarea.focus();
+  }
+}
+
+function resizeTextArea(textAreaRef: RefObject<HTMLTextAreaElement>, theme?: Theme) {
+  const textarea = textAreaRef.current;
+  const padding = theme !== undefined ? theme.spaces.text.padding : 0;
+  if (textarea !== null) {
+    /*
+     * Text area resizing trick proposed at: https://stackoverflow.com/a/25621277/2096369.
+     */
+    textarea.style.height = "auto";
+    textarea.style.height = padding * 2 + textarea.scrollHeight + "px";
+  }
 }
 
 interface TextOwnProps {
@@ -76,9 +76,14 @@ interface TextProps {
   value: string | undefined;
   focused: boolean;
   className?: string;
+  theme?: Theme;
 }
 
-const StyledText = styled(Text)(({ theme }) => ({
+/*
+ * Override the styles for the Markdown editor. It should match the aesthetic for the rest of the
+ * application. Some elements of the editor should be hidden when the editor is not selected.
+ */
+const StyledText = styled(withTheme(Text))(({ theme }) => ({
   fontFamily: theme.typography.text.fontFamily + " !important",
   border: "none",
   "& .mde-header": {
@@ -111,12 +116,12 @@ const StyledText = styled(Text)(({ theme }) => ({
     }
   },
   "& textarea": {
+    padding: theme.spaces.text.padding,
     fontFamily: theme.typography.text.fontFamily + " !important",
     fontSize: theme.typography.text.fontSize,
     "&:focus": {
       outline: "none",
-      border: "2px solid " + theme.palette.secondaryScale[100],
-      boxShadow: "0 0 10px " + theme.palette.secondaryScale[100]
+      boxShadow: "0 0 5px " + theme.palette.secondaryScale[200]
     }
   },
   "& .grip": {

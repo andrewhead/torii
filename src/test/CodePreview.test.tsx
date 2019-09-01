@@ -21,7 +21,11 @@ function setup() {
    * https://github.com/react-monaco-editor/react-monaco-editor/issues/172).
    */
   const wrapper = shallow(
-    <CodePreview {...{ text, reasons, selections, path, chunkVersionOffsets }} />
+    <CodePreview
+      {...{ text, reasons, selections, path, chunkVersionOffsets }}
+      edit={jest.fn()}
+      setSelections={jest.fn()}
+    />
   );
   return {
     wrapper

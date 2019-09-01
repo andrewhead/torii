@@ -13,7 +13,7 @@ import {
   XYCoord
 } from "react-dnd";
 import { connect } from "react-redux";
-import { actions, Cell as CellState, CellId, ContentType, State, store } from "santoku-store";
+import { actions, Cell as CellState, CellId, ContentType, State } from "santoku-store";
 import { DragItemTypes } from "./drag-and-drop";
 import Output from "./Output";
 import { getCell, isSelected } from "./selectors/cell";
@@ -41,7 +41,7 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
           ${props.selected === true && "selected"}
           ${props.isDragging === true && "drag"}
           ${props.className !== undefined && props.className}`}
-        onClick={() => store.dispatch(actions.ui.selectCell(props.id))}
+        onClick={() => props.selectCell(props.id)}
       >
         <Cell {...propsWithoutStyles} />
       </div>
@@ -109,13 +109,23 @@ interface DraggableCellProps extends CellProps {
   className?: string;
 }
 
-interface CellProps {
+interface CellProps extends CellActions {
   id: CellId;
   index: number;
   cell: CellState;
   selected: boolean;
   className?: string;
 }
+
+interface CellActions {
+  move: typeof actions.cells.move;
+  selectCell: typeof actions.ui.selectCell;
+}
+
+const cellActionCreators = {
+  move: actions.cells.move,
+  selectCell: actions.ui.selectCell
+};
 
 interface CellInitProps {
   id: CellId;
@@ -130,10 +140,13 @@ interface CellInstance {
  * Based on drag-and-drop behavior from React-DnD simple list example. See
  * https://github.com/react-dnd/react-dnd/blob/master/packages/documentation/examples-decorators/src/04-sortable/simple/Card.tsx
  */
-export default connect((state: State, ownProps: CellInitProps) => {
-  const { id } = ownProps;
-  return { ...ownProps, cell: getCell(state, id), selected: isSelected(state, id) };
-})(
+export default connect(
+  (state: State, ownProps: CellInitProps) => {
+    const { id } = ownProps;
+    return { ...ownProps, cell: getCell(state, id), selected: isSelected(state, id) };
+  },
+  cellActionCreators
+)(
   DropTarget(
     DragItemTypes.CELL,
     {
@@ -147,6 +160,7 @@ export default connect((state: State, ownProps: CellInitProps) => {
           return;
         }
 
+        const dropProps = monitor.getItem() as CellProps;
         const dragIndex = monitor.getItem().index;
         const hoverIndex = draggedCell.index;
         if (dragIndex === hoverIndex) {
@@ -171,7 +185,7 @@ export default connect((state: State, ownProps: CellInitProps) => {
           return;
         }
 
-        store.dispatch(actions.cells.move(monitor.getItem().id, hoverIndex));
+        dropProps.move(monitor.getItem().id, hoverIndex);
         monitor.getItem().index = hoverIndex;
         draggedCell.index = hoverIndex;
       }
@@ -184,7 +198,7 @@ export default connect((state: State, ownProps: CellInitProps) => {
       DragItemTypes.CELL,
       {
         beginDrag: (props: CellProps): CellDragInfo => {
-          store.dispatch(actions.ui.selectCell(props.id));
+          props.selectCell(props.id);
           return { id: props.id, index: props.index, type: DragItemTypes.CELL };
         }
       },

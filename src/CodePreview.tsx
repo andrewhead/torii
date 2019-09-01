@@ -3,7 +3,8 @@ import * as monacoTypes from "monaco-editor/esm/vs/editor/editor.api";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import MonacoEditor from "react-monaco-editor";
-import { actions, Path, Range, Selection, SourcedRange, SourceType, store } from "santoku-store";
+import { connect } from "react-redux";
+import { actions, Path, Range, Selection, SourcedRange, SourceType } from "santoku-store";
 import { ChunkVersionOffsets, Reason, SnippetSelection } from "./selectors/types";
 
 type MonacoApiType = typeof monacoTypes;
@@ -148,7 +149,7 @@ export function CodePreview(props: CodePreviewProps) {
             props.chunkVersionOffsets
           );
           if (sourcedRange !== null) {
-            store.dispatch(actions.code.edit(sourcedRange, change.text));
+            props.edit(sourcedRange, change.text);
           }
         }
       }
@@ -159,22 +160,20 @@ export function CodePreview(props: CodePreviewProps) {
   const onDidChangeCursorSelection = useCallback(
     (event: monacoTypes.editor.ICursorSelectionChangedEvent) => {
       if (monacoApi !== undefined && editor !== undefined && editor.hasTextFocus() === true) {
-        store.dispatch(
-          actions.code.setSelections(
-            ...[event.selection]
-              .concat(event.secondarySelections)
-              .map(monacoSelection => {
-                return getSnippetSelectionFromMonacoSelection(monacoApi, monacoSelection);
-              })
-              .map(snippetSelection => {
-                return getSelectionFromSnippetSelection(
-                  snippetSelection,
-                  props.path,
-                  props.chunkVersionOffsets
-                );
-              })
-              .filter((s): s is Selection => s !== null)
-          )
+        props.setSelections(
+          ...[event.selection]
+            .concat(event.secondarySelections)
+            .map(monacoSelection => {
+              return getSnippetSelectionFromMonacoSelection(monacoApi, monacoSelection);
+            })
+            .map(snippetSelection => {
+              return getSelectionFromSnippetSelection(
+                snippetSelection,
+                props.path,
+                props.chunkVersionOffsets
+              );
+            })
+            .filter((s): s is Selection => s !== null)
         );
       }
     },
@@ -309,7 +308,7 @@ function getMonacoSelectionFromSimpleSelection(
   );
 }
 
-interface CodePreviewProps {
+interface CodePreviewProps extends CodePreviewActions {
   text: string;
   reasons: Reason[];
   selections: SnippetSelection[];
@@ -319,7 +318,17 @@ interface CodePreviewProps {
   theme?: Theme;
 }
 
-export default styled(withTheme(CodePreview))(({ theme }) => ({
+interface CodePreviewActions {
+  edit: typeof actions.code.edit;
+  setSelections: typeof actions.code.setSelections;
+}
+
+const codePreviewActionCreators = {
+  edit: actions.code.edit,
+  setSelections: actions.code.setSelections
+};
+
+const StyledCodePreview = styled(withTheme(CodePreview))(({ theme }) => ({
   /*
    * Check the declaration of the markers for full control over the appearance of lines. For
    * example, the marker may have been declared to be "in front" of the text, which will make
@@ -329,3 +338,8 @@ export default styled(withTheme(CodePreview))(({ theme }) => ({
     opacity: 0.5
   }
 }));
+
+export default connect(
+  undefined,
+  codePreviewActionCreators
+)(StyledCodePreview);

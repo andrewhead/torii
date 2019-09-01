@@ -2,7 +2,7 @@ import { Button, CircularProgress, styled, Theme, withTheme } from "@material-ui
 import SubjectIcon from "@material-ui/icons/Subject";
 import * as React from "react";
 import { connect } from "react-redux";
-import { actions, Output, OutputId, State, store } from "santoku-store";
+import { actions, Output, OutputId, State } from "santoku-store";
 import { getOutput } from "./selectors/output-button";
 
 export function OutputButton(props: OutputButtonProps) {
@@ -12,7 +12,7 @@ export function OutputButton(props: OutputButtonProps) {
       color="secondary"
       className={`output-button ${props.className !== undefined && props.className}`}
       onClick={e => {
-        store.dispatch(actions.cells.insertOutput(props.cellIndex + 1, props.id));
+        props.insertOutput(props.cellIndex + 1, props.id);
         /*
          * Prevent click from bubbling up to parent, where it would trigger selection of this cell.
          */
@@ -48,22 +48,24 @@ interface ContrastCircularProgressProps {
   theme?: Theme;
 }
 
-const StyledContrastCircularProgress = styled(withTheme(ContrastCircularProgress))(({ theme }) => ({
-  marginLeft: theme.spacing(1),
-  marginRight: theme.spacing(1),
-  /*
-   * XXX(andrewhead): May be a hack. Preferred way to set color is to override 'colorPrimary'
-   * as described in https://material-ui.com/api/circular-progress/.
-   */
-  color: theme.palette.getContrastText(theme.palette.primary.main)
-}));
+export const StyledContrastCircularProgress = styled(withTheme(ContrastCircularProgress))(
+  ({ theme }) => ({
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    /*
+     * XXX(andrewhead): May be a hack. Preferred way to set color is to override 'colorPrimary'
+     * as described in https://material-ui.com/api/circular-progress/.
+     */
+    color: theme.palette.getContrastText(theme.palette.primary.main)
+  })
+);
 
 interface OutputButtonOwnProps {
   id: OutputId;
   cellIndex: number;
 }
 
-interface OutputButtonProps {
+interface OutputButtonProps extends OutputButtonActions {
   id: OutputId;
   output: Output;
   cellIndex: number;
@@ -71,12 +73,21 @@ interface OutputButtonProps {
   className?: string;
 }
 
+interface OutputButtonActions {
+  insertOutput: typeof actions.cells.insertOutput;
+}
+
+const outputButtonActionCreators = {
+  insertOutput: actions.cells.insertOutput
+};
+
 export default connect(
-  (state: State, ownProps: OutputButtonOwnProps): OutputButtonProps => {
+  (state: State, ownProps: OutputButtonOwnProps) => {
     return {
       id: ownProps.id,
       cellIndex: ownProps.cellIndex,
       output: getOutput(state, ownProps.id)
     };
-  }
+  },
+  outputButtonActionCreators
 )(StyledOutputButton);

@@ -7,25 +7,6 @@ import { ConsoleOutput } from "../ConsoleOutput";
 
 Enzyme.configure({ adapter: new Adapter() });
 
-function setup() {
-  const output: Output = {
-    commandId: "command-id",
-    state: "started",
-    type: "console",
-    log: {
-      contents: "Console output",
-      stdoutRanges: [{ start: 0, end: 14 }],
-      stderrRanges: []
-    }
-  };
-  const props = { output };
-  /*
-   * Full element rendered to test text initialization.
-   */
-  const wrapper = mount(<ConsoleOutput {...props} />);
-  return { wrapper };
-}
-
 describe("ConsoleOutput", () => {
   it("contains the console output", () => {
     const output: Output = {

@@ -4,7 +4,7 @@ import { RefObject, useEffect, useRef, useState } from "react";
 import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
 import { connect } from "react-redux";
-import { actions, State, store, TextId } from "santoku-store";
+import { actions, State, TextId } from "santoku-store";
 import Showdown from "showdown";
 import { getValue } from "./selectors/text";
 
@@ -33,7 +33,7 @@ export function Text(props: TextProps) {
       value={props.value || ""}
       className={`${props.focused && "focused"}
         ${props.className !== undefined && props.className}`}
-      onChange={value => store.dispatch(actions.texts.setText(props.id, value))}
+      onChange={value => props.setText(props.id, value)}
       selectedTab={selectedTab}
       onTabChange={setSelectedTab}
       generateMarkdownPreview={markdown => Promise.resolve(markdownRenderer.makeHtml(markdown))}
@@ -71,13 +71,21 @@ interface TextOwnProps {
   focused: boolean;
 }
 
-interface TextProps {
+interface TextProps extends TextActions {
   id: TextId;
   value: string | undefined;
   focused: boolean;
   className?: string;
   theme?: Theme;
 }
+
+interface TextActions {
+  setText: typeof actions.texts.setText;
+}
+
+const actionCreators = {
+  setText: actions.texts.setText
+};
 
 /*
  * Override the styles for the Markdown editor. It should match the aesthetic for the rest of the
@@ -130,11 +138,12 @@ const StyledText = styled(withTheme(Text))(({ theme }) => ({
 }));
 
 export default connect(
-  (state: State, ownProps: TextOwnProps): TextProps => {
+  (state: State, ownProps: TextOwnProps) => {
     return {
       id: ownProps.id,
       focused: ownProps.focused,
       value: getValue(state, ownProps.id)
     };
-  }
+  },
+  actionCreators
 )(StyledText);

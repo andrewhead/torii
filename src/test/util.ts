@@ -1,27 +1,40 @@
-export function connected(componentName: string) {
-  return `Connect(${componentName})`;
-}
+import { createStore, testUtils } from "santoku-store";
 
-export function styled(componentName: string) {
-  return `Styled(${componentName})`;
-}
-
-export function withStyles(componentName: string) {
-  return `WithStyles(${componentName})`;
-}
-
-export function forwardRef(componentName: string) {
-  return `ForwardRef(${componentName})`;
-}
-
-export function withTheme(componentName: string) {
-  return `WithTheme(${componentName})`;
-}
-
-export function dropTarget(componentName: string) {
-  return `DropTarget(${componentName})`;
-}
-
-export function dragSource(componentName: string) {
-  return `DragSource(${componentName})`;
+/**
+ * Create store with interesting data. This store can be passed to the Redux 'Provider' when
+ * testing this app standalone, to make sure the presentation appears correct.
+ */
+export function createStoreWithFakedata() {
+  return createStore(
+    testUtils.createStateWithChunks(
+      {
+        snippetId: "snippet-1",
+        chunkId: "chunk-1",
+        chunkVersionId: "chunk-1-version-1",
+        line: 1,
+        text: "Line 1 (Snippet 1, Chunk 1, Version 1)"
+      },
+      {
+        snippetId: "snippet-1",
+        chunkId: "chunk-2",
+        chunkVersionId: "chunk-2-version-1",
+        line: 2,
+        text: "Line 2 (Snippet 1, Chunk 2, Version 1)"
+      },
+      {
+        snippetId: "snippet-2",
+        chunkId: "chunk-2",
+        chunkVersionId: "chunk-2-version-2",
+        line: 2,
+        text: "Line 2 v2 (Snippet 1, Chunk 2, Version 2)"
+      },
+      {
+        snippetId: "snippet-2",
+        chunkId: "chunk-3",
+        chunkVersionId: "chunk-3-version-1",
+        line: 3,
+        text: "Line 3 (Snippet 2, Chunk 1, Version 1)\nLine 4 (Snippet 2, Chunk 1, Version 1)"
+      }
+    )
+  );
 }

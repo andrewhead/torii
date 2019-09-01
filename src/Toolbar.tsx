@@ -4,6 +4,7 @@ import MaterialUiToolbar from "@material-ui/core/Toolbar";
 import CodeIcon from "@material-ui/icons/Code";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
 import * as React from "react";
+import { connect } from "react-redux";
 import { actions, store } from "santoku-store";
 
 export function Toolbar(props: ToolbarProps) {
@@ -16,7 +17,7 @@ export function Toolbar(props: ToolbarProps) {
         color="inherit"
         className="action-button"
         onClick={() => {
-          store.dispatch(actions.cells.insertText(store.getState()));
+          props.insertText(store.getState());
         }}
       >
         <TextFieldsIcon className="action-icon" />
@@ -30,11 +31,19 @@ export function Toolbar(props: ToolbarProps) {
   );
 }
 
-interface ToolbarProps {
+interface ToolbarProps extends ToolbarActions {
   className?: string;
 }
 
-export default styled(Toolbar)(({ theme }) => ({
+interface ToolbarActions {
+  insertText: typeof actions.cells.insertText;
+}
+
+const toolbarActionCreators = {
+  insertText: actions.cells.insertText
+};
+
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   margin: "0 auto",
   "& .action-icon": {
     marginRight: theme.spacing(1)
@@ -44,3 +53,8 @@ export default styled(Toolbar)(({ theme }) => ({
     marginLeft: theme.spacing(1)
   }
 }));
+
+export default connect(
+  undefined,
+  toolbarActionCreators
+)(StyledToolbar);

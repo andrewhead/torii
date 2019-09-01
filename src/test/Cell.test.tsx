@@ -3,7 +3,9 @@ import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { Cell as CellState, ContentType } from "santoku-store";
 import { Cell } from "../Cell";
-import { connected, styled, withTheme } from "./util";
+import Output from "../Output";
+import Snippet from "../Snippet";
+import Text from "../Text";
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -18,7 +20,9 @@ Enzyme.configure({ adapter: new Adapter() });
  */
 describe("Cell", () => {
   function createCell(cell: CellState, id: any, index: number) {
-    return shallow(<Cell {...{ id, cell, index }} selected={true} />);
+    return shallow(
+      <Cell {...{ id, cell, index }} selected={true} move={jest.fn()} selectCell={jest.fn()} />
+    );
   }
 
   it("renders snippets", () => {
@@ -26,7 +30,7 @@ describe("Cell", () => {
     const id = "cell-id";
     const index = 1;
     const wrapper = createCell(cell, id, index);
-    const snippet = wrapper.find(connected(styled("Snippet")));
+    const snippet = wrapper.find(Snippet);
     expect(snippet.length).toBe(1);
   });
 
@@ -41,7 +45,7 @@ describe("Cell", () => {
     const id = "cell-id";
     const index = 1;
     const wrapper = createCell(cell, id, index);
-    const output = wrapper.find(connected("Output"));
+    const output = wrapper.find(Output);
     expect(output.length).toBe(1);
   });
 
@@ -53,7 +57,7 @@ describe("Cell", () => {
     const id = "cell-id";
     const index = 1;
     const wrapper = createCell(cell, id, index);
-    const text = wrapper.find(connected(styled(withTheme("Text"))));
+    const text = wrapper.find(Text);
     expect(text.length).toBe(1);
   });
 });

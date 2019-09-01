@@ -9,12 +9,16 @@ import Showdown from "showdown";
 import { getValue } from "./selectors/text";
 
 export function Text(props: TextProps) {
-  const ref = useRef<HTMLTextAreaElement>(null);
+  const ref = useRef<ReactMde>(null);
   const [selectedTab, setSelectedTab] = useState<"write" | "preview">("write");
 
   useEffect(() => {
     setSelectedTab(props.focused ? "write" : "preview");
   }, [props.focused]);
+
+  useEffect(() => {
+    resizeTextArea(ref);
+  }, [props.value]);
 
   useEffect(() => {
     if (selectedTab === "write") {
@@ -25,17 +29,14 @@ export function Text(props: TextProps) {
 
   return (
     <ReactMde
+      ref={ref}
       value={props.value || ""}
       className={`${props.focused && "focused"}
         ${props.className !== undefined && props.className}`}
-      onChange={value => {
-        store.dispatch(actions.texts.setText(props.id, value));
-        resizeTextArea(ref);
-      }}
+      onChange={value => store.dispatch(actions.texts.setText(props.id, value))}
       selectedTab={selectedTab}
       onTabChange={setSelectedTab}
       generateMarkdownPreview={markdown => Promise.resolve(markdownRenderer.makeHtml(markdown))}
-      textAreaProps={{ ref }}
       minPreviewHeight={0}
     />
   );
@@ -47,20 +48,19 @@ const markdownRenderer = new Showdown.Converter({
   strikethrough: true
 });
 
-function focusTextArea(textAreaRef: RefObject<HTMLTextAreaElement>) {
-  const textarea = textAreaRef.current;
-  if (textarea !== null) {
-    textarea.focus();
+function focusTextArea(reactMdeRef: RefObject<ReactMde>) {
+  if (reactMdeRef.current !== null && reactMdeRef.current.textAreaRef !== null) {
+    reactMdeRef.current.textAreaRef.focus();
   }
 }
 
-function resizeTextArea(textAreaRef: RefObject<HTMLTextAreaElement>, theme?: Theme) {
-  const textarea = textAreaRef.current;
+function resizeTextArea(reactMdeRef: RefObject<ReactMde>, theme?: Theme) {
   const padding = theme !== undefined ? theme.spaces.text.padding : 0;
-  if (textarea !== null) {
+  if (reactMdeRef.current !== null && reactMdeRef.current.textAreaRef !== null) {
     /*
      * Text area resizing trick proposed at: https://stackoverflow.com/a/25621277/2096369.
      */
+    const textarea = reactMdeRef.current.textAreaRef;
     textarea.style.height = "auto";
     textarea.style.height = padding * 2 + textarea.scrollHeight + "px";
   }

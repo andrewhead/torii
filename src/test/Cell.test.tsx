@@ -3,7 +3,7 @@ import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { Cell as CellState, ContentType } from "santoku-store";
 import { Cell } from "../Cell";
-import { connected, styled } from "./util";
+import { connected, styled, withTheme } from "./util";
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -53,7 +53,7 @@ describe("Cell", () => {
     const id = "cell-id";
     const index = 1;
     const wrapper = createCell(cell, id, index);
-    const text = wrapper.find(connected(styled("Text")));
+    const text = wrapper.find(connected(styled(withTheme("Text"))));
     expect(text.length).toBe(1);
   });
 });

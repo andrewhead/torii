@@ -339,7 +339,21 @@ const StyledCodeEditor = styled(withTheme(CodeEditor))(({ theme }) => ({
    */
   "& .requested-visible": {
     opacity: 0.5
-  }
+  },
+  /*
+   * Give code cell a light left border so that it's obvious that this cell aligns with other cell
+   * contents, despite the line gutter on the code editor.
+   */
+  borderLeftStyle: "solid",
+  borderLeftWidth: theme.spacing(1),
+  borderLeftColor: theme.palette.primary.main,
+  /*
+   * Make the border span the entire height of the cell.
+   */
+  paddingTop: theme.spaces.cell.paddingTop,
+  paddingBottom: theme.spaces.cell.paddingBottom,
+  marginTop: -theme.spaces.cell.paddingTop,
+  marginBottom: -theme.spaces.cell.paddingBottom
 }));
 
 export default connect(

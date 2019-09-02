@@ -3,15 +3,16 @@ import { ChunkId, ChunkVersionId, Path, Position } from "santoku-store";
 export interface SnippetText {
   paths: Path[];
   byPath: {
-    [path: string]: PathSnippetText;
+    [path: string]: CodeEditorProps;
   };
 }
 
-export interface PathSnippetText {
+export interface CodeEditorProps {
   text: string;
   reasons: Reason[];
   selections: SnippetSelection[];
   chunkVersionOffsets: ChunkVersionOffsets;
+  path: Path;
 }
 
 export interface LineText {

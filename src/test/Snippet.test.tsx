@@ -1,27 +1,16 @@
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
-import CodeEditor from "../CodeEditor";
 import OutputPalette from "../OutputPalette";
-import { Reason, SnippetText } from "../selectors/types";
 import { Snippet } from "../Snippet";
+import SnippetEditor from "../SnippetEditor";
 
 Enzyme.configure({ adapter: new Adapter() });
 
 function setup() {
   const id = "snippet-id";
-  const snippetText: SnippetText = {
-    byPath: {
-      path: {
-        reasons: [Reason.ADDED],
-        text: "Text",
-        selections: [],
-        chunkVersionOffsets: [{ line: 1, chunkVersionId: "chunk-version-0" }]
-      }
-    },
-    paths: ["path"]
-  };
-  const props = { id, snippetText };
+  const paths = ["path"];
+  const props = { id, paths };
   const wrapper = shallow(<Snippet {...props} cellIndex={0} />);
   return {
     wrapper
@@ -31,7 +20,7 @@ function setup() {
 describe("Snippet", () => {
   it("should render CodeEditor", () => {
     const { wrapper } = setup();
-    const codeEditor = wrapper.find(CodeEditor);
+    const codeEditor = wrapper.find(SnippetEditor);
     expect(codeEditor.length).toBe(1);
   });
 

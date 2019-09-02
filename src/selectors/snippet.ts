@@ -1,6 +1,8 @@
+import _ from "lodash";
 import {
   Chunk,
   ChunkVersionId,
+  Path,
   Selection,
   SnippetId,
   SourceType,
@@ -8,61 +10,65 @@ import {
   Undoable,
   visibility
 } from "santoku-store";
-import {
-  ChunkVersionOffsets,
-  ChunkVersionsByPath,
-  LineText,
-  Reason,
-  SnippetSelection,
-  SnippetText
-} from "./types";
+import { ChunkVersionOffsets, CodeEditorProps, LineText, Reason, SnippetSelection } from "./types";
 
-export function getSnippetText(state: Undoable, snippetId: SnippetId): SnippetText {
-  const sortedChunkVersions = getSortedChunkVersions(state, snippetId);
-  const snippetText: SnippetText = { paths: [], byPath: {} };
-  for (const path of Object.keys(sortedChunkVersions)) {
-    const lineTexts = getTextForPath(state, sortedChunkVersions[path], snippetId);
-    snippetText.paths.push(path);
-    snippetText.byPath[path] = {
-      reasons: lineTexts.map(lt => lt.reason),
-      text: textUtils.join(...lineTexts.map(lt => lt.text)),
-      selections: getSnippetSelections(state, sortedChunkVersions[path]),
-      chunkVersionOffsets: getChunkVersionOffsets(state, sortedChunkVersions[path])
-    };
+export function getSnippetPaths(state: Undoable, snippetId: SnippetId) {
+  let paths: Path[] = [];
+  for (const chunkVersionId of getVisibleChunkVersions(state, snippetId)) {
+    const { path } = getChunk(state, chunkVersionId).location;
+    paths = _.unionWith(paths, [path]);
   }
-  return snippetText;
+  return paths;
+}
+
+export function getSnippetEditorProps(
+  state: Undoable,
+  snippetId: SnippetId,
+  path: Path
+): CodeEditorProps {
+  const sortedChunkVersions = getSortedChunkVersions(state, snippetId, path);
+  const lineTexts = getTextForPath(state, sortedChunkVersions, snippetId);
+  return {
+    path,
+    reasons: lineTexts.map(lt => lt.reason),
+    text: textUtils.join(...lineTexts.map(lt => lt.text)),
+    selections: getSnippetSelections(state, sortedChunkVersions),
+    chunkVersionOffsets: getChunkVersionOffsets(state, sortedChunkVersions)
+  };
 }
 
 /**
- * Gets sorted lists of chunk versions in this snippet, grouped by path.
+ * Get IDs of all chunk versions that should be showing for a snippet.
  */
-function getSortedChunkVersions(state: Undoable, snippetId: SnippetId): ChunkVersionsByPath {
+function getVisibleChunkVersions(state: Undoable, snippetId: SnippetId): ChunkVersionId[] {
   const snippet = state.snippets.byId[snippetId];
   const chunkVersionIds = [...snippet.chunkVersionsAdded];
   const snippetVisibilityRules = state.visibilityRules[snippetId];
   if (snippetVisibilityRules !== undefined) {
     chunkVersionIds.push(...Object.keys(snippetVisibilityRules));
   }
-  const chunkVersionIdsByPath = chunkVersionIds.reduce(
-    (orderedChunkVersions, chunkVersionId) => {
-      const chunk = getChunk(state, chunkVersionId);
-      const { path } = chunk.location;
-      const chunkVersionList = orderedChunkVersions[path] || [];
-      return {
-        ...orderedChunkVersions,
-        [path]: chunkVersionList.concat(chunkVersionId)
-      };
-    },
-    {} as ChunkVersionsByPath
-  );
-  for (const path of Object.keys(chunkVersionIdsByPath)) {
-    chunkVersionIdsByPath[path].sort((chunkVersionId1, chunkVersionId2) => {
-      const chunk1 = getChunk(state, chunkVersionId1);
-      const chunk2 = getChunk(state, chunkVersionId2);
-      return chunk1.location.line - chunk2.location.line;
-    });
-  }
-  return chunkVersionIdsByPath;
+  return chunkVersionIds;
+}
+
+/**
+ * Gets sorted lists of chunk versions in this snippet, grouped by path.
+ */
+function getSortedChunkVersions(
+  state: Undoable,
+  snippetId: SnippetId,
+  path: Path
+): ChunkVersionId[] {
+  const chunkVersionIds = getVisibleChunkVersions(state, snippetId);
+  const filtered = chunkVersionIds.filter(chunkVersionId => {
+    const chunk = getChunk(state, chunkVersionId);
+    return _.isEqual(chunk.location.path, path);
+  });
+  filtered.sort((chunkVersionId1, chunkVersionId2) => {
+    const chunk1 = getChunk(state, chunkVersionId1);
+    const chunk2 = getChunk(state, chunkVersionId2);
+    return chunk1.location.line - chunk2.location.line;
+  });
+  return filtered;
 }
 
 function getTextForPath(

@@ -1,23 +1,34 @@
 import { SourceType, testUtils, visibility } from "santoku-store";
-import { getSnippetText } from "../../../src/selectors/snippet";
+import { getSnippetEditorProps, getSnippetPaths } from "../../../src/selectors/snippet";
 import { Reason } from "../../selectors/types";
 
 const FILE_PATH = "file-path";
 
-describe("getEditorText", () => {
+describe("getSnippetPaths", () => {
+  it("gets the paths of chunks in the snippet", () => {
+    const snippetId = "snippet-0";
+    const code = testUtils.createChunks(
+      { snippetId, path: "path-0" },
+      { snippetId, path: "path-1" }
+    );
+    const paths = getSnippetPaths(code, snippetId);
+    expect(paths).toContain("path-0");
+    expect(paths).toContain("path-1");
+  });
+});
+
+describe("getSnippetText", () => {
   it("should have lines from chunk versions, in order", () => {
-    const text = testUtils.createChunks(
+    const code = testUtils.createChunks(
       { line: 3, text: ["Line 3", "Line 4"].join("\n") },
       { line: 1, text: ["Line 1", "Line 2"].join("\n") }
     );
-    const editorText = getSnippetText(text, testUtils.TEST_SNIPPET_ID);
-    expect(editorText.byPath[testUtils.TEST_FILE_PATH].text).toEqual(
-      ["Line 1", "Line 2", "Line 3", "Line 4"].join("\n")
-    );
+    const props = getSnippetEditorProps(code, testUtils.TEST_SNIPPET_ID, testUtils.TEST_FILE_PATH);
+    expect(props.text).toEqual(["Line 1", "Line 2", "Line 3", "Line 4"].join("\n"));
   });
 
   it("should have line visiblities", () => {
-    const text = testUtils.createUndoable({
+    const code = testUtils.createUndoable({
       snippets: {
         all: ["snippet-0", "snippet-1"],
         byId: {
@@ -59,19 +70,19 @@ describe("getEditorText", () => {
         }
       }
     });
-    const editorText = getSnippetText(text, "snippet-1");
-    expect(editorText.byPath[FILE_PATH]).toMatchObject({
+    const props = getSnippetEditorProps(code, "snippet-1", FILE_PATH);
+    expect(props).toMatchObject({
       reasons: [Reason.REQUESTED_VISIBLE],
       text: "Line 1"
     });
   });
 
   it("should have adjusted selections", () => {
-    const text = testUtils.createChunks(
+    const code = testUtils.createChunks(
       { chunkVersionId: "chunk-version-0", line: 1, text: ["Line 1", "Line 2"].join("\n") },
       { chunkVersionId: "chunk-version-1", line: 3, text: ["Line 3", "Line 4"].join("\n") }
     );
-    text.selections = [
+    code.selections = [
       {
         anchor: { line: 1, character: 0 },
         active: { line: 1, character: 2 },
@@ -79,8 +90,8 @@ describe("getEditorText", () => {
         relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: "chunk-version-1" }
       }
     ];
-    const editorText = getSnippetText(text, testUtils.TEST_SNIPPET_ID);
-    expect(editorText.byPath[FILE_PATH]).toMatchObject({
+    const props = getSnippetEditorProps(code, testUtils.TEST_SNIPPET_ID, FILE_PATH);
+    expect(props).toMatchObject({
       selections: [
         {
           anchor: { line: 3, character: 0 },
@@ -91,11 +102,11 @@ describe("getEditorText", () => {
   });
 
   it("should adjust selections from the reference implementation", () => {
-    const text = testUtils.createChunks(
+    const code = testUtils.createChunks(
       { chunkVersionId: "chunk-version-0", line: 1, text: ["Line 1", "Line 2"].join("\n") },
       { chunkVersionId: "chunk-version-1", line: 3, text: ["Line 3", "Line 4"].join("\n") }
     );
-    text.selections = [
+    code.selections = [
       /*
        * Should appear in snippet.
        */
@@ -115,8 +126,8 @@ describe("getEditorText", () => {
         relativeTo: { source: SourceType.REFERENCE_IMPLEMENTATION }
       }
     ];
-    const editorText = getSnippetText(text, testUtils.TEST_SNIPPET_ID);
-    expect(editorText.byPath[FILE_PATH]).toMatchObject({
+    const props = getSnippetEditorProps(code, testUtils.TEST_SNIPPET_ID, FILE_PATH);
+    expect(props).toMatchObject({
       selections: [
         {
           anchor: { line: 3, character: 0 },
@@ -127,12 +138,12 @@ describe("getEditorText", () => {
   });
 
   it("should have a map from chunk offset to line number", () => {
-    const text = testUtils.createChunks(
+    const code = testUtils.createChunks(
       { chunkVersionId: "chunk-version-0", line: 1, text: "Line 1" },
       { chunkVersionId: "chunk-version-1", line: 11, text: "Line 11" }
     );
-    const editorText = getSnippetText(text, testUtils.TEST_SNIPPET_ID);
-    expect(editorText.byPath[FILE_PATH]).toMatchObject({
+    const props = getSnippetEditorProps(code, testUtils.TEST_SNIPPET_ID, FILE_PATH);
+    expect(props).toMatchObject({
       chunkVersionOffsets: [
         { chunkVersionId: "chunk-version-0", line: 1 },
         { chunkVersionId: "chunk-version-1", line: 2 }

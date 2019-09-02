@@ -4,8 +4,16 @@ import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import MonacoEditor from "react-monaco-editor";
 import { connect } from "react-redux";
-import { actions, Path, Range, Selection, SourcedRange, SourceType } from "santoku-store";
-import { ChunkVersionOffsets, Reason, SnippetSelection } from "./selectors/types";
+import {
+  actions,
+  Path,
+  Range,
+  Selection,
+  SourcedRange,
+  SourceType,
+  visibility
+} from "santoku-store";
+import { ChunkVersionOffsets, SnippetSelection } from "./selectors/types";
 
 type MonacoApiType = typeof monacoTypes;
 type IEditorConstructionOptions = monacoTypes.editor.IEditorConstructionOptions;
@@ -95,9 +103,9 @@ export function CodeEditor(props: CodeEditorProps) {
     if (editor === undefined) {
       return;
     }
-    const newDecorations = props.reasons
-      .map((reason, i): IModelDeltaDecoration | undefined => {
-        return reason === Reason.REQUESTED_VISIBLE
+    const newDecorations = props.visibilities
+      .map((vis, i): IModelDeltaDecoration | undefined => {
+        return vis === visibility.VISIBLE
           ? {
               options: {
                 inlineClassName: "requested-visible",
@@ -313,7 +321,7 @@ function getMonacoSelectionFromSimpleSelection(
 
 interface CodeEditorProps extends EditorActions {
   text: string;
-  reasons: Reason[];
+  visibilities: (visibility.Visibility | undefined)[];
   selections: SnippetSelection[];
   chunkVersionOffsets: ChunkVersionOffsets;
   path: Path;

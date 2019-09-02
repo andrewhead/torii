@@ -1,4 +1,4 @@
-import { ChunkId, ChunkVersionId, Path, Position } from "santoku-store";
+import { ChunkId, ChunkVersionId, Path, Position, visibility } from "santoku-store";
 
 export interface SnippetText {
   paths: Path[];
@@ -9,7 +9,7 @@ export interface SnippetText {
 
 export interface CodeEditorProps {
   text: string;
-  reasons: Reason[];
+  visibilities: (visibility.Visibility | undefined)[];
   selections: SnippetSelection[];
   chunkVersionOffsets: ChunkVersionOffsets;
   path: Path;
@@ -23,7 +23,7 @@ export interface LineText {
    * Offset of line within chunk version text. Starts at 0.
    */
   offset: number;
-  reason: Reason;
+  visibility: visibility.Visibility | undefined;
 }
 
 export interface ChunkVersionsByPath {

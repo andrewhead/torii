@@ -53,7 +53,7 @@ export default connect(
   (state: State, ownProps: SnippetOwnProps): SnippetProps => {
     return {
       ...ownProps,
-      paths: getSnippetPaths(state.undoable.present, ownProps.id)
+      paths: getSnippetPaths(state, ownProps.id)
     };
   }
 )(StyledSnippet);

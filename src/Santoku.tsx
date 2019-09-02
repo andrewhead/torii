@@ -51,8 +51,9 @@ interface SantokuProps {
 }
 
 const StyledSantoku = styled(Santoku)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
   "& .cells": {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(4),
     /*
      * Add enough margin to the bottom of the document so that the user can scroll until the
      * very last cells are at the top of the window.

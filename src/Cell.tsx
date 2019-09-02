@@ -83,7 +83,9 @@ export function Cell(props: CellProps) {
       {(() => {
         switch (props.cell.type) {
           case ContentType.SNIPPET:
-            return <Snippet id={props.cell.contentId} cellIndex={props.index} />;
+            return (
+              <Snippet id={props.cell.contentId} cellIndex={props.index} focused={props.selected} />
+            );
           case ContentType.TEXT:
             return <Text id={props.cell.contentId} focused={props.selected} />;
           case ContentType.OUTPUT:

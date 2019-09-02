@@ -4,7 +4,7 @@ import { createStore, testUtils } from "santoku-store";
  * Create store with interesting data. This store can be passed to the Redux 'Provider' when
  * testing this app standalone, to make sure the presentation appears correct.
  */
-export function createStoreWithFakedata() {
+export function createStoreWithFakeData() {
   return createStore(
     testUtils.createStateWithChunks(
       {

@@ -1,17 +1,30 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
 import CodeEditor from "./CodeEditor";
 import { getSnapshotEditorProps } from "./selectors/snapshot-editor";
 import { SnapshotEditorProps, SnippetOffsets } from "./selectors/types";
-import { ContentWidgetPositionPreference, IContentWidget } from "./types/monaco";
+import {
+  ContentWidgetPositionPreference,
+  IContentWidget,
+  IStandaloneCodeEditor,
+  MonacoApiType
+} from "./types/monaco";
 
 /**
  * Code editor for editing all the code for a snapshot (everything up to and including a snippet)
  * from one file.
  */
 export function SnapshotEditor(props: SnapshotEditorProps) {
-  return <CodeEditor {...props} />;
+  const editorRef = useRef<IStandaloneCodeEditor>();
+  const monacoApiRef = useRef<MonacoApiType>();
+
+  useEffect(() => {
+    console.log(editorRef.current);
+    console.log(monacoApiRef.current);
+  });
+
+  return <CodeEditor {...{ ...props, editorRef, monacoApiRef }} />;
 }
 
 interface SnapshotEditorOwnProps {

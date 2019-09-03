@@ -1,6 +1,6 @@
 import { styled, Theme, withTheme } from "@material-ui/core";
 import * as React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { RefObject, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import MonacoEditor from "react-monaco-editor";
 import { connect } from "react-redux";
 import {
@@ -29,12 +29,15 @@ import {
  * for react-monaco-editor: https://codesandbox.io/s/883y2zmp6l. Code on CodeSandbox is released
  * implicitly under MIT license: https://codesandbox.io/legal/terms.
  */
-export function CodeEditor(props: CodeEditorProps) {
+export const CodeEditor = (props: CodeEditorProps) => {
   const [editor, setEditor] = useState<IStandaloneCodeEditor | undefined>();
   const [monacoApi, setMonacoApi] = useState<MonacoApiType | undefined>();
   const [decorations, setDecorations] = useState<string[]>([]);
   const [editCallback, setEditCallback] = useState<monacoTypes.IDisposable | undefined>();
   const [selectionCallback, setSelectionCallback] = useState<monacoTypes.IDisposable | undefined>();
+
+  useImperativeHandle(props.editorRef, () => editor, [editor]);
+  useImperativeHandle(props.monacoApiRef, () => monacoApi, [monacoApi]);
 
   useEffect(() => {
     if (props.hidden !== true) {
@@ -275,7 +278,7 @@ export function CodeEditor(props: CodeEditorProps) {
       />
     </div>
   );
-}
+};
 
 function getRangeFromMonacoRange(monacoRange: monacoTypes.IRange): Range {
   return {
@@ -365,6 +368,14 @@ export interface CodeEditorOwnProps extends BaseCodeEditorProps {
    * Use to notify the editor if it's no longer hidden, so that it can repaint.
    */
   hidden?: boolean;
+  /**
+   * Reference to the Monaco code editor, for components extending this one.
+   */
+  editorRef?: RefObject<IStandaloneCodeEditor | undefined>;
+  /**
+   * Reference to Monaco API, for components extending this one.
+   */
+  monacoApiRef?: RefObject<MonacoApiType | undefined>;
 }
 
 interface EditorActions {

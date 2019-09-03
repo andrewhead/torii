@@ -56,10 +56,15 @@ export function SnippetContainer(props: SnippetProps) {
                 Edit Program Snapshot
               </Button>
             </ButtonGroup>
-            <SnippetEditor hidden={tab !== "snippet"} key={path} path={path} snippetId={props.id} />
+            <SnippetEditor
+              hidden={tab !== "snippet"}
+              key={`${path}-snippet`}
+              path={path}
+              snippetId={props.id}
+            />
             <SnapshotEditor
               hidden={tab !== "snapshot"}
-              key={path}
+              key={`${path}-snapshot`}
               path={path}
               snippetId={props.id}
             />

@@ -8,11 +8,11 @@ describe("getSnippetIndexContentWidgets", () => {
     ];
     const widgets = getSnippetIndexContentWidgets(snippetOffsets, 4);
     const widget = widgets[0];
-    expect(widget.allowEditorOverflow).toBe(true);
+    expect(widget.allowEditorOverflow).toBe(false);
     expect(widget.getDomNode().textContent).toMatch(/snippet 1/i);
     expect(widget.getPosition()).toMatchObject({
       position: {
-        lineNumber: 2,
+        lineNumber: 1,
         column: Number.POSITIVE_INFINITY
       }
     });

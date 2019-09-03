@@ -1,13 +1,13 @@
 import { ContentType, Path, selectors, SnippetId, State } from "santoku-store";
 import { IModelDeltaDecoration } from "../types/monaco";
 import { getCodeEditorProps } from "./code-editor";
-import { LineText, SnapshotEditorProps, SnippetOffsets } from "./types";
+import { BaseSnapshotEditorProps, LineText, SnippetOffsets } from "./types";
 
 export function getSnapshotEditorProps(
   state: State,
   snippetId: SnippetId,
   path: Path
-): SnapshotEditorProps {
+): BaseSnapshotEditorProps {
   const orderedChunkVersions = selectors.code.getSnapshotOrderedChunkVersions(
     state,
     snippetId,

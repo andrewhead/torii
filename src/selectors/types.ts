@@ -1,6 +1,6 @@
 import { ChunkId, ChunkVersionId, Path, Position, SnippetId, visibility } from "santoku-store";
 
-export interface SnapshotEditorProps extends BaseCodeEditorProps {
+export interface BaseSnapshotEditorProps extends BaseCodeEditorProps {
   snippetOffsets: SnippetOffsets;
 }
 

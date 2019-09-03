@@ -10,9 +10,9 @@ import {
   visibility
 } from "santoku-store";
 import {
-  BaseCodeEditorProps,
   ChunkVersionIdToSnippetIdMap,
   ChunkVersionOffsets,
+  CodeEditorBaseProps,
   LineFilter,
   LineText,
   SnippetSelection
@@ -23,7 +23,7 @@ import {
  * 'getSnapshotEditorProps'. Returns both the editor props, as well as a list of annotated text
  * for each line that will be shown in the editor, so that callers can do additional processing.
  */
-export function getCodeEditorProps(
+export function getCodeEditorBaseProps(
   state: State,
   snippetId: SnippetId,
   path: Path,
@@ -33,31 +33,33 @@ export function getCodeEditorProps(
   const stateSlice = state.undoable.present;
   const lineTexts: LineText[] = [];
   const chunkVersionSnippets = getChunkVersionIdToSnippetIdMap(state);
+  let lineIndex = 1;
 
   for (const chunkVersionId of sortedChunkVersions) {
     const chunkVersion = stateSlice.chunkVersions.byId[chunkVersionId];
     const { chunk: chunkId, text: chunkVersionText } = chunkVersion;
     const lines = textUtils.split(chunkVersionText);
 
-    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      const lineVisibility = getVisibility(stateSlice, snippetId, chunkVersionId, lineIndex);
-      if (filter === undefined || filter(chunkVersionId, lineVisibility)) {
+    for (let chunkLineIndex = 0; chunkLineIndex < lines.length; chunkLineIndex++) {
+      const lineVisibility = getVisibility(stateSlice, snippetId, chunkVersionId, chunkLineIndex);
+      if (filter === undefined || filter(chunkVersionId, chunkLineIndex)) {
         lineTexts.push({
           snippetId: chunkVersionSnippets[chunkVersionId],
           chunkId,
           chunkVersionId,
           offset: lineIndex,
           visibility: lineVisibility,
-          text: lines[lineIndex]
+          text: lines[chunkLineIndex]
         });
       }
+      lineIndex += 1;
     }
   }
   const visibilities = lineTexts.map(lt => lt.visibility);
   const text = textUtils.join(...lineTexts.map(lt => lt.text));
   const selections = getSnippetSelections(stateSlice, sortedChunkVersions);
   const chunkVersionOffsets = getChunkVersionOffsets(lineTexts);
-  const props: BaseCodeEditorProps = { path, visibilities, text, selections, chunkVersionOffsets };
+  const props: CodeEditorBaseProps = { path, visibilities, text, selections, chunkVersionOffsets };
   return { props, lineTexts };
 }
 

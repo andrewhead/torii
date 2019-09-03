@@ -1,5 +1,5 @@
 import { SourceType, testUtils } from "santoku-store";
-import { getCodeEditorProps } from "../../selectors/code-editor";
+import { getCodeEditorBaseProps } from "../../selectors/code-editor";
 
 const FILE_PATH = "file-path";
 
@@ -19,7 +19,7 @@ describe("getCodeEditorProps", () => {
     ];
     const state = testUtils.createStateWithUndoable(code);
     const chunkVersions = ["chunk-version-0", "chunk-version-1"];
-    const props = getCodeEditorProps(state, testUtils.TEST_SNIPPET_ID, FILE_PATH, chunkVersions)
+    const props = getCodeEditorBaseProps(state, testUtils.TEST_SNIPPET_ID, FILE_PATH, chunkVersions)
       .props;
     expect(props).toMatchObject({
       selections: [
@@ -58,7 +58,7 @@ describe("getCodeEditorProps", () => {
     ];
     const state = testUtils.createStateWithUndoable(code);
     const chunkVersions = ["chunk-version-0", "chunk-version-1"];
-    const props = getCodeEditorProps(state, testUtils.TEST_SNIPPET_ID, FILE_PATH, chunkVersions)
+    const props = getCodeEditorBaseProps(state, testUtils.TEST_SNIPPET_ID, FILE_PATH, chunkVersions)
       .props;
     expect(props).toMatchObject({
       selections: [
@@ -76,7 +76,7 @@ describe("getCodeEditorProps", () => {
       { chunkVersionId: "chunk-version-1", line: 11, text: "Line 11" }
     );
     const chunkVersions = ["chunk-version-0", "chunk-version-1"];
-    const props = getCodeEditorProps(state, testUtils.TEST_SNIPPET_ID, FILE_PATH, chunkVersions)
+    const props = getCodeEditorBaseProps(state, testUtils.TEST_SNIPPET_ID, FILE_PATH, chunkVersions)
       .props;
     expect(props).toMatchObject({
       chunkVersionOffsets: [

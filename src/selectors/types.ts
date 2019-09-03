@@ -1,10 +1,14 @@
 import { ChunkId, ChunkVersionId, Path, Position, SnippetId, visibility } from "santoku-store";
 
-export interface BaseSnapshotEditorProps extends BaseCodeEditorProps {
+export interface SnapshotEditorBaseProps extends CodeEditorBaseProps {
   snippetOffsets: SnippetOffsets;
 }
 
-export interface BaseCodeEditorProps {
+export interface SnippetEditorBaseProps extends CodeEditorBaseProps {
+  lineNumbers: number[];
+}
+
+export interface CodeEditorBaseProps {
   text: string;
   visibilities: (visibility.Visibility | undefined)[];
   selections: SnippetSelection[];
@@ -14,7 +18,10 @@ export interface BaseCodeEditorProps {
 
 export type LineFilter = (
   chunkVersionId: ChunkVersionId,
-  visibility: visibility.Visibility | undefined
+  /*
+   * Offset of line within chunk. Starts at zero.
+   */
+  offset: number
 ) => boolean;
 
 export interface LineText {
@@ -23,7 +30,7 @@ export interface LineText {
   chunkId: ChunkId;
   chunkVersionId: ChunkVersionId;
   /**
-   * Offset of line within chunk version text. Starts at 0.
+   * Offset of line in a set of ordered chunk versions. Starts at 1.
    */
   offset: number;
   visibility: visibility.Visibility | undefined;

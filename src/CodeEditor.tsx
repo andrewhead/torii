@@ -12,7 +12,7 @@ import {
   SourceType,
   visibility
 } from "santoku-store";
-import { BaseCodeEditorProps, ChunkVersionOffsets, SnippetSelection } from "./selectors/types";
+import { ChunkVersionOffsets, CodeEditorBaseProps, SnippetSelection } from "./selectors/types";
 import {
   IEditorConstructionOptions,
   IModelDeltaDecoration,
@@ -260,6 +260,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
     [monacoApi, props.theme]
   );
 
+  const lineNumbers = props.lineNumbers;
   const editorOptions: IEditorConstructionOptions = {
     /*
      * Height of editor will be determined dynamically; the editor should never scroll.
@@ -269,7 +270,14 @@ export const CodeEditor = (props: CodeEditorProps) => {
      * Remove visual distractors from the margins of the editor.
      */
     minimap: { enabled: false },
-    overviewRulerLanes: 0
+    overviewRulerLanes: 0,
+    lineNumbers:
+      lineNumbers === undefined
+        ? "on"
+        : lineNumber => {
+            const i = lineNumber - 1;
+            return i < lineNumbers.length ? lineNumbers[i].toString() : "N/A";
+          }
   };
 
   if (props.theme !== undefined) {
@@ -379,7 +387,12 @@ interface CodeEditorProps extends CodeEditorOwnProps, EditorActions {
   theme?: Theme;
 }
 
-export interface CodeEditorOwnProps extends BaseCodeEditorProps {
+export interface CodeEditorOwnProps extends CodeEditorBaseProps {
+  /**
+   * Custom line numbers to put in the left margin. If line numbers are defined, there must be one
+   * defined for every line of text.
+   */
+  lineNumbers?: number[];
   /**
    * Use to notify the editor if it's no longer hidden, so that it can repaint.
    */

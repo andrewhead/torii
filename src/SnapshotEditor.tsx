@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
 import CodeEditor from "./CodeEditor";
 import { getSnapshotEditorProps, getSnippetRangeDecorations } from "./selectors/snapshot-editor";
-import { BaseSnapshotEditorProps, SnippetOffsets } from "./selectors/types";
+import { SnapshotEditorBaseProps, SnippetOffsets } from "./selectors/types";
 import {
   ContentWidgetPositionPreference,
   IContentWidget,
@@ -66,7 +66,7 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
   return <CodeEditor {...{ ...props, editorRef, monacoApiRef }} />;
 }
 
-interface SnapshotEditorProps extends BaseSnapshotEditorProps {
+interface SnapshotEditorProps extends SnapshotEditorBaseProps {
   snippetId: SnippetId;
   hidden?: boolean;
 }

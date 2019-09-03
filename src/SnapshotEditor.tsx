@@ -110,7 +110,13 @@ export function getSnippetIndexContentWidgets(
 const StyledSnapshotEditor = styled(withTheme(SnapshotEditor))(({ theme }) => ({
   "& .snippet-range": {
     "&.past-snippet": {
-      backgroundColor: theme.palette.primaryScale[200]
+      backgroundColor: theme.palette.primaryScale[200],
+      /*
+       * Right behind the selection background color. This also causes a small visual glitch where
+       * a box for the cursor appears in front of this background at the edge of the selection. I
+       * don't know how to fix this, as I couldn't find a way to make Monaco backgrounds transparent.
+       */
+      zIndex: -1
     }
   },
   "& .snippet-index-label": {

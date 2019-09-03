@@ -243,6 +243,23 @@ export const CodeEditor = (props: CodeEditorProps) => {
     [editor, monacoApi, onDidChangeCursorSelection, onDidChangeModelContent]
   );
 
+  useEffect(
+    function setEditorTheme() {
+      if (monacoApi !== undefined && props.theme !== undefined) {
+        monacoApi.editor.defineTheme("santoku", {
+          base: "vs",
+          inherit: true,
+          rules: [],
+          colors: {
+            "editor.background": props.theme.palette.background.paper
+          }
+        });
+        monacoApi.editor.setTheme("santoku");
+      }
+    },
+    [monacoApi, props.theme]
+  );
+
   const editorOptions: IEditorConstructionOptions = {
     /*
      * Height of editor will be determined dynamically; the editor should never scroll.
@@ -269,7 +286,6 @@ export const CodeEditor = (props: CodeEditorProps) => {
       className={`${props.className !== undefined && props.className}`}
     >
       <MonacoEditor
-        theme="vscode"
         editorDidMount={(e: IStandaloneCodeEditor, m) => {
           setEditor(e);
           setMonacoApi(m);

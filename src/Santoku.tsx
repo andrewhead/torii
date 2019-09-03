@@ -1,5 +1,6 @@
 import AppBar from "@material-ui/core/AppBar";
 import { styled } from "@material-ui/core/styles";
+import MaterialUiToolbar from "@material-ui/core/Toolbar";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -11,16 +12,15 @@ export function Santoku(props: SantokuProps) {
   return (
     <div className={`Santoku ${props.className !== undefined && props.className}`}>
       <ElevationScroll>
-        <AppBar position="fixed">
+        <AppBar className="app-bar" position="fixed">
           <Toolbar />
         </AppBar>
       </ElevationScroll>
       {/*
-       * Toolbar is included twice, once in the floating element above, and the second time right
-       * below. The second one isn't visible, but it holds the place of the toolbar so that no
-       * cells appear beneath the floating toolbar when scrolled to the top.
+       * Include and empty toolbar to hold the place of the toolbar at the top of the page,
+       * so no cells appear beneath the elevated toolbar when scrolled to the top.
        */}
-      <Toolbar />
+      <MaterialUiToolbar variant="dense" />
       <div className="cells">
         {props.cellIds.map((id, index) => {
           return <Cell id={id} index={index} key={id} />;
@@ -53,7 +53,7 @@ interface SantokuProps {
 const StyledSantoku = styled(Santoku)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   "& .cells": {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2),
     /*
      * Add enough margin to the bottom of the document so that the user can scroll until the
      * very last cells are at the top of the window.

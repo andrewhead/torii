@@ -1,6 +1,6 @@
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { styled } from "@material-ui/core/styles";
-import Tab from "@material-ui/core/Tab";
-import Tabs from "@material-ui/core/Tabs";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -30,21 +30,39 @@ export function SnippetContainer(props: SnippetProps) {
       <div className="code-editors">
         {props.paths.map((path: Path) => (
           <div key="path">
-            <Tabs className="tabs" value={tab} onChange={(_, newTab) => setTab(newTab)}>
-              {/*
-               * In the future, may want to use icons to convey snippets and snapshots.
-               * If so, two options are Cropy75 for snippet (wide rectangle) and CropyPortrait
-               * (tall rectangle).
-               */}
-              <Tab key="snippet" value="snippet" label="Edit Snippet" />
-              <Tab key="snapshot" value="snapshot" label="Edit Program Snapshot" />
-            </Tabs>
-            <div hidden={tab !== "snippet"}>
-              <SnippetEditor key={path} path={path} snippetId={props.id} />
-            </div>
-            <div hidden={tab !== "snapshot"}>
-              <SnapshotEditor key={path} path={path} snippetId={props.id} />
-            </div>
+            {/*
+             * Buttons are used here for tab behavior instead of Material UI tabs, as tabs were
+             * taking up too much time to re-render, for a reason I couldn't determine.
+             */}
+            {/*
+             * In the future, may want to use icons on the buttons. If so, two options are Cropy75
+             * for snippet (wide rectangle) and CropyPortrait(tall rectangle).
+             */}
+            <ButtonGroup color="secondary" className="tabs">
+              <Button
+                variant={tab === "snippet" ? "contained" : "outlined"}
+                onClick={() => {
+                  setTab("snippet");
+                }}
+              >
+                Edit Snippet
+              </Button>
+              <Button
+                variant={tab === "snapshot" ? "contained" : "outlined"}
+                onClick={() => {
+                  setTab("snapshot");
+                }}
+              >
+                Edit Program Snapshot
+              </Button>
+            </ButtonGroup>
+            <SnippetEditor hidden={tab !== "snippet"} key={path} path={path} snippetId={props.id} />
+            <SnapshotEditor
+              hidden={tab !== "snapshot"}
+              key={path}
+              path={path}
+              snippetId={props.id}
+            />
           </div>
         ))}
       </div>
@@ -73,8 +91,10 @@ const StyledSnippet = styled(SnippetContainer)(({ theme }) => ({
   },
   "& .tabs": {
     position: "absolute",
+    zIndex: theme.zIndex.tooltip,
     backgroundColor: theme.palette.background.paper,
-    bottom: "calc(100% - " + theme.spaces.cell.paddingTop + "px)",
+    // bottom: "calc(100% - " + theme.spaces.cell.paddingTop + "px)",
+    bottom: "100%",
     right: 0
   }
 }));

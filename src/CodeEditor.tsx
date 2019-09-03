@@ -1,5 +1,4 @@
 import { styled, Theme, withTheme } from "@material-ui/core";
-import * as monacoTypes from "monaco-editor/esm/vs/editor/editor.api";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import MonacoEditor from "react-monaco-editor";
@@ -13,12 +12,14 @@ import {
   SourceType,
   visibility
 } from "santoku-store";
-import { ChunkVersionOffsets, SnippetSelection } from "./selectors/types";
-
-type MonacoApiType = typeof monacoTypes;
-type IEditorConstructionOptions = monacoTypes.editor.IEditorConstructionOptions;
-type IStandaloneCodeEditor = monacoTypes.editor.IStandaloneCodeEditor;
-type IModelDeltaDecoration = monacoTypes.editor.IModelDeltaDecoration;
+import { BaseCodeEditorProps, ChunkVersionOffsets, SnippetSelection } from "./selectors/types";
+import {
+  IEditorConstructionOptions,
+  IModelDeltaDecoration,
+  IStandaloneCodeEditor,
+  MonacoApiType,
+  monacoTypes
+} from "./types/monaco";
 
 /**
  * A code editor that shows a program built from multiple chunks. Maps edits and selections to
@@ -36,21 +37,38 @@ export function CodeEditor(props: CodeEditorProps) {
   const [selectionCallback, setSelectionCallback] = useState<monacoTypes.IDisposable | undefined>();
 
   useEffect(() => {
+    if (props.hidden !== true) {
+      /*
+       * If the editor is being shown, it needs to catch up on updates to state that it has ignored.
+       */
+      updateValue();
+      updateSelections();
+      updateDecorations();
+      updateEditorHeight();
+      forceEditorLayoutUpdate();
+    }
+  }, [props.hidden]);
+
+  useEffect(() => {
     updateValue();
-    updateSelections();
-    updateDecorations();
     updateEditorHeight();
-  });
+  }, [props.text, editor]);
+
+  useEffect(() => {
+    updateSelections();
+  }, [props.selections, editor]);
 
   useEffect(() => {
     updateLanguage();
   }, [props.path, editor]);
 
+  useEffect(() => {
+    updateDecorations();
+  }, [props.visibilities, editor]);
+
   function updateValue() {
-    if (editor !== undefined && editor.hasTextFocus() === false) {
-      if (editor.getValue() !== props.text) {
-        editor.setValue(props.text);
-      }
+    if (props.hidden !== true && editor !== undefined && editor.hasTextFocus() === false) {
+      editor.setValue(props.text);
     }
   }
 
@@ -73,7 +91,12 @@ export function CodeEditor(props: CodeEditorProps) {
   }
 
   function updateSelections() {
-    if (editor !== undefined && editor.hasTextFocus() === false && monacoApi !== undefined) {
+    if (
+      props.hidden !== true &&
+      editor !== undefined &&
+      editor.hasTextFocus() === false &&
+      monacoApi !== undefined
+    ) {
       const currentMonacoSelections = editor.getSelections();
       const monacoSelections = props.selections.map(s =>
         getMonacoSelectionFromSimpleSelection(monacoApi, s)
@@ -100,7 +123,7 @@ export function CodeEditor(props: CodeEditorProps) {
   }
 
   function updateDecorations() {
-    if (editor === undefined) {
+    if (props.hidden === true || editor === undefined) {
       return;
     }
     const newDecorations = props.visibilities
@@ -125,7 +148,7 @@ export function CodeEditor(props: CodeEditorProps) {
   }
 
   function updateEditorHeight() {
-    if (editor === undefined) {
+    if (props.hidden === true || editor === undefined) {
       return;
     }
     /*
@@ -140,12 +163,22 @@ export function CodeEditor(props: CodeEditorProps) {
     if (textModel !== null) {
       const lineCount = textModel.getLineCount();
       if (container !== null) {
-        container.style.height = `${lineCount * lineHeight + horizontalScrollBarHeight}px`;
-        /*
-         * Force adjustment of editor height.
-         */
-        editor.layout();
+        const heightBefore = container.style.height;
+        const height = `${lineCount * lineHeight + horizontalScrollBarHeight}px`;
+        if (height !== heightBefore) {
+          container.style.height = `${lineCount * lineHeight + horizontalScrollBarHeight}px`;
+          forceEditorLayoutUpdate();
+        }
       }
+    }
+  }
+
+  /*
+   * Be very sparing will calling this method: it takes a long time to complete.
+   */
+  function forceEditorLayoutUpdate() {
+    if (editor !== undefined) {
+      editor.layout();
     }
   }
 
@@ -228,7 +261,10 @@ export function CodeEditor(props: CodeEditorProps) {
   }
 
   return (
-    <div className={`${props.className !== undefined && props.className}`}>
+    <div
+      hidden={props.hidden === true}
+      className={`${props.className !== undefined && props.className}`}
+    >
       <MonacoEditor
         theme="vscode"
         editorDidMount={(e: IStandaloneCodeEditor, m) => {
@@ -319,14 +355,16 @@ function getMonacoSelectionFromSimpleSelection(
   );
 }
 
-interface CodeEditorProps extends EditorActions {
-  text: string;
-  visibilities: (visibility.Visibility | undefined)[];
-  selections: SnippetSelection[];
-  chunkVersionOffsets: ChunkVersionOffsets;
-  path: Path;
+interface CodeEditorProps extends CodeEditorOwnProps, EditorActions {
   className?: string;
   theme?: Theme;
+}
+
+export interface CodeEditorOwnProps extends BaseCodeEditorProps {
+  /**
+   * Use to notify the editor if it's no longer hidden, so that it can repaint.
+   */
+  hidden?: boolean;
 }
 
 interface EditorActions {

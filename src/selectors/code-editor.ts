@@ -1,9 +1,7 @@
-import _ from "lodash";
 import {
   ChunkVersionId,
   Path,
   Selection,
-  selectors,
   SnippetId,
   SourceType,
   State,
@@ -11,58 +9,31 @@ import {
   Undoable,
   visibility
 } from "santoku-store";
-import { getChunk, getVisibleChunkVersions, isAddedInSnippet } from "./snippet";
-import { ChunkVersionOffsets, CodeEditorProps, LineText, SnippetSelection } from "./types";
-
-export function getSnapshotEditorProps(state: State, snippetId: SnippetId, path: Path) {
-  const orderedChunkVersions = selectors.code.getSnapshotOrderedChunkVersions(
-    state,
-    snippetId,
-    path
-  );
-  return getEditorProps(state, snippetId, path, orderedChunkVersions);
-}
-
-export function getSnippetEditorProps(state: State, snippetId: SnippetId, path: Path) {
-  const orderedChunkVersions = getSnippetOrderedChunkVersions(state, snippetId, path);
-  function lineFilter(chunkVersionId: ChunkVersionId, vis: visibility.Visibility | undefined) {
-    const isAddedInThisSnippet = isAddedInSnippet(state, chunkVersionId, snippetId);
-    return isAddedInThisSnippet || vis === visibility.VISIBLE;
-  }
-  return getEditorProps(state, snippetId, path, orderedChunkVersions, lineFilter);
-}
+import {
+  BaseCodeEditorProps,
+  ChunkVersionIdToSnippetIdMap,
+  ChunkVersionOffsets,
+  LineFilter,
+  LineText,
+  SnippetSelection
+} from "./types";
 
 /**
- * Gets sorted lists of chunk versions in this snippet, grouped by path.
+ * Not intended to be called by components. Use instead 'getSnippetEditorProps' or
+ * 'getSnapshotEditorProps'. Returns both the editor props, as well as a list of annotated text
+ * for each line that will be shown in the editor, so that callers can do additional processing.
  */
-function getSnippetOrderedChunkVersions(
-  state: State,
-  snippetId: SnippetId,
-  path: Path
-): ChunkVersionId[] {
-  const stateSlice = state.undoable.present;
-  const chunkVersionIds = getVisibleChunkVersions(state, snippetId);
-  const filtered = chunkVersionIds.filter(chunkVersionId => {
-    const chunk = getChunk(stateSlice, chunkVersionId);
-    return _.isEqual(chunk.location.path, path);
-  });
-  filtered.sort((chunkVersionId1, chunkVersionId2) => {
-    const chunk1 = getChunk(stateSlice, chunkVersionId1);
-    const chunk2 = getChunk(stateSlice, chunkVersionId2);
-    return chunk1.location.line - chunk2.location.line;
-  });
-  return filtered;
-}
-
-function getEditorProps(
+export function getCodeEditorProps(
   state: State,
   snippetId: SnippetId,
   path: Path,
   sortedChunkVersions: ChunkVersionId[],
   filter?: LineFilter
-): CodeEditorProps {
+) {
   const stateSlice = state.undoable.present;
   const lineTexts: LineText[] = [];
+  const chunkVersionSnippets = getChunkVersionIdToSnippetIdMap(state);
+
   for (const chunkVersionId of sortedChunkVersions) {
     const chunkVersion = stateSlice.chunkVersions.byId[chunkVersionId];
     const { chunk: chunkId, text: chunkVersionText } = chunkVersion;
@@ -72,6 +43,7 @@ function getEditorProps(
       const lineVisibility = getVisibility(stateSlice, snippetId, chunkVersionId, lineIndex);
       if (filter === undefined || filter(chunkVersionId, lineVisibility)) {
         lineTexts.push({
+          snippetId: chunkVersionSnippets[chunkVersionId],
           chunkId,
           chunkVersionId,
           offset: lineIndex,
@@ -81,19 +53,13 @@ function getEditorProps(
       }
     }
   }
-  return {
-    path,
-    visibilities: lineTexts.map(lt => lt.visibility),
-    text: textUtils.join(...lineTexts.map(lt => lt.text)),
-    selections: getSnippetSelections(stateSlice, sortedChunkVersions),
-    chunkVersionOffsets: getChunkVersionOffsets(stateSlice, sortedChunkVersions)
-  };
+  const visibilities = lineTexts.map(lt => lt.visibility);
+  const text = textUtils.join(...lineTexts.map(lt => lt.text));
+  const selections = getSnippetSelections(stateSlice, sortedChunkVersions);
+  const chunkVersionOffsets = getChunkVersionOffsets(lineTexts);
+  const props: BaseCodeEditorProps = { path, visibilities, text, selections, chunkVersionOffsets };
+  return { props, lineTexts };
 }
-
-type LineFilter = (
-  chunkVersionId: ChunkVersionId,
-  visibility: visibility.Visibility | undefined
-) => boolean;
 
 /**
  * Assumes all chunk versions IDs are present in the state.
@@ -163,18 +129,32 @@ function getSnippetSelectionFromSelection(selection: Selection, offset: number) 
   };
 }
 
-function getChunkVersionOffsets(
-  state: Undoable,
-  orderedChunkVersions: ChunkVersionId[]
-): ChunkVersionOffsets {
-  let line = 1;
-  const chunkVersionOffsets = [];
-  for (const chunkVersionId of orderedChunkVersions) {
-    chunkVersionOffsets.push({ line, chunkVersionId });
-    const chunkVersionText = state.chunkVersions.byId[chunkVersionId].text;
-    line += textUtils.split(chunkVersionText).length;
+function getChunkVersionOffsets(lineTexts: LineText[]): ChunkVersionOffsets {
+  const offsets = [];
+  let lastChunkVersionId;
+  for (let i = 0; i < lineTexts.length; i++) {
+    const { chunkVersionId } = lineTexts[i];
+    if (chunkVersionId !== lastChunkVersionId) {
+      offsets.push({ line: i + 1, chunkVersionId });
+    }
+    lastChunkVersionId = chunkVersionId;
   }
-  return chunkVersionOffsets;
+  return offsets;
+}
+
+/**
+ * Returns map from all chunk version IDs in the state to the snippets they belong to.
+ */
+function getChunkVersionIdToSnippetIdMap(state: State) {
+  const snippets = state.undoable.present.snippets;
+  const lookup: ChunkVersionIdToSnippetIdMap = {};
+  for (const snippetId of snippets.all) {
+    const snippet = snippets.byId[snippetId];
+    for (const chunkVersionId of snippet.chunkVersionsAdded) {
+      lookup[chunkVersionId] = snippetId;
+    }
+  }
+  return lookup;
 }
 
 function getVisibility(

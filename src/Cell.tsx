@@ -25,7 +25,7 @@ import Text from "./Text";
  */
 export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps>(
   (props: DraggableCellProps, ref) => {
-    const elementRef = useRef(null);
+    const elementRef = useRef<HTMLDivElement>(null);
     props.connectDragSource(elementRef);
     props.connectDropTarget(elementRef);
 
@@ -37,6 +37,15 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
     return (
       <div
         ref={elementRef}
+        onDragStart={() => {
+          /*
+           * To generate a preview with the 'tranform' property, this class must be added before
+           * the preview is generated. This is one place where the class can be added early enough.
+           */
+          if (elementRef !== null && elementRef.current !== null) {
+            elementRef.current.classList.add("dragJustTriggered");
+          }
+        }}
         className={`cell-container
           ${props.selected === true && "selected"}
           ${props.isDragging === true && "drag"}
@@ -66,12 +75,22 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
     borderLeftColor: theme.palette.secondaryScale[50]
   },
   /*
-   * Hack to correct the drag previews. Without this, in VSCode, a drag preview included any
-   * selected editor, along with all selected editors below it. For details on why this worked,
-   * and whether this bug has been fixed, see:
+   * Hack to correct the drag previews. Make sure this class is added to cell before a drag
+   * preview is generated. Currently, this needs to occur before the react-dnd handlers set
+   * in (e.g., right when 'onDragStart' is called).
+   *
+   * This class must be removed after the drag is complete for overlays to render at the right
+   * z-index. Otherwise, this transform sets a new stack context, which means that tooltips may
+   * end up getting obscured by other content within a higher stack context.
+   *
+   * Without this, in VSCode, a drag preview included any selected editor, along with all
+   * selected editors below it. For details on why this worked, and whether this bug has
+   * been fixed, see:
    * https://github.com/react-dnd/react-dnd/issues/832#issuecomment-442071628
    */
-  transform: "translate3d(0, 0, 0)",
+  "&.dragJustTriggered": {
+    transform: "translate3d(0, 0, 0)"
+  },
   "&.drag": {
     opacity: 0
   }
@@ -152,7 +171,7 @@ export default connect(
   DropTarget(
     DragItemTypes.CELL,
     {
-      hover: (draggedCell: CellDragInfo, monitor: DropTargetMonitor, component: CellInstance) => {
+      hover: (draggedCell: CellProps, monitor: DropTargetMonitor, component: CellInstance) => {
         if (component === null) {
           return;
         }
@@ -162,7 +181,6 @@ export default connect(
           return;
         }
 
-        const dropProps = monitor.getItem() as CellProps;
         const dragIndex = monitor.getItem().index;
         const hoverIndex = draggedCell.index;
         if (dragIndex === hoverIndex) {
@@ -187,7 +205,7 @@ export default connect(
           return;
         }
 
-        dropProps.move(monitor.getItem().id, hoverIndex);
+        draggedCell.move(monitor.getItem().id, hoverIndex);
         monitor.getItem().index = hoverIndex;
         draggedCell.index = hoverIndex;
       }

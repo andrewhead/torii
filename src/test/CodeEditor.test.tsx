@@ -2,15 +2,14 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import MonacoEditor from "react-monaco-editor";
-import { SourceType, textUtils } from "santoku-store";
+import { SourceType, textUtils, visibility } from "santoku-store";
 import { CodeEditor, getSelectionFromSnippetSelection } from "../CodeEditor";
-import { Reason } from "../selectors/types";
 
 Enzyme.configure({ adapter: new Adapter() });
 
 function setup() {
   const text = textUtils.join("Line 1", "Line 2");
-  const reasons = [Reason.ADDED, Reason.REQUESTED_VISIBLE];
+  const visibilities = [undefined, visibility.VISIBLE] as (visibility.Visibility | undefined)[];
   const selections = [{ anchor: { line: 1, character: 0 }, active: { line: 1, character: 2 } }];
   const path = "file-path";
   const chunkVersionOffsets = [{ line: 1, chunkVersionId: "chunk-version-0" }];
@@ -22,7 +21,7 @@ function setup() {
    */
   const wrapper = shallow(
     <CodeEditor
-      {...{ text, reasons, selections, path, chunkVersionOffsets }}
+      {...{ text, visibilities, selections, path, chunkVersionOffsets }}
       edit={jest.fn()}
       setSelections={jest.fn()}
     />

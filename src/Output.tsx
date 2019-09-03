@@ -6,7 +6,7 @@ import { getOutput } from "./selectors/output-button";
 
 export function Output(props: OutputProps) {
   return (
-    <div className={`output command-state-${props.output.state}`}>
+    <div className={`output`}>
       {props.output.type === "console" && <ConsoleOutput output={props.output} />}
     </div>
   );

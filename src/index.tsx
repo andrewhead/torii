@@ -8,7 +8,6 @@ import * as santokuEditorAdapterClasses from "santoku-editor-adapter";
 import { store } from "santoku-store";
 import "./index.css";
 import Santoku from "./Santoku";
-import { createStoreWithFakeData } from "./test/util";
 import createTheme from "./theme";
 
 declare global {
@@ -20,7 +19,7 @@ declare global {
 const theme = createTheme();
 
 ReactDOM.render(
-  <Provider store={createStoreWithFakeData()}>
+  <Provider store={store}>
     {/* <Provider store={store}> */}
     {/* <Provider store={createStoreWithFakeData()}> */}
     {/* Change to createStoreWithFakeData() to code editors in standalone app. */}

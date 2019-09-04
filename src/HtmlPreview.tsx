@@ -1,4 +1,6 @@
+import { Theme } from "@material-ui/core/styles";
 import styled from "@material-ui/core/styles/styled";
+import withTheme from "@material-ui/core/styles/withTheme";
 import React, { useEffect, useRef } from "react";
 
 export function HtmlPreview(props: HtmlPreviewProps) {
@@ -7,12 +9,12 @@ export function HtmlPreview(props: HtmlPreviewProps) {
   useEffect(() => {
     if (iframeRef.current !== null && props.html !== undefined) {
       const iframe = iframeRef.current;
-      iframe.onload = () => fitIFrameToContents(iframe);
+      iframe.onload = () => fitIFrameToContents(iframe, props.theme);
       if (iframe.contentWindow !== null) {
         loadIFrameContents(iframe, props.html);
       }
     }
-  }, [iframeRef, props.html]);
+  }, [iframeRef, props.html, props.theme]);
 
   return (
     <div className={`html-preview ${props.className !== undefined && props.className}`}>
@@ -30,7 +32,8 @@ function loadIFrameContents(iframe: HTMLIFrameElement, html: string) {
   }
 }
 
-function fitIFrameToContents(iframe: HTMLIFrameElement) {
+function fitIFrameToContents(iframe: HTMLIFrameElement, theme?: Theme) {
+  const borderWidth = theme ? theme.shape.borderWidth : 0;
   if (iframe.contentWindow !== null) {
     /*
      * iframe margin is non-zero by default. Set to zero so no margin around content.
@@ -38,8 +41,8 @@ function fitIFrameToContents(iframe: HTMLIFrameElement) {
     iframe.contentWindow.document.body.style.margin = "0";
     iframe.style.width = "auto";
     iframe.style.height = "auto";
-    iframe.style.width = iframe.contentWindow.document.body.scrollWidth + "px";
-    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px";
+    iframe.style.width = iframe.contentWindow.document.body.scrollWidth + borderWidth + "px";
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + borderWidth + "px";
   }
 }
 
@@ -49,11 +52,13 @@ interface HtmlPreviewProps {
    */
   html: string | undefined;
   className?: string;
+  theme?: Theme;
 }
 
-export default styled(HtmlPreview)(({ theme }) => ({
+export default styled(withTheme(HtmlPreview))(({ theme }) => ({
   textAlign: "center",
   "& iframe": {
+    borderStyle: "solid",
     borderColor: theme.palette.primary.main,
     borderWidth: theme.shape.borderWidth,
     borderRadius: theme.shape.borderRadius

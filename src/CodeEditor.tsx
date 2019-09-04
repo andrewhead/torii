@@ -1,4 +1,5 @@
 import { styled, Theme, withTheme } from "@material-ui/core";
+import _ from "lodash";
 import * as React from "react";
 import { RefObject, useCallback, useEffect, useImperativeHandle, useState } from "react";
 import MonacoEditor from "react-monaco-editor";
@@ -442,7 +443,9 @@ const StyledCodeEditor = styled(withTheme(CodeEditor))(({ theme }) => ({
   marginBottom: -theme.spaces.cell.paddingBottom
 }));
 
+const MemoizedCodeEditor = React.memo(StyledCodeEditor, _.isEqual);
+
 export default connect(
   undefined,
   editorActionCreators
-)(StyledCodeEditor);
+)(MemoizedCodeEditor);

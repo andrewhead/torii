@@ -1,6 +1,7 @@
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { styled } from "@material-ui/core/styles";
+import _ from "lodash";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -29,7 +30,7 @@ export function SnippetContainer(props: SnippetProps) {
     >
       <div className="code-editors">
         {props.paths.map((path: Path) => (
-          <div key="path">
+          <div key={path}>
             {/*
              * Buttons are used here for tab behavior instead of Material UI tabs, as tabs were
              * taking up too much time to re-render, for a reason I couldn't determine.
@@ -58,13 +59,13 @@ export function SnippetContainer(props: SnippetProps) {
             </ButtonGroup>
             <SnippetEditor
               hidden={tab !== "snippet"}
-              key={`${path}-snippet`}
+              key={"snippet"}
               path={path}
               snippetId={props.id}
             />
             <SnapshotEditor
               hidden={tab !== "snapshot"}
-              key={`${path}-snapshot`}
+              key={"snapshot"}
               path={path}
               snippetId={props.id}
             />
@@ -118,6 +119,8 @@ interface SnippetProps {
   className?: string;
 }
 
+const MemoizedSnippet = React.memo(StyledSnippet, _.isEqual);
+
 export default connect(
   (state: State, ownProps: SnippetOwnProps): SnippetProps => {
     return {
@@ -125,4 +128,4 @@ export default connect(
       paths: getSnippetPaths(state, ownProps.id)
     };
   }
-)(StyledSnippet);
+)(MemoizedSnippet);

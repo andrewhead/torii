@@ -28,7 +28,6 @@ interface HtmlOutputProps {
 }
 
 export default styled(HtmlOutput)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius,
   "&:not(.state-finished)": {
     "& .html-preview": {
       opacity: 0.7

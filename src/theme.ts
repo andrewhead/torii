@@ -31,6 +31,9 @@ export default function createTheme(options?: ThemeOptions) {
         padding: defaultTheme.spacing(1)
       }
     },
+    shape: {
+      borderWidth: 4
+    },
     typography: {
       code: {
         fontFamily: "Monaco",

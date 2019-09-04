@@ -1,18 +1,21 @@
 import { Color } from "@material-ui/core";
 import { Palette, PaletteOptions } from "@material-ui/core/styles/createPalette";
 import { Typography, TypographyOptions } from "@material-ui/core/styles/createTypography";
+import { Shape, ShapeOptions } from "@material-ui/core/styles/shape";
 
 declare module "@material-ui/core/styles/createMuiTheme" {
   interface Theme {
     typography: Typography;
     palette: Palette;
     spaces: Spaces;
+    shape: Shape;
   }
 
   interface ThemeOptions {
     palette?: PaletteOptions;
     typography?: TypographyOptions;
     spaces: SpacesOptions;
+    shape?: ShapeOptions;
   }
 
   interface Spaces {
@@ -30,6 +33,16 @@ declare module "@material-ui/core/styles/createMuiTheme" {
   }
 
   interface SpacesOptions extends Spaces {}
+}
+
+declare module "@material-ui/core/styles/shape" {
+  interface Shape {
+    borderWidth: number;
+  }
+
+  interface ShapeOptions {
+    borderWidth?: number;
+  }
 }
 
 /**

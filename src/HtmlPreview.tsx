@@ -7,6 +7,7 @@ export function HtmlPreview(props: HtmlPreviewProps) {
   useEffect(() => {
     if (iframeRef.current !== null && props.html !== undefined) {
       const iframe = iframeRef.current;
+      iframe.onload = () => fitIFrameToContents(iframe);
       if (iframe.contentWindow !== null) {
         loadIFrameContents(iframe, props.html);
       }
@@ -26,16 +27,19 @@ function loadIFrameContents(iframe: HTMLIFrameElement, html: string) {
     doc.open();
     doc.write(html);
     doc.close();
-    iframe.onload = () => fitIFrameToContents(iframe);
   }
 }
 
 function fitIFrameToContents(iframe: HTMLIFrameElement) {
   if (iframe.contentWindow !== null) {
+    /*
+     * iframe margin is non-zero by default. Set to zero so no margin around content.
+     */
+    iframe.contentWindow.document.body.style.margin = "0";
     iframe.style.width = "auto";
     iframe.style.height = "auto";
     iframe.style.width = iframe.contentWindow.document.body.scrollWidth + "px";
-    iframe.style.width = iframe.contentWindow.document.body.scrollHeight + "px";
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px";
   }
 }
 
@@ -50,6 +54,8 @@ interface HtmlPreviewProps {
 export default styled(HtmlPreview)(({ theme }) => ({
   textAlign: "center",
   "& iframe": {
-    border: "none"
+    borderColor: theme.palette.primary.main,
+    borderWidth: theme.shape.borderWidth,
+    borderRadius: theme.shape.borderRadius
   }
 }));

@@ -14,6 +14,11 @@ export interface CodeEditorBaseProps {
   selections: SnippetSelection[];
   chunkVersionOffsets: ChunkVersionOffsets;
   path: Path;
+  /**
+   * The ID of whatever chunk version is currently selected. If there are no selections in the
+   * code editor, or if selections are made in multiple chunk versions, this will be 'undefined'.
+   */
+  selectedChunkVersionId: ChunkVersionId | undefined;
 }
 
 export type LineFilter = (

@@ -13,6 +13,7 @@ function setup() {
   const selections = [{ anchor: { line: 1, character: 0 }, active: { line: 1, character: 2 } }];
   const path = "file-path";
   const chunkVersionOffsets = [{ line: 1, chunkVersionId: "chunk-version-0" }];
+  const selectedChunkVersionId = undefined;
   /**
    * It doesn't make sense to use anything other than 'shallow' here, because the 'monaco-editor'
    * package is mocked out to just return a div. (Jest can't transpile the ES6 code in the
@@ -21,7 +22,7 @@ function setup() {
    */
   const wrapper = shallow(
     <CodeEditor
-      {...{ text, visibilities, selections, path, chunkVersionOffsets }}
+      {...{ text, visibilities, selections, path, chunkVersionOffsets, selectedChunkVersionId }}
       edit={jest.fn()}
       setSelections={jest.fn()}
     />

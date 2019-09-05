@@ -59,7 +59,15 @@ export function getCodeEditorBaseProps(
   const text = textUtils.join(...lineTexts.map(lt => lt.text));
   const selections = getSnippetSelections(stateSlice, sortedChunkVersions);
   const chunkVersionOffsets = getChunkVersionOffsets(lineTexts);
-  const props: CodeEditorBaseProps = { path, visibilities, text, selections, chunkVersionOffsets };
+  const selectedChunkVersionId = getSelectedChunkVersionId(stateSlice.selections, lineTexts);
+  const props: CodeEditorBaseProps = {
+    path,
+    visibilities,
+    text,
+    selections,
+    chunkVersionOffsets,
+    selectedChunkVersionId
+  };
   return { props, lineTexts };
 }
 
@@ -169,6 +177,32 @@ function getVisibility(
     if (state.visibilityRules[snippetId][chunkVersionId] !== undefined) {
       return state.visibilityRules[snippetId][chunkVersionId][line];
     }
+  }
+  return undefined;
+}
+
+/**
+ * Get the ID of the chunk version selected in a code editor. See the definition of the
+ * 'selectedChunkVersionId' prop to understand when this property will be 'undefined'.
+ */
+function getSelectedChunkVersionId(
+  selections: Selection[],
+  lineTexts: LineText[]
+): ChunkVersionId | undefined {
+  let selectedChunkVersionId: ChunkVersionId | undefined;
+  for (const selection of selections) {
+    if (selection.relativeTo.source === SourceType.REFERENCE_IMPLEMENTATION) {
+      return undefined;
+    } else if (selection.relativeTo.source === SourceType.CHUNK_VERSION) {
+      if (selectedChunkVersionId === undefined) {
+        selectedChunkVersionId = selection.relativeTo.chunkVersionId;
+      } else if (selectedChunkVersionId !== selection.relativeTo.chunkVersionId) {
+        return undefined;
+      }
+    }
+  }
+  if (lineTexts.some(lt => lt.chunkVersionId === selectedChunkVersionId)) {
+    return selectedChunkVersionId;
   }
   return undefined;
 }

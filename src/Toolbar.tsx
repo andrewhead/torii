@@ -1,11 +1,16 @@
 import Button from "@material-ui/core/Button";
 import styled from "@material-ui/core/styles/styled";
 import MaterialUiToolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import CodeIcon from "@material-ui/icons/Code";
+import SaveIcon from "@material-ui/icons/Save";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
+import UndoIcon from "@material-ui/icons/Undo";
+import { saveAs } from "file-saver";
 import * as React from "react";
 import { connect } from "react-redux";
-import { actions, store } from "santoku-store";
+import { actions, State } from "santoku-store";
 
 export function Toolbar(props: ToolbarProps) {
   return (
@@ -13,48 +18,125 @@ export function Toolbar(props: ToolbarProps) {
       variant="dense"
       className={`${props.className !== undefined && props.className}`}
     >
-      <Button
-        color="inherit"
-        className="action-button"
-        onClick={() => {
-          props.insertText(store.getState());
-        }}
-      >
-        <TextFieldsIcon className="action-icon" />
-        Add text
-      </Button>
-      <Button color="inherit" className="action-button">
-        <CodeIcon className="action-icon" />
-        Add snippet
-      </Button>
+      <Typography className="title" variant="h6">
+        Torii
+      </Typography>
+      <div className="button-set">
+        <Button
+          color="secondary"
+          variant="outlined"
+          className="action-button textual-action-button"
+          onClick={() => {
+            props.insertText(props.state);
+          }}
+        >
+          <TextFieldsIcon className="action-icon" />
+          Add text
+        </Button>
+        <Button
+          color="secondary"
+          variant="outlined"
+          className="action-button textual-action-button"
+        >
+          <CodeIcon className="action-icon" />
+          Add snippet
+        </Button>
+        <Button
+          color="inherit"
+          className="action-button textual-action-button"
+          onClick={() => props.undo()}
+        >
+          <UndoIcon className="action-icon" />
+          Undo
+        </Button>
+      </div>
+      <div className="button-set">
+        <Button color="inherit" className="action-button" component="label">
+          <CloudUploadIcon />
+          <input
+            id="load-file-input"
+            type="file"
+            accept=".json"
+            onChange={event => load(event, props.setState)}
+            style={{ display: "none" } /* Hide the input; it will be rendered as Button */}
+          />
+        </Button>
+        <Button color="inherit" className="aciton-button" onClick={() => save(props.state)}>
+          <SaveIcon />
+        </Button>
+      </div>
     </MaterialUiToolbar>
   );
 }
 
+function load(event: React.ChangeEvent<HTMLInputElement>, setState: typeof actions.state.setState) {
+  const files = event.target.files;
+  if (files !== null && files.length === 1) {
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onloadend = loadEvent => {
+      if (loadEvent.target !== null) {
+        const result = reader.result;
+        if (result !== null && typeof result === "string") {
+          let state;
+          try {
+            /*
+             * TODO(andrewhead): validate data before loading it.
+             * TODO(andrewhead): provide user-friendly error message if load fails.
+             */
+            state = JSON.parse(result);
+          } catch (err) {
+            console.error(err);
+          }
+          setState(state);
+        }
+      }
+    };
+    reader.readAsText(file);
+  }
+}
+
+function save(state: State) {
+  const time = new Date().toLocaleTimeString();
+  const fileName = `Tutorial ${time}.json`;
+  const data = JSON.stringify(state, undefined, 2);
+  const blob = new Blob([data], { type: "text/plain;charset=utf-8" });
+  saveAs(blob, fileName);
+}
+
 interface ToolbarProps extends ToolbarActions {
+  state: State;
   className?: string;
 }
 
 interface ToolbarActions {
   insertText: typeof actions.cells.insertText;
+  setState: typeof actions.state.setState;
+  undo: typeof actions.state.undo;
 }
 
 const toolbarActionCreators = {
-  insertText: actions.cells.insertText
+  insertText: actions.cells.insertText,
+  setState: actions.state.setState,
+  undo: actions.state.undo
 };
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  margin: "0 auto",
+  "& .button-set": {
+    marginLeft: theme.spacing(4)
+  },
+  "& .title": {
+    flexGrow: 1
+  },
   "& .action-icon": {
     marginRight: theme.spacing(1)
   },
-  "& .action-button": {
-    marginRight: theme.spacing(1),
+  "& .textual-action-button": {
     marginLeft: theme.spacing(1)
   }
 }));
 
 export default connect(
-  undefined,
+  (state: State) => ({ state }),
   toolbarActionCreators
 )(StyledToolbar);

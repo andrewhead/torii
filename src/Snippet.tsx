@@ -1,6 +1,7 @@
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import { styled } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import _ from "lodash";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -14,7 +15,7 @@ import SnippetEditor from "./SnippetEditor";
 /**
  * Will contain multiple editors, if snippet contains code for multiple paths.
  */
-export function SnippetContainer(props: SnippetProps) {
+export function Snippet(props: SnippetProps) {
   const [tab, setTab] = useState<"snippet" | "snapshot">("snippet");
 
   useEffect(() => {
@@ -39,24 +40,29 @@ export function SnippetContainer(props: SnippetProps) {
              * In the future, may want to use icons on the buttons. If so, two options are Cropy75
              * for snippet (wide rectangle) and CropyPortrait(tall rectangle).
              */}
-            <ButtonGroup color="secondary" className="tabs">
-              <Button
-                variant={tab === "snippet" ? "contained" : "outlined"}
-                onClick={() => {
-                  setTab("snippet");
-                }}
-              >
-                Edit Snippet
-              </Button>
-              <Button
-                variant={tab === "snapshot" ? "contained" : "outlined"}
-                onClick={() => {
-                  setTab("snapshot");
-                }}
-              >
-                Edit Program Snapshot
-              </Button>
-            </ButtonGroup>
+            <div className="tabs">
+              <Typography variant="button" className="view-label">
+                View As
+              </Typography>
+              <ButtonGroup variant="outlined">
+                <Button
+                  color={tab === "snippet" ? "secondary" : "inherit"}
+                  onClick={() => {
+                    setTab("snippet");
+                  }}
+                >
+                  Snippet
+                </Button>
+                <Button
+                  color={tab === "snapshot" ? "secondary" : "inherit"}
+                  onClick={() => {
+                    setTab("snapshot");
+                  }}
+                >
+                  Program Snapshot
+                </Button>
+              </ButtonGroup>
+            </div>
             <SnippetEditor
               hidden={tab !== "snippet"}
               key={"snippet"}
@@ -77,7 +83,26 @@ export function SnippetContainer(props: SnippetProps) {
   );
 }
 
-const StyledSnippet = styled(SnippetContainer)(({ theme }) => ({
+const StyledSnippet = styled(Snippet)(({ theme }) => ({
+  "&:not(.focused)": {
+    "& .tabs": {
+      display: "none"
+    }
+  },
+  "& .tabs": {
+    position: "absolute",
+    zIndex: theme.zIndex.tooltip,
+    backgroundColor: theme.palette.background.paper,
+    bottom: "calc(100% - " + theme.spaces.cell.paddingTop + "px)",
+    right: 0,
+    "& .view-label": {
+      display: "inline-flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1)
+    }
+  },
   /*
    * Allows absolute positioning of the output palette.
    */
@@ -89,19 +114,6 @@ const StyledSnippet = styled(SnippetContainer)(({ theme }) => ({
     "& .output-palette": {
       visibility: "visible"
     }
-  },
-  "&:not(.focused)": {
-    "& .tabs": {
-      display: "none"
-    }
-  },
-  "& .tabs": {
-    position: "absolute",
-    zIndex: theme.zIndex.tooltip,
-    backgroundColor: theme.palette.background.paper,
-    // bottom: "calc(100% - " + theme.spaces.cell.paddingTop + "px)",
-    bottom: "100%",
-    right: 0
   }
 }));
 

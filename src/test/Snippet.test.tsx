@@ -2,7 +2,7 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import OutputPalette from "../OutputPalette";
-import { SnippetContainer } from "../Snippet";
+import { Snippet } from "../Snippet";
 import SnippetEditor from "../SnippetEditor";
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -12,7 +12,7 @@ function setup() {
   const paths = ["path"];
   const focused = false;
   const props = { id, paths, focused };
-  const wrapper = shallow(<SnippetContainer {...props} cellIndex={0} />);
+  const wrapper = shallow(<Snippet {...props} cellIndex={0} />);
   return {
     wrapper
   };

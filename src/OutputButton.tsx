@@ -8,7 +8,7 @@ import { getOutput } from "./selectors/output-button";
 export function OutputButton(props: OutputButtonProps) {
   return (
     <Button
-      variant="contained"
+      variant="text"
       color="secondary"
       className={`output-button ${props.className !== undefined && props.className}`}
       onClick={e => {
@@ -19,16 +19,15 @@ export function OutputButton(props: OutputButtonProps) {
         e.stopPropagation();
       }}
     >
-      {props.output.type === "console" && "Console output"}
-      {props.output.type === "html" && "HTML"}
-      {props.output.state !== "finished" && <StyledContrastCircularProgress />}
       {props.output.type === "console" && <SubjectIcon />}
+      {props.output.type === "console" && "Add console output"}
+      {props.output.type === "html" && "Add HTML output"}
+      {props.output.state !== "finished" && <StyledContrastCircularProgress />}
     </Button>
   );
 }
 
 const StyledOutputButton = styled(withTheme(OutputButton))(({ theme }) => ({
-  padding: theme.spacing(1),
   fontFamily: theme.typography.button.fontFamily,
   fontSize: theme.typography.button.fontSize
 }));

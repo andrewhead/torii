@@ -281,6 +281,8 @@ export const CodeEditor = (props: CodeEditorProps) => {
           }
   };
 
+  editorOptions.lineNumbers = "off";
+
   if (props.theme !== undefined) {
     const { fontFamily, fontSize } = props.theme.typography.code;
     editorOptions.fontFamily = fontFamily;

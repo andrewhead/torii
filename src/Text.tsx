@@ -114,7 +114,8 @@ const StyledText = styled(withTheme(Text))(({ theme }) => ({
       borderBottom: "0 !important"
     },
     "& p": {
-      fontSize: theme.typography.text.fontSize
+      fontSize: theme.typography.text.fontSize,
+      lineHeight: theme.typography.text.lineHeight
     },
     "& code": {
       fontFamily: theme.typography.code.fontFamily,
@@ -127,6 +128,7 @@ const StyledText = styled(withTheme(Text))(({ theme }) => ({
     padding: theme.spaces.text.padding,
     fontFamily: theme.typography.text.fontFamily + " !important",
     fontSize: theme.typography.text.fontSize,
+    lineHeight: theme.typography.text.lineHeight,
     "&:focus": {
       outline: "none",
       boxShadow: "0 0 5px " + theme.palette.secondaryScale[200]

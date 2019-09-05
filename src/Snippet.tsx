@@ -7,7 +7,6 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
-import OutputPalette from "./OutputPalette";
 import { getSnippetPaths } from "./selectors/snippet";
 import SnapshotEditor from "./SnapshotEditor";
 import SnippetEditor from "./SnippetEditor";
@@ -78,7 +77,6 @@ export function Snippet(props: SnippetProps) {
           </div>
         ))}
       </div>
-      <OutputPalette snippetId={props.id} cellIndex={props.cellIndex} />
     </div>
   );
 }
@@ -101,18 +99,6 @@ const StyledSnippet = styled(Snippet)(({ theme }) => ({
       justifyContent: "center",
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1)
-    }
-  },
-  /*
-   * Allows absolute positioning of the output palette.
-   */
-  position: "relative",
-  "& .output-palette": {
-    visibility: "hidden"
-  },
-  "&:hover": {
-    "& .output-palette": {
-      visibility: "visible"
     }
   }
 }));

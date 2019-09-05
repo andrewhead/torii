@@ -6,7 +6,6 @@ import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import * as santokuEditorAdapterClasses from "santoku-editor-adapter";
 import { store } from "santoku-store";
-import "./index.css";
 import Santoku from "./Santoku";
 import createTheme from "./theme";
 

@@ -54,7 +54,8 @@ export default function createTheme(options?: ThemeOptions) {
         fontWeight: "normal",
         fontStyle: "normal",
         color: defaultTheme.typography.body1.color,
-        fontSize: 18
+        fontSize: 18,
+        lineHeight: defaultTheme.typography.body1.lineHeight
       }
     }
   });

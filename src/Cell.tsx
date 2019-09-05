@@ -14,6 +14,7 @@ import {
 } from "react-dnd";
 import { connect } from "react-redux";
 import { actions, Cell as CellState, CellId, ContentType, State } from "santoku-store";
+import CellActionPalette from "./CellActionPalette";
 import { DragItemTypes } from "./drag-and-drop";
 import Output from "./Output";
 import { getCell, isSelected } from "./selectors/cell";
@@ -75,6 +76,18 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
     borderLeftColor: theme.palette.secondaryScale[50]
   },
   /*
+   * Allows absolute positioning of the cell action palette.
+   */
+  position: "relative",
+  "& .cell-action-palette": {
+    visibility: "hidden"
+  },
+  "&:hover": {
+    "& .cell-action-palette": {
+      visibility: "visible"
+    }
+  },
+  /*
    * Hack to correct the drag previews. Make sure this class is added to cell before a drag
    * preview is generated. Currently, this needs to occur before the react-dnd handlers set
    * in (e.g., right when 'onDragStart' is called).
@@ -113,6 +126,7 @@ export function Cell(props: CellProps) {
             return null;
         }
       })()}
+      <CellActionPalette cellId={props.id} cell={props.cell} cellIndex={props.index} />
     </div>
   );
 }

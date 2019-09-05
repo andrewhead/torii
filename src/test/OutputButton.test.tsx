@@ -29,6 +29,6 @@ describe("OutputButton", () => {
 
   it("should have text for the output type", () => {
     const wrapper = shallowOutputButton();
-    expect(wrapper.text()).toEqual("Console output");
+    expect(wrapper.text()).toMatch(/add console output/i);
   });
 });

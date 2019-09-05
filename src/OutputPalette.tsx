@@ -19,11 +19,7 @@ export function OutputPalette(props: OutputPaletteProps) {
   );
 }
 
-const StyledOutputPalette = styled(OutputPalette)(({ theme }) => ({
-  position: "absolute",
-  bottom: theme.spacing(1),
-  right: theme.spacing(1)
-}));
+const StyledOutputPalette = styled(OutputPalette)(({ theme }) => ({}));
 
 interface OutputPaletteOwnProps {
   snippetId: SnippetId;

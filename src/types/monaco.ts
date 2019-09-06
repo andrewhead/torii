@@ -10,6 +10,7 @@ export { ContentWidgetPositionPreference };
 export type IEditorConstructionOptions = monacoTypes.editor.IEditorConstructionOptions;
 export type IStandaloneCodeEditor = monacoTypes.editor.IStandaloneCodeEditor;
 export type IModelDeltaDecoration = monacoTypes.editor.IModelDeltaDecoration;
+export type IModelDecorationOptions = monacoTypes.editor.IModelDecorationOptions;
 export type IContentWidget = monacoTypes.editor.IContentWidget;
 export type IContentWidgetPosition = monacoTypes.editor.IContentWidgetPosition;
 const ContentWidgetPositionPreference = monacoTypes.editor.ContentWidgetPositionPreference;

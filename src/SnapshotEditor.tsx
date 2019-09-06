@@ -1,17 +1,12 @@
 import styled from "@material-ui/core/styles/styled";
 import withTheme from "@material-ui/core/styles/withTheme";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
 import CodeEditor from "./CodeEditor";
-import { getSnapshotEditorProps, getSnippetRangeDecorations } from "./selectors/snapshot-editor";
+import { getSelectedChunkVersionDecorations, getSnapshotEditorProps, getSnippetRangeDecorations } from "./selectors/snapshot-editor";
 import { SnapshotEditorBaseProps, SnippetOffsets } from "./selectors/types";
-import {
-  ContentWidgetPositionPreference,
-  IContentWidget,
-  IStandaloneCodeEditor,
-  MonacoApiType
-} from "./types/monaco";
+import { ContentWidgetPositionPreference, IContentWidget, IStandaloneCodeEditor, MonacoApiType } from "./types/monaco";
 
 /**
  * Code editor for editing all the code for a snapshot (everything up to and including a snippet)
@@ -20,12 +15,14 @@ import {
 export function SnapshotEditor(props: SnapshotEditorProps) {
   const editorRef = useRef<IStandaloneCodeEditor>();
   const monacoApiRef = useRef<MonacoApiType>();
-  const [snippetRangeDecorations, setSnippetRangeDecorations] = useState<string[]>([]);
-  const [snippetIndexWidgets, setSnippetIndexWidgets] = useState<IContentWidget[]>([]);
+  const selectedChunkDecorations = useRef<string[]>([]);
+  const snippetRangeDecorations = useRef<string[]>([]);
+  const snippetIndexWidgets = useRef<IContentWidget[]>([]);
 
   useEffect(() => {
     if (props.hidden !== true) {
       updateSnippetRangeDecorations();
+      updateSelectedChunkDecorations();
       updateSnippetIndexWidgets();
     }
   }, [props.hidden]);
@@ -35,13 +32,32 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
     updateSnippetIndexWidgets();
   }, [props.snippetOffsets]);
 
+  useEffect(() => {
+    updateSelectedChunkDecorations();
+  }, [props.selectedChunkVersionId, props.chunkVersionOffsets]);
+
   function updateSnippetRangeDecorations() {
     if (props.hidden === true || editorRef.current === undefined) {
       return;
     }
     const editor = editorRef.current;
     const newDecorations = getSnippetRangeDecorations(props.snippetOffsets, props.snippetId);
-    setSnippetRangeDecorations(editor.deltaDecorations(snippetRangeDecorations, newDecorations));
+    snippetRangeDecorations.current = editor.deltaDecorations(snippetRangeDecorations.current, newDecorations);
+  }
+
+  function updateSelectedChunkDecorations() {
+    if (props.hidden === true || editorRef.current === undefined) {
+      return;
+    }
+    const editor = editorRef.current;
+    const newDecorations = getSelectedChunkVersionDecorations(
+      props.selectedChunkVersionId,
+      props.chunkVersionOffsets
+    );
+    selectedChunkDecorations.current = editor.deltaDecorations(
+      selectedChunkDecorations.current,
+      newDecorations
+    );
   }
 
   function updateSnippetIndexWidgets() {
@@ -53,11 +69,11 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
     if (model === null) {
       return;
     }
-    for (const oldWidget of snippetIndexWidgets) {
+    for (const oldWidget of snippetIndexWidgets.current) {
       editor.removeContentWidget(oldWidget);
     }
     const newWidgets = getSnippetIndexContentWidgets(props.snippetOffsets, model.getLineCount());
-    setSnippetIndexWidgets(newWidgets);
+    snippetIndexWidgets.current = newWidgets;
     for (const newWidget of newWidgets) {
       editor.addContentWidget(newWidget);
     }
@@ -76,6 +92,8 @@ interface SnapshotEditorOwnProps {
   path: Path;
   hidden?: boolean;
 }
+
+export function getSnippetBoundaryViewZones(snippetOffsets: SnippetOffsets) {}
 
 export function getSnippetIndexContentWidgets(
   snippetOffsets: SnippetOffsets,
@@ -108,17 +126,6 @@ export function getSnippetIndexContentWidgets(
 }
 
 const StyledSnapshotEditor = styled(withTheme(SnapshotEditor))(({ theme }) => ({
-  "& .snippet-range": {
-    "&.past-snippet": {
-      backgroundColor: theme.palette.primaryScale[200],
-      /*
-       * Right behind the selection background color. This also causes a small visual glitch where
-       * a box for the cursor appears in front of this background at the edge of the selection. I
-       * don't know how to fix this, as I couldn't find a way to make Monaco backgrounds transparent.
-       */
-      zIndex: -1
-    }
-  },
   "& .snippet-index-label": {
     "& code": {
       fontFamily: theme.typography.code.fontFamily + " !important",
@@ -128,6 +135,39 @@ const StyledSnapshotEditor = styled(withTheme(SnapshotEditor))(({ theme }) => ({
     },
     marginLeft: theme.spacing(3),
     opacity: 0.4
+  },
+  "& .selected-chunk-version-top-boundary": {
+    borderTopColor: theme.palette.secondaryScale[100],
+    borderTopWidth: 1,
+    borderTopStyle: "solid"
+  },
+  /**
+   * Set background to transparent, as otherwise we see weird cells of white on top of chunks for
+   * which we've set the background color.
+   */
+  "& .monaco-editor-background": {
+    background: "none"
+  },
+  "& .selected-chunk-version-body": {
+    backgroundColor: theme.palette.secondaryScale[50],
+    /*
+     * Right behind the selection background color.
+     */
+    zIndex: -1
+  },
+  "& .selected-chunk-version-bottom-boundary": {
+    borderBottomColor: theme.palette.secondaryScale[100],
+    borderBottomWidth: 1,
+    borderBottomStyle: "solid"
+  },
+  "& .snippet-range": {
+    "&.past-snippet": {
+      backgroundColor: theme.palette.primaryScale[200],
+      /*
+       * Right behind the highlights for the selected chunk.
+       */
+      zIndex: -2
+    }
   }
 }));
 

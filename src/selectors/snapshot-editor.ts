@@ -1,7 +1,8 @@
-import { ContentType, Path, selectors, SnippetId, State } from "santoku-store";
-import { IModelDeltaDecoration } from "../types/monaco";
+import _ from "lodash";
+import { ChunkVersionId, ContentType, Path, selectors, SnippetId, State } from "santoku-store";
+import { IModelDecorationOptions, IModelDeltaDecoration } from "../types/monaco";
 import { getCodeEditorBaseProps } from "./code-editor";
-import { LineText, SnapshotEditorBaseProps, SnippetOffsets } from "./types";
+import { ChunkVersionOffsets, LineText, SnapshotEditorBaseProps, SnippetOffsets } from "./types";
 
 export function getSnapshotEditorProps(
   state: State,
@@ -44,22 +45,63 @@ export function getSnippetRangeDecorations(
   for (let i = 0; i < snippetOffsets.length; i++) {
     const offset = snippetOffsets[i];
     const nextOffset = snippetOffsets[i + 1];
-    decorations.push({
-      options: snippetRangeDecorationOptions(offset.snippetId === currentSnippet),
-      range: {
-        startLineNumber: offset.line,
-        startColumn: 0,
-        endLineNumber: nextOffset !== undefined ? nextOffset.line - 1 : Number.POSITIVE_INFINITY,
-        endColumn: Number.POSITIVE_INFINITY
-      }
-    });
+    const startLine = offset.line;
+    const endLine = nextOffset !== undefined ? nextOffset.line - 1 : Number.POSITIVE_INFINITY;
+    const isCurrentSnippet = offset.snippetId === currentSnippet;
+    const className = "snippet-range " + (isCurrentSnippet ? "current-snippet" : "past-snippet");
+    decorations.push(lineRangeDecoration(startLine, endLine, { className }));
   }
   return decorations;
 }
 
-function snippetRangeDecorationOptions(isCurrentSnippet: boolean) {
+export function getSelectedChunkVersionDecorations(
+  chunkVersionId: ChunkVersionId | undefined,
+  chunkVersionOffsets: ChunkVersionOffsets
+) {
+  const decorations = [];
+  if (chunkVersionId === undefined) {
+    return [];
+  }
+  const chunkVersionIndex = chunkVersionOffsets.map(o => o.chunkVersionId).indexOf(chunkVersionId);
+  if (chunkVersionIndex !== -1) {
+    const topLine = chunkVersionOffsets[chunkVersionIndex].line;
+    const bottomLine =
+      chunkVersionIndex < chunkVersionOffsets.length - 1
+        ? chunkVersionOffsets[chunkVersionIndex + 1].line - 1
+        : Number.POSITIVE_INFINITY;
+    if (chunkVersionIndex > 0) {
+      decorations.push(
+        lineRangeDecoration(topLine, topLine, { className: "selected-chunk-version-top-boundary" })
+      );
+    }
+    decorations.push(
+      lineRangeDecoration(topLine, bottomLine, { className: "selected-chunk-version-body" })
+    );
+    if (chunkVersionIndex < chunkVersionOffsets.length - 1) {
+      decorations.push(
+        lineRangeDecoration(bottomLine, bottomLine, {
+          className: "selected-chunk-version-bottom-boundary"
+        })
+      );
+    }
+  }
+  return decorations;
+}
+
+function lineRangeDecoration(
+  startLine: number,
+  endLine: number,
+  options?: IModelDecorationOptions
+) {
+  const baseOptions = { isWholeLine: true };
+  options = _.merge({}, baseOptions, options);
   return {
-    isWholeLine: true,
-    className: "snippet-range " + (isCurrentSnippet ? "current-snippet" : "past-snippet")
+    range: {
+      startLineNumber: startLine,
+      startColumn: 0,
+      endLineNumber: endLine,
+      endColumn: Number.POSITIVE_INFINITY
+    },
+    options
   };
 }

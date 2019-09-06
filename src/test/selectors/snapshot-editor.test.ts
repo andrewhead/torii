@@ -1,5 +1,6 @@
 import { testUtils } from "santoku-store";
 import {
+  getSelectedChunkVersionDecorations,
   getSnapshotEditorProps,
   getSnippetRangeDecorations
 } from "../../selectors/snapshot-editor";
@@ -80,4 +81,79 @@ describe("getSnippetRangeDecorations", () => {
       }
     }
   ]);
+});
+
+describe("getSelectedChunkVersionDecorations", () => {
+  it("decorates the body, and boundaries of the chunk", () => {
+    const chunkVersionOffsets = [
+      { chunkVersionId: "chunk-version-above-id", line: 1 },
+      { chunkVersionId: "chunk-version-id", line: 2 },
+      { chunkVersionId: "chunk-version-below-id", line: 4 }
+    ];
+    expect(getSelectedChunkVersionDecorations("chunk-version-id", chunkVersionOffsets)).toEqual([
+      {
+        options: {
+          isWholeLine: true,
+          className: "selected-chunk-version-top-boundary"
+        },
+        range: {
+          startLineNumber: 2,
+          startColumn: 0,
+          endLineNumber: 2,
+          endColumn: Number.POSITIVE_INFINITY
+        }
+      },
+      {
+        options: {
+          isWholeLine: true,
+          className: "selected-chunk-version-body"
+        },
+        range: {
+          startLineNumber: 2,
+          startColumn: 0,
+          endLineNumber: 3,
+          endColumn: Number.POSITIVE_INFINITY
+        }
+      },
+      {
+        options: {
+          isWholeLine: true,
+          className: "selected-chunk-version-bottom-boundary"
+        },
+        range: {
+          startLineNumber: 3,
+          startColumn: 0,
+          endLineNumber: 3,
+          endColumn: Number.POSITIVE_INFINITY
+        }
+      }
+    ]);
+  });
+
+  it("doesn't make decorations at the editor top and bottom", () => {
+    /*
+     * This is the only chunk versions. Any decorations created would coincide with the top and
+     * the bottom of the editor. Don't bother making decorations for those bounds.
+     */
+    const chunkVersionOffsets = [{ chunkVersionId: "chunk-version-id", line: 1 }];
+    expect(getSelectedChunkVersionDecorations("chunk-version-id", chunkVersionOffsets)).toEqual([
+      {
+        options: {
+          isWholeLine: true,
+          className: "selected-chunk-version-body"
+        },
+        range: {
+          startLineNumber: 1,
+          startColumn: 0,
+          endLineNumber: Number.POSITIVE_INFINITY,
+          endColumn: Number.POSITIVE_INFINITY
+        }
+      }
+    ]);
+  });
+
+  it("doesn't make deocrations for an undefined chunk version ID", () => {
+    const chunkVersionOffsets = [{ chunkVersionId: "chunk-version-id", line: 1 }];
+    expect(getSelectedChunkVersionDecorations(undefined, chunkVersionOffsets)).toEqual([]);
+  });
 });

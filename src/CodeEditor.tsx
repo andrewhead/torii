@@ -273,6 +273,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
     minimap: { enabled: false },
     overviewRulerLanes: 0,
     renderLineHighlight: "none",
+    hideCursorInOverviewRuler: true,
     lineNumbers:
       lineNumbers === undefined
         ? "on"

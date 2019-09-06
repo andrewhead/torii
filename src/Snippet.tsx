@@ -89,7 +89,7 @@ const StyledSnippet = styled(Snippet)(({ theme }) => ({
   },
   "& .tabs": {
     position: "absolute",
-    zIndex: theme.zIndex.tooltip,
+    zIndex: theme.zIndex.mobileStepper,
     backgroundColor: theme.palette.background.paper,
     bottom: "calc(100% - " + theme.spaces.cell.paddingTop + "px)",
     right: 0,

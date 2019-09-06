@@ -48,6 +48,7 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
           }
         }}
         className={`cell-container
+          ${props.cell.hidden === true && "hidden"}
           ${props.selected === true && "selected"}
           ${props.isDragging === true && "drag"}
           ${props.className !== undefined && props.className}`}
@@ -69,11 +70,26 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   borderLeftStyle: "solid",
   borderLeftWidth: theme.spacing(1),
   borderLeftColor: "transparent",
-  "&.selected": {
+  "&.selected:not(.hidden)": {
     borderLeftColor: theme.palette.secondaryScale[300]
   },
-  "&:hover:not(.selected)": {
+  "&:hover:not(.selected,.hidden)": {
     borderLeftColor: theme.palette.secondaryScale[50]
+  },
+  "& .hidden-marker": {
+    paddingTop: 10,
+    marginTop: -10,
+    paddingBottom: 10,
+    marginBottom: -10,
+    height: 1,
+    border: 0,
+    borderBottomWidth: 2,
+    borderBottomColor: theme.palette.primary.main,
+    borderBottomStyle: "solid",
+    "&:hover": {
+      borderBottomWidth: theme.shape.borderWidth,
+      borderBottomColor: theme.palette.secondary.main
+    }
   },
   /*
    * Allows absolute positioning of the cell action palette.
@@ -110,6 +126,19 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
 }));
 
 export function Cell(props: CellProps) {
+  if (props.cell.hidden) {
+    return (
+      <div
+        className="cell-hidden"
+        onClick={() => {
+          props.show(props.id);
+        }}
+      >
+        <hr className="hidden-marker" />
+      </div>
+    );
+  }
+
   return (
     <div className="cell">
       {(() => {
@@ -155,11 +184,13 @@ interface CellProps extends CellActions {
 interface CellActions {
   move: typeof actions.cells.move;
   selectCell: typeof actions.ui.selectCell;
+  show: typeof actions.cells.show;
 }
 
 const cellActionCreators = {
   move: actions.cells.move,
-  selectCell: actions.ui.selectCell
+  selectCell: actions.ui.selectCell,
+  show: actions.cells.show
 };
 
 interface CellInitProps {

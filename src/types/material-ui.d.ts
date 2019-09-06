@@ -38,10 +38,12 @@ declare module "@material-ui/core/styles/createMuiTheme" {
 declare module "@material-ui/core/styles/shape" {
   interface Shape {
     borderWidth: number;
+    codeLineBorderWidth: number;
   }
 
   interface ShapeOptions {
     borderWidth?: number;
+    codeLineBorderWidth?: number;
   }
 }
 

@@ -1,4 +1,8 @@
-import { Button, CircularProgress, styled, Theme, withTheme } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { Theme } from "@material-ui/core/styles";
+import styled from "@material-ui/core/styles/styled";
+import withTheme from "@material-ui/core/styles/withTheme";
 import SubjectIcon from "@material-ui/icons/Subject";
 import * as React from "react";
 import { connect } from "react-redux";

@@ -4,9 +4,19 @@ import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
 import CodeEditor from "./CodeEditor";
-import { getSelectedChunkVersionDecorations, getSnapshotEditorProps, getSnippetRangeDecorations } from "./selectors/snapshot-editor";
+import LinkToggle from "./LinkToggle";
+import {
+  getSelectedChunkVersionDecorations,
+  getSnapshotEditorProps,
+  getSnippetRangeDecorations
+} from "./selectors/snapshot-editor";
 import { SnapshotEditorBaseProps, SnippetOffsets } from "./selectors/types";
-import { ContentWidgetPositionPreference, IContentWidget, IStandaloneCodeEditor, MonacoApiType } from "./types/monaco";
+import {
+  ContentWidgetPositionPreference,
+  IContentWidget,
+  IStandaloneCodeEditor,
+  MonacoApiType
+} from "./types/monaco";
 
 /**
  * Code editor for editing all the code for a snapshot (everything up to and including a snippet)
@@ -15,6 +25,7 @@ import { ContentWidgetPositionPreference, IContentWidget, IStandaloneCodeEditor,
 export function SnapshotEditor(props: SnapshotEditorProps) {
   const editorRef = useRef<IStandaloneCodeEditor>();
   const monacoApiRef = useRef<MonacoApiType>();
+  const linkWidgetRef = useRef<HTMLDivElement>(null);
   const selectedChunkDecorations = useRef<string[]>([]);
   const snippetRangeDecorations = useRef<string[]>([]);
   const snippetIndexWidgets = useRef<IContentWidget[]>([]);
@@ -24,6 +35,7 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
       updateSnippetRangeDecorations();
       updateSelectedChunkDecorations();
       updateSnippetIndexWidgets();
+      updateLinkToggleWidget();
     }
   }, [props.hidden]);
 
@@ -34,6 +46,7 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
 
   useEffect(() => {
     updateSelectedChunkDecorations();
+    updateLinkToggleWidget();
   }, [props.selectedChunkVersionId, props.chunkVersionOffsets]);
 
   function updateSnippetRangeDecorations() {
@@ -42,7 +55,10 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
     }
     const editor = editorRef.current;
     const newDecorations = getSnippetRangeDecorations(props.snippetOffsets, props.snippetId);
-    snippetRangeDecorations.current = editor.deltaDecorations(snippetRangeDecorations.current, newDecorations);
+    snippetRangeDecorations.current = editor.deltaDecorations(
+      snippetRangeDecorations.current,
+      newDecorations
+    );
   }
 
   function updateSelectedChunkDecorations() {
@@ -79,7 +95,35 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
     }
   }
 
-  return <CodeEditor {...{ ...props, editorRef, monacoApiRef }} />;
+  function updateLinkToggleWidget() {
+    if (
+      props.hidden === true ||
+      editorRef.current === undefined ||
+      props.selectedChunkVersionId === undefined ||
+      linkWidgetRef.current === null
+    ) {
+      return;
+    }
+    const editor = editorRef.current;
+    const selectionChunkVersionLine = props.chunkVersionOffsets
+      .filter(offset => offset.chunkVersionId === props.selectedChunkVersionId)
+      .map(offset => offset.line)[0];
+    if (selectionChunkVersionLine !== undefined) {
+      const lineTop = editor.getTopForLineNumber(selectionChunkVersionLine);
+      linkWidgetRef.current.style.top = `${lineTop}px`;
+    }
+  }
+
+  return (
+    <div hidden={props.hidden}>
+      <CodeEditor {...{ ...props, editorRef, monacoApiRef }} />
+      <div ref={linkWidgetRef} style={{ position: "absolute", right: 0 }}>
+        {props.selectedChunkVersionId !== undefined && (
+          <LinkToggle snippetId={props.snippetId} chunkVersionId={props.selectedChunkVersionId} />
+        )}
+      </div>
+    </div>
+  );
 }
 
 interface SnapshotEditorProps extends SnapshotEditorBaseProps {
@@ -93,7 +137,7 @@ interface SnapshotEditorOwnProps {
   hidden?: boolean;
 }
 
-export function getSnippetBoundaryViewZones(snippetOffsets: SnippetOffsets) {}
+// export function getSnippetBoundaryViewZones(snippetOffsets: SnippetOffsets) {}
 
 export function getSnippetIndexContentWidgets(
   snippetOffsets: SnippetOffsets,
@@ -138,7 +182,7 @@ const StyledSnapshotEditor = styled(withTheme(SnapshotEditor))(({ theme }) => ({
   },
   "& .selected-chunk-version-top-boundary": {
     borderTopColor: theme.palette.secondaryScale[100],
-    borderTopWidth: 1,
+    borderBottomWidth: theme.shape.codeLineBorderWidth,
     borderTopStyle: "solid"
   },
   /**
@@ -157,12 +201,12 @@ const StyledSnapshotEditor = styled(withTheme(SnapshotEditor))(({ theme }) => ({
   },
   "& .selected-chunk-version-bottom-boundary": {
     borderBottomColor: theme.palette.secondaryScale[100],
-    borderBottomWidth: 1,
+    borderBottomWidth: theme.shape.codeLineBorderWidth,
     borderBottomStyle: "solid"
   },
   "& .snippet-range": {
     "&.past-snippet": {
-      backgroundColor: theme.palette.primaryScale[200],
+      backgroundColor: theme.palette.primaryScale[100],
       /*
        * Right behind the highlights for the selected chunk.
        */

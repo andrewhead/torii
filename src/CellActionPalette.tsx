@@ -1,6 +1,7 @@
 import { styled } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import * as React from "react";
 import { connect } from "react-redux";
 import { actions, Cell as CellState, CellId, ContentType } from "santoku-store";
@@ -12,6 +13,9 @@ export function CellActionPalette(props: CellActionPaletteProps) {
       {props.cell.type === ContentType.SNIPPET && (
         <OutputPalette cellIndex={props.cellIndex} snippetId={props.cell.contentId} />
       )}
+      <Button className="action-button" onClick={() => props.hide(props.cellId)}>
+        <VisibilityOffIcon />
+      </Button>
       <Button
         className="action-button"
         onClick={() => props.deleteCell(props.cellId, props.cell.type, props.cell.contentId)}
@@ -28,7 +32,7 @@ const StyledCellActionPalette = styled(CellActionPalette)(({ theme }) => ({
   borderStyle: "solid",
   borderWidth: 1,
   borderRadius: theme.shape.borderRadius,
-  zIndex: theme.zIndex.tooltip,
+  zIndex: theme.zIndex.mobileStepper,
   display: "inline-flex",
   position: "absolute",
   bottom: 0,
@@ -47,10 +51,12 @@ interface CellActionPaletteProps extends PaletteActions {
 
 interface PaletteActions {
   deleteCell: typeof actions.cells.deleteCell;
+  hide: typeof actions.cells.hide;
 }
 
 const actionCreators = {
-  deleteCell: actions.cells.deleteCell
+  deleteCell: actions.cells.deleteCell,
+  hide: actions.cells.hide
 };
 
 export default connect(

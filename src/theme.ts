@@ -32,7 +32,8 @@ export default function createTheme(options?: ThemeOptions) {
       }
     },
     shape: {
-      borderWidth: 4
+      borderWidth: 4,
+      codeLineBorderWidth: 2
     },
     typography: {
       code: {

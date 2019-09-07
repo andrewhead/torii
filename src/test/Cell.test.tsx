@@ -20,8 +20,15 @@ Enzyme.configure({ adapter: new Adapter() });
  */
 describe("Cell", () => {
   function createCell(cell: CellState, id: any, index: number) {
+    const { type, contentId, hidden } = cell;
     return shallow(
-      <Cell {...{ id, cell, index }} selected={true} move={jest.fn()} selectCell={jest.fn()} />
+      <Cell
+        {...{ id, type, contentId, index, hidden }}
+        selected={true}
+        move={jest.fn()}
+        selectCell={jest.fn()}
+        show={jest.fn()}
+      />
     );
   }
 

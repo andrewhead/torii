@@ -1,7 +1,7 @@
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
-import { Cell, ContentType } from "santoku-store";
+import { ContentType } from "santoku-store";
 import { CellActionPalette } from "../CellActionPalette";
 import OutputPalette from "../OutputPalette";
 
@@ -9,10 +9,12 @@ Enzyme.configure({ adapter: new Adapter() });
 
 function setup() {
   const cellId = "snippet-id";
-  const cell = { type: ContentType.SNIPPET, contentId: "snippet-id" } as Cell;
+  const contentType = ContentType.SNIPPET;
+  const contentId = "snippet-id";
   const cellIndex = 0;
   const deleteCell = jest.fn();
-  const props = { cellId, cell, cellIndex, deleteCell };
+  const hide = jest.fn();
+  const props = { cellId, contentType, contentId, cellIndex, deleteCell, hide };
   const wrapper = shallow(<CellActionPalette {...props} />);
   return {
     wrapper

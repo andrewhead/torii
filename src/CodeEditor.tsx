@@ -1,7 +1,7 @@
 import { styled, Theme, withTheme } from "@material-ui/core";
 import _ from "lodash";
 import * as React from "react";
-import { RefObject, useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import MonacoEditor from "react-monaco-editor";
 import { connect } from "react-redux";
 import {
@@ -36,6 +36,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
   const [decorations, setDecorations] = useState<string[]>([]);
   const [editCallback, setEditCallback] = useState<monacoTypes.IDisposable | undefined>();
   const [selectionCallback, setSelectionCallback] = useState<monacoTypes.IDisposable | undefined>();
+  const editorOptions = useRef<IEditorConstructionOptions>();
 
   useImperativeHandle(props.editorRef, () => editor, [editor]);
   useImperativeHandle(props.monacoApiRef, () => monacoApi, [monacoApi]);
@@ -261,8 +262,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
     [monacoApi, props.theme]
   );
 
-  const lineNumbers = props.lineNumbers;
-  const editorOptions: IEditorConstructionOptions = {
+  const newEditorOptions: IEditorConstructionOptions = {
     /*
      * Height of editor will be determined dynamically; the editor should never scroll.
      */
@@ -274,23 +274,29 @@ export const CodeEditor = (props: CodeEditorProps) => {
     overviewRulerLanes: 0,
     renderLineHighlight: "none",
     hideCursorInOverviewRuler: true,
-    lineNumbers:
+    lineNumbers: "off"
+  };
+
+  /*
+  const lineNumbers = props.lineNumbers;
+  editorOptions.lineNumbers = 
       lineNumbers === undefined
         ? "on"
         : lineNumber => {
             const i = lineNumber - 1;
             return i < lineNumbers.length ? lineNumbers[i].toString() : "N/A";
           }
-  };
-
-  editorOptions.lineNumbers = "off";
+  */
 
   if (props.theme !== undefined) {
     const { fontFamily, fontSize } = props.theme.typography.code;
-    editorOptions.fontFamily = fontFamily;
+    newEditorOptions.fontFamily = fontFamily;
     if (typeof fontSize === "number") {
-      editorOptions.fontSize = fontSize;
+      newEditorOptions.fontSize = fontSize;
     }
+  }
+  if (!_.isEqual(editorOptions.current, newEditorOptions)) {
+    editorOptions.current = newEditorOptions;
   }
 
   return (
@@ -303,7 +309,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
           setEditor(e);
           setMonacoApi(m);
         }}
-        options={editorOptions}
+        options={editorOptions.current}
       />
     </div>
   );

@@ -9,21 +9,23 @@ import styled from "@material-ui/core/styles/styled";
 import withTheme from "@material-ui/core/styles/withTheme";
 import Switch from "@material-ui/core/Switch";
 import * as React from "react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { connect } from "react-redux";
 import { actions, ChunkId, ChunkVersionId, MergeStrategy, SnippetId, State } from "santoku-store";
 import { canInstantMerge, isLinked } from "./selectors/link";
+import { GetStateContext } from "./store";
 
 export function LinkSwitch(props: LinkSwitchProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const getState = useContext(GetStateContext);
 
   function instantMerge() {
-    props.merge(props.state, props.snippetId, props.chunkVersionId, MergeStrategy.REVERT_CHANGES);
+    props.merge(getState(), props.snippetId, props.chunkVersionId, MergeStrategy.REVERT_CHANGES);
   }
 
   function closeMergeDialog(strategy?: MergeStrategy) {
     if (strategy !== undefined) {
-      props.merge(props.state, props.snippetId, props.chunkVersionId, strategy);
+      props.merge(getState(), props.snippetId, props.chunkVersionId, strategy);
     }
     setDialogOpen(false);
   }
@@ -92,7 +94,6 @@ interface LinkSwitchProps extends LinkSwitchActions {
   snippetId: SnippetId;
   chunkId: ChunkId;
   chunkVersionId: ChunkVersionId;
-  state: State;
   className?: string;
 }
 
@@ -112,7 +113,6 @@ export default connect(
   (state: State, ownProps: LinkSwitchOwnProps) => {
     return {
       ...ownProps,
-      state,
       linked: isLinked(state, ownProps.chunkVersionId, ownProps.snippetId),
       instantMerge: canInstantMerge(state, ownProps.chunkVersionId, ownProps.snippetId),
       chunkId: state.undoable.present.chunkVersions.byId[ownProps.chunkVersionId].chunk

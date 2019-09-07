@@ -11,6 +11,7 @@ import { saveAs } from "file-saver";
 import * as React from "react";
 import { connect } from "react-redux";
 import { actions, State } from "santoku-store";
+import { GetStateContext } from "./store";
 
 export function Toolbar(props: ToolbarProps) {
   return (
@@ -22,17 +23,21 @@ export function Toolbar(props: ToolbarProps) {
         Torii
       </Typography>
       <div className="button-set">
-        <Button
-          color="secondary"
-          variant="outlined"
-          className="action-button textual-action-button"
-          onClick={() => {
-            props.insertText(props.state);
-          }}
-        >
-          <TextFieldsIcon className="action-icon" />
-          Add text
-        </Button>
+        <GetStateContext.Consumer>
+          {getState => (
+            <Button
+              color="secondary"
+              variant="outlined"
+              className="action-button textual-action-button"
+              onClick={() => {
+                props.insertText(getState());
+              }}
+            >
+              <TextFieldsIcon className="action-icon" />
+              Add text
+            </Button>
+          )}
+        </GetStateContext.Consumer>
         <Button
           color="secondary"
           variant="outlined"
@@ -61,9 +66,13 @@ export function Toolbar(props: ToolbarProps) {
             style={{ display: "none" } /* Hide the input; it will be rendered as Button */}
           />
         </Button>
-        <Button color="inherit" className="aciton-button" onClick={() => save(props.state)}>
-          <SaveIcon />
-        </Button>
+        <GetStateContext.Consumer>
+          {getState => (
+            <Button color="inherit" className="action-button" onClick={() => save(getState())}>
+              <SaveIcon />
+            </Button>
+          )}
+        </GetStateContext.Consumer>
       </div>
     </MaterialUiToolbar>
   );
@@ -105,7 +114,6 @@ function save(state: State) {
 }
 
 interface ToolbarProps extends ToolbarActions {
-  state: State;
   className?: string;
 }
 
@@ -137,6 +145,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 }));
 
 export default connect(
-  (state: State) => ({ state }),
+  undefined,
   toolbarActionCreators
 )(StyledToolbar);

@@ -4,21 +4,21 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import * as React from "react";
 import { connect } from "react-redux";
-import { actions, Cell as CellState, CellId, ContentType } from "santoku-store";
+import { actions, CellId, ContentType } from "santoku-store";
 import OutputPalette from "./OutputPalette";
 
 export function CellActionPalette(props: CellActionPaletteProps) {
   return (
     <div className={`cell-action-palette ${props.className !== undefined && props.className}`}>
-      {props.cell.type === ContentType.SNIPPET && (
-        <OutputPalette cellIndex={props.cellIndex} snippetId={props.cell.contentId} />
+      {props.contentType === ContentType.SNIPPET && (
+        <OutputPalette cellIndex={props.cellIndex} snippetId={props.contentId} />
       )}
       <Button className="action-button" onClick={() => props.hide(props.cellId)}>
         <VisibilityOffIcon />
       </Button>
       <Button
         className="action-button"
-        onClick={() => props.deleteCell(props.cellId, props.cell.type, props.cell.contentId)}
+        onClick={() => props.deleteCell(props.cellId, props.contentType, props.contentId)}
       >
         <DeleteIcon />
       </Button>
@@ -44,7 +44,8 @@ const StyledCellActionPalette = styled(CellActionPalette)(({ theme }) => ({
 
 interface CellActionPaletteProps extends PaletteActions {
   cellId: CellId;
-  cell: CellState;
+  contentType: ContentType;
+  contentId: any;
   cellIndex: number;
   className?: string;
 }

@@ -13,7 +13,7 @@ import {
   XYCoord
 } from "react-dnd";
 import { connect } from "react-redux";
-import { actions, Cell as CellState, CellId, ContentType, State } from "santoku-store";
+import { actions, CellId, ContentType, State } from "santoku-store";
 import CellActionPalette from "./CellActionPalette";
 import { DragItemTypes } from "./drag-and-drop";
 import Output from "./Output";
@@ -48,7 +48,7 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
           }
         }}
         className={`cell-container
-          ${props.cell.hidden === true && "hidden"}
+          ${props.hidden === true && "hidden"}
           ${props.selected === true && "selected"}
           ${props.isDragging === true && "drag"}
           ${props.className !== undefined && props.className}`}
@@ -77,17 +77,15 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
     borderLeftColor: theme.palette.secondaryScale[50]
   },
   "& .hidden-marker": {
-    paddingTop: 10,
-    marginTop: -10,
-    paddingBottom: 10,
-    marginBottom: -10,
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
     height: 1,
     border: 0,
-    borderBottomWidth: 2,
+    borderBottomWidth: theme.shape.borderWidth,
     borderBottomColor: theme.palette.primary.main,
     borderBottomStyle: "solid",
     "&:hover": {
-      borderBottomWidth: theme.shape.borderWidth,
+      borderBottomWidth: theme.shape.borderWidth * 2,
       borderBottomColor: theme.palette.secondary.main
     }
   },
@@ -126,7 +124,7 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
 }));
 
 export function Cell(props: CellProps) {
-  if (props.cell.hidden) {
+  if (props.hidden) {
     return (
       <div
         className="cell-hidden"
@@ -142,20 +140,25 @@ export function Cell(props: CellProps) {
   return (
     <div className="cell">
       {(() => {
-        switch (props.cell.type) {
+        switch (props.type) {
           case ContentType.SNIPPET:
             return (
-              <Snippet id={props.cell.contentId} cellIndex={props.index} focused={props.selected} />
+              <Snippet id={props.contentId} cellIndex={props.index} focused={props.selected} />
             );
           case ContentType.TEXT:
-            return <Text id={props.cell.contentId} focused={props.selected} />;
+            return <Text id={props.contentId} focused={props.selected} />;
           case ContentType.OUTPUT:
-            return <Output id={props.cell.contentId} />;
+            return <Output id={props.contentId} />;
           default:
             return null;
         }
       })()}
-      <CellActionPalette cellId={props.id} cell={props.cell} cellIndex={props.index} />
+      <CellActionPalette
+        cellId={props.id}
+        contentType={props.type}
+        contentId={props.contentId}
+        cellIndex={props.index}
+      />
     </div>
   );
 }
@@ -176,7 +179,9 @@ interface DraggableCellProps extends CellProps {
 interface CellProps extends CellActions {
   id: CellId;
   index: number;
-  cell: CellState;
+  type: ContentType;
+  contentId: any;
+  hidden: boolean;
   selected: boolean;
   className?: string;
 }
@@ -209,7 +214,14 @@ interface CellInstance {
 export default connect(
   (state: State, ownProps: CellInitProps) => {
     const { id } = ownProps;
-    return { ...ownProps, cell: getCell(state, id), selected: isSelected(state, id) };
+    const cell = getCell(state, id);
+    return {
+      ...ownProps,
+      type: cell.type,
+      contentId: cell.contentId,
+      hidden: cell.hidden,
+      selected: isSelected(state, id)
+    };
   },
   cellActionCreators
 )(

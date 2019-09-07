@@ -5,8 +5,8 @@ import HTML5Backend from "react-dnd-html5-backend";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import * as santokuEditorAdapterClasses from "santoku-editor-adapter";
-import { store } from "santoku-store";
 import Santoku from "./Santoku";
+import { GetStateContext, getStateFunction, store } from "./store";
 import createTheme from "./theme";
 
 declare global {
@@ -19,14 +19,13 @@ const theme = createTheme();
 
 ReactDOM.render(
   <Provider store={store}>
-    {/* <Provider store={store}> */}
-    {/* <Provider store={createStoreWithFakeData()}> */}
-    {/* Change to createStoreWithFakeData() to code editors in standalone app. */}
-    <DndProvider backend={HTML5Backend}>
-      <ThemeProvider theme={theme}>
-        <Santoku />
-      </ThemeProvider>
-    </DndProvider>
+    <GetStateContext.Provider value={getStateFunction}>
+      <DndProvider backend={HTML5Backend}>
+        <ThemeProvider theme={theme}>
+          <Santoku />
+        </ThemeProvider>
+      </DndProvider>
+    </GetStateContext.Provider>
   </Provider>,
   document.getElementById("root") as HTMLElement
 );

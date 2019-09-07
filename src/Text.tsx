@@ -61,8 +61,11 @@ function resizeTextArea(reactMdeRef: RefObject<ReactMde>, theme?: Theme) {
      * Text area resizing trick proposed at: https://stackoverflow.com/a/25621277/2096369.
      */
     const textarea = reactMdeRef.current.textAreaRef;
-    textarea.style.height = "auto";
-    textarea.style.height = padding * 2 + textarea.scrollHeight + "px";
+    const newHeight = padding * 2 + textarea.scrollHeight + "px";
+    if (textarea.style.height !== newHeight) {
+      textarea.style.height = "auto";
+      textarea.style.height = padding * 2 + textarea.scrollHeight + "px";
+    }
   }
 }
 

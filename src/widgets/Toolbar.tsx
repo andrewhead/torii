@@ -10,7 +10,9 @@ import UndoIcon from "@material-ui/icons/Undo";
 import { saveAs } from "file-saver";
 import * as React from "react";
 import { connect } from "react-redux";
+import { EditorAdapter, requests } from "santoku-editor-adapter";
 import { actions, State } from "santoku-store";
+import { EditorContext } from "../contexts/editor";
 import { GetStateContext } from "../contexts/store";
 
 export function Toolbar(props: ToolbarProps) {
@@ -38,14 +40,23 @@ export function Toolbar(props: ToolbarProps) {
             </Button>
           )}
         </GetStateContext.Consumer>
-        <Button
-          color="secondary"
-          variant="outlined"
-          className="action-button textual-action-button"
-        >
-          <CodeIcon className="action-icon" />
-          Add snippet
-        </Button>
+        <EditorContext.Consumer>
+          {getEditorAdapter => {
+            return (
+              <Button
+                color="secondary"
+                variant="outlined"
+                className="action-button textual-action-button"
+                onClick={() => {
+                  addSnippet(getEditorAdapter);
+                }}
+              >
+                <CodeIcon className="action-icon" />
+                Add snippet
+              </Button>
+            );
+          }}
+        </EditorContext.Consumer>
         <Button
           color="inherit"
           className="action-button textual-action-button"
@@ -76,6 +87,13 @@ export function Toolbar(props: ToolbarProps) {
       </div>
     </MaterialUiToolbar>
   );
+}
+
+function addSnippet(getEditorAdapter: () => EditorAdapter | undefined) {
+  const editorAdapter = getEditorAdapter();
+  if (editorAdapter !== undefined) {
+    editorAdapter.request(requests.insertSnippetRequest());
+  }
 }
 
 function load(event: React.ChangeEvent<HTMLInputElement>, setState: typeof actions.state.setState) {

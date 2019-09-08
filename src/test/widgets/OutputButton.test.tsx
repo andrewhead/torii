@@ -2,7 +2,7 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { Output } from "santoku-store";
-import { OutputButton, StyledContrastCircularProgress } from "../OutputButton";
+import { OutputButton, StyledContrastCircularProgress } from "../../widgets/OutputButton";
 
 Enzyme.configure({ adapter: new Adapter() });
 

@@ -14,10 +14,10 @@ import {
 } from "react-dnd";
 import { connect } from "react-redux";
 import { actions, CellId, ContentType, State } from "santoku-store";
+import { DragItemTypes } from "../contexts/drag-and-drop";
+import { getCell, isSelected } from "../selectors/cell";
 import CellActionPalette from "./CellActionPalette";
-import { DragItemTypes } from "./drag-and-drop";
 import Output from "./Output";
-import { getCell, isSelected } from "./selectors/cell";
 import Snippet from "./Snippet";
 import Text from "./Text";
 

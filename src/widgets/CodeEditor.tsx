@@ -13,14 +13,14 @@ import {
   SourceType,
   visibility
 } from "santoku-store";
-import { ChunkVersionOffsets, CodeEditorBaseProps, SnippetSelection } from "./selectors/types";
+import { ChunkVersionOffsets, CodeEditorBaseProps, SnippetSelection } from "../selectors/types";
 import {
   IEditorConstructionOptions,
   IModelDeltaDecoration,
   IStandaloneCodeEditor,
   MonacoApiType,
   monacoTypes
-} from "./types/monaco";
+} from "../types/monaco";
 
 /**
  * A code editor that shows a program built from multiple chunks. Maps edits and selections to

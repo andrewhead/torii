@@ -3,7 +3,7 @@ import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import MonacoEditor from "react-monaco-editor";
 import { SourceType, textUtils, visibility } from "santoku-store";
-import { CodeEditor, getSelectionFromSnippetSelection } from "../CodeEditor";
+import { CodeEditor, getSelectionFromSnippetSelection } from "../../widgets/CodeEditor";
 
 Enzyme.configure({ adapter: new Adapter() });
 

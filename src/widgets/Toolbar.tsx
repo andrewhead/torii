@@ -11,7 +11,7 @@ import { saveAs } from "file-saver";
 import * as React from "react";
 import { connect } from "react-redux";
 import { actions, State } from "santoku-store";
-import { GetStateContext } from "./store";
+import { GetStateContext } from "../contexts/store";
 
 export function Toolbar(props: ToolbarProps) {
   return (

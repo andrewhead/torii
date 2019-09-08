@@ -2,8 +2,8 @@ import { styled } from "@material-ui/core";
 import * as React from "react";
 import { connect } from "react-redux";
 import { CommandId, OutputId, SnippetId, State } from "santoku-store";
+import { getCommandIds } from "../selectors/output-palette";
 import OutputButton from "./OutputButton";
-import { getCommandIds } from "./selectors/output-palette";
 
 export function OutputPalette(props: OutputPaletteProps) {
   return (

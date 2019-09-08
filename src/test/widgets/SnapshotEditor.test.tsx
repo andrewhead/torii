@@ -1,4 +1,4 @@
-import { getSnippetIndexContentWidgets } from "../SnapshotEditor";
+import { getSnippetIndexContentWidgets } from "../../widgets/SnapshotEditor";
 
 describe("getSnippetIndexContentWidgets", () => {
   it("creates content widgets", () => {

@@ -3,20 +3,20 @@ import withTheme from "@material-ui/core/styles/withTheme";
 import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
-import CodeEditor from "./CodeEditor";
-import LinkToggle from "./LinkToggle";
 import {
   getSelectedChunkVersionDecorations,
   getSnapshotEditorProps,
   getSnippetRangeDecorations
-} from "./selectors/snapshot-editor";
-import { SnapshotEditorBaseProps, SnippetOffsets } from "./selectors/types";
+} from "../selectors/snapshot-editor";
+import { SnapshotEditorBaseProps, SnippetOffsets } from "../selectors/types";
 import {
   ContentWidgetPositionPreference,
   IContentWidget,
   IStandaloneCodeEditor,
   MonacoApiType
-} from "./types/monaco";
+} from "../types/monaco";
+import CodeEditor from "./CodeEditor";
+import LinkToggle from "./LinkToggle";
 
 /**
  * Code editor for editing all the code for a snapshot (everything up to and including a snippet)

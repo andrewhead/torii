@@ -2,10 +2,10 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { Cell as CellState, ContentType } from "santoku-store";
-import { Cell } from "../Cell";
-import Output from "../Output";
-import Snippet from "../Snippet";
-import Text from "../Text";
+import { Cell } from "../../widgets/Cell";
+import Output from "../../widgets/Output";
+import Snippet from "../../widgets/Snippet";
+import Text from "../../widgets/Text";
 
 Enzyme.configure({ adapter: new Adapter() });
 

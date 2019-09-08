@@ -7,7 +7,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
-import { getSnippetPaths } from "./selectors/snippet";
+import { getSnippetPaths } from "../selectors/snippet";
 import SnapshotEditor from "./SnapshotEditor";
 import SnippetEditor from "./SnippetEditor";
 

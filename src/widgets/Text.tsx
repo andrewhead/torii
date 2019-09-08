@@ -6,7 +6,7 @@ import "react-mde/lib/styles/css/react-mde-all.css";
 import { connect } from "react-redux";
 import { actions, State, TextId } from "santoku-store";
 import Showdown from "showdown";
-import { getValue } from "./selectors/text";
+import { getValue } from "../selectors/text";
 
 export function Text(props: TextProps) {
   const ref = useRef<ReactMde>(null);

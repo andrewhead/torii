@@ -1,8 +1,8 @@
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
-import { Snippet } from "../Snippet";
-import SnippetEditor from "../SnippetEditor";
+import { Snippet } from "../../widgets/Snippet";
+import SnippetEditor from "../../widgets/SnippetEditor";
 
 Enzyme.configure({ adapter: new Adapter() });
 

@@ -3,7 +3,7 @@ import Enzyme, { mount, shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { Output } from "santoku-store";
-import { ConsoleOutput } from "../ConsoleOutput";
+import { ConsoleOutput } from "../../widgets/ConsoleOutput";
 
 Enzyme.configure({ adapter: new Adapter() });
 

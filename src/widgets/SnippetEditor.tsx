@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { Path, SnippetId, State } from "santoku-store";
 import CodeEditor, { CodeEditorOwnProps } from "./CodeEditor";
-import { getSnippetEditorProps } from "./selectors/snippet-editor";
+import { getSnippetEditorProps } from "../selectors/snippet-editor";
 
 /**
  * Code editor for editing all the code for a snippet from one file.

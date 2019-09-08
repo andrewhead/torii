@@ -6,7 +6,8 @@ describe("getCell", () => {
     const cellId = "cell-id";
     const cell: Cell = {
       contentId: "content-id",
-      type: ContentType.SNIPPET
+      type: ContentType.SNIPPET,
+      hidden: false
     };
     const state = testUtils.createStateWithUndoable({
       cells: {

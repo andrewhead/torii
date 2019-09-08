@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Output as OutputState, OutputId, State } from "santoku-store";
 import ConsoleOutput from "./ConsoleOutput";
 import HtmlOutput from "./HtmlOutput";
-import { getOutput } from "./selectors/output-button";
+import { getOutput } from "../selectors/output-button";
 
 export function Output(props: OutputProps) {
   return (

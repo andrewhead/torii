@@ -2,8 +2,8 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import { ContentType } from "santoku-store";
-import { CellActionPalette } from "../CellActionPalette";
-import OutputPalette from "../OutputPalette";
+import { CellActionPalette } from "../../widgets/CellActionPalette";
+import OutputPalette from "../../widgets/OutputPalette";
 
 Enzyme.configure({ adapter: new Adapter() });
 

@@ -12,8 +12,8 @@ import * as React from "react";
 import { useContext, useState } from "react";
 import { connect } from "react-redux";
 import { actions, ChunkId, ChunkVersionId, MergeStrategy, SnippetId, State } from "santoku-store";
-import { canInstantMerge, isLinked } from "./selectors/link";
-import { GetStateContext } from "./store";
+import { GetStateContext } from "../contexts/store";
+import { canInstantMerge, isLinked } from "../selectors/link";
 
 export function LinkSwitch(props: LinkSwitchProps) {
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -5,9 +5,9 @@ import HTML5Backend from "react-dnd-html5-backend";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import * as santokuEditorAdapterClasses from "santoku-editor-adapter";
-import Santoku from "./Santoku";
-import { GetStateContext, getStateFunction, store } from "./store";
-import createTheme from "./theme";
+import { GetStateContext, getStateFunction, store } from "./contexts/store";
+import createTheme from "./contexts/theme";
+import Santoku from "./widgets/Santoku";
 
 declare global {
   interface Window {

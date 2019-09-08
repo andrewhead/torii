@@ -7,7 +7,7 @@ import SubjectIcon from "@material-ui/icons/Subject";
 import * as React from "react";
 import { connect } from "react-redux";
 import { actions, Output, OutputId, State } from "santoku-store";
-import { getOutput } from "./selectors/output-button";
+import { getOutput } from "../selectors/output-button";
 
 export function OutputButton(props: OutputButtonProps) {
   return (

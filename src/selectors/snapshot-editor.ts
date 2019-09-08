@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { ChunkVersionId, ContentType, Path, selectors, SnippetId, State } from "santoku-store";
 import { IModelDecorationOptions, IModelDeltaDecoration } from "../types/monaco";
-import { getCodeEditorBaseProps } from "./code-editor";
+import { getPartialProgram } from "./code-editor";
 import { ChunkVersionOffsets, LineText, SnapshotEditorBaseProps, SnippetOffsets } from "./types";
 
 export function getSnapshotEditorProps(
@@ -9,13 +9,17 @@ export function getSnapshotEditorProps(
   snippetId: SnippetId,
   path: Path
 ): SnapshotEditorBaseProps {
+  const { partialProgram, lineTexts } = getSnapshotPartialProgram(state, snippetId, path);
+  return { ...partialProgram, snippetOffsets: getSnippetOffsets(state, lineTexts) };
+}
+
+function getSnapshotPartialProgram(state: State, snippetId: SnippetId, path: Path) {
   const orderedChunkVersions = selectors.code.getSnapshotOrderedChunkVersions(
     state,
     snippetId,
     path
   );
-  const { props, lineTexts } = getCodeEditorBaseProps(state, snippetId, path, orderedChunkVersions);
-  return { ...props, snippetOffsets: getSnippetOffsets(state, lineTexts) };
+  return getPartialProgram(state, snippetId, path, orderedChunkVersions);
 }
 
 function getSnippetOffsets(state: State, lineTexts: LineText[]): SnippetOffsets {

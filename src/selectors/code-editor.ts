@@ -12,18 +12,20 @@ import {
 import {
   ChunkVersionIdToSnippetIdMap,
   ChunkVersionOffsets,
-  CodeEditorBaseProps,
   LineFilter,
   LineText,
+  PartialProgram,
   SnippetSelection
 } from "./types";
 
 /**
- * Not intended to be called by components. Use instead 'getSnippetEditorProps' or
+ * Gets all code, in order, that has been included in the tutorial up until 'snippetId', that
+ * comes from a specified set of chunk version IDs and passes a filtering criteria.
+ * Shouldn't be called directly by components. Use instead 'getSnippetEditorProps' or
  * 'getSnapshotEditorProps'. Returns both the editor props, as well as a list of annotated text
  * for each line that will be shown in the editor, so that callers can do additional processing.
  */
-export function getCodeEditorBaseProps(
+export function getPartialProgram(
   state: State,
   snippetId: SnippetId,
   path: Path,
@@ -60,7 +62,7 @@ export function getCodeEditorBaseProps(
   const selections = getSnippetSelections(stateSlice, sortedChunkVersions);
   const chunkVersionOffsets = getChunkVersionOffsets(lineTexts);
   const selectedChunkVersionId = getSelectedChunkVersionId(stateSlice.selections, lineTexts);
-  const props: CodeEditorBaseProps = {
+  const code: PartialProgram = {
     path,
     visibilities,
     text,
@@ -68,7 +70,7 @@ export function getCodeEditorBaseProps(
     chunkVersionOffsets,
     selectedChunkVersionId
   };
-  return { props, lineTexts };
+  return { partialProgram: code, lineTexts };
 }
 
 /**

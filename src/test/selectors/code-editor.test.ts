@@ -1,7 +1,7 @@
 import { SourceType, testUtils } from "santoku-store";
-import { getCodeEditorBaseProps } from "../../selectors/code-editor";
+import { getPartialProgram } from "../../selectors/code-editor";
 
-describe("getCodeEditorProps", () => {
+describe("getPartialProgram", () => {
   it("should have adjusted selections", () => {
     const code = testUtils.createChunks(
       { chunkVersionId: "chunk-version-0", line: 1, text: ["Line 1", "Line 2"].join("\n") },
@@ -17,13 +17,13 @@ describe("getCodeEditorProps", () => {
     ];
     const state = testUtils.createStateWithUndoable(code);
     const chunkVersions = ["chunk-version-0", "chunk-version-1"];
-    const { props } = getCodeEditorBaseProps(
+    const { partialProgram } = getPartialProgram(
       state,
       testUtils.TEST_SNIPPET_ID,
       testUtils.TEST_FILE_PATH,
       chunkVersions
     );
-    expect(props).toMatchObject({
+    expect(partialProgram).toMatchObject({
       selections: [
         {
           anchor: { line: 3, character: 0 },
@@ -60,13 +60,13 @@ describe("getCodeEditorProps", () => {
     ];
     const state = testUtils.createStateWithUndoable(code);
     const chunkVersions = ["chunk-version-0", "chunk-version-1"];
-    const { props } = getCodeEditorBaseProps(
+    const { partialProgram } = getPartialProgram(
       state,
       testUtils.TEST_SNIPPET_ID,
       testUtils.TEST_FILE_PATH,
       chunkVersions
     );
-    expect(props).toMatchObject({
+    expect(partialProgram).toMatchObject({
       selections: [
         {
           anchor: { line: 3, character: 0 },
@@ -82,13 +82,13 @@ describe("getCodeEditorProps", () => {
       { chunkVersionId: "chunk-version-1", line: 11 }
     );
     const chunkVersions = ["chunk-version-0", "chunk-version-1"];
-    const { props } = getCodeEditorBaseProps(
+    const { partialProgram } = getPartialProgram(
       state,
       testUtils.TEST_SNIPPET_ID,
       testUtils.TEST_FILE_PATH,
       chunkVersions
     );
-    expect(props).toMatchObject({
+    expect(partialProgram).toMatchObject({
       chunkVersionOffsets: [
         { chunkVersionId: "chunk-version-0", line: 1 },
         { chunkVersionId: "chunk-version-1", line: 2 }
@@ -114,25 +114,25 @@ describe("getCodeEditorProps", () => {
         }
       ];
       const chunkVersions = ["chunk-version-0"];
-      const { props } = getCodeEditorBaseProps(
+      const { partialProgram } = getPartialProgram(
         state,
         testUtils.TEST_SNIPPET_ID,
         testUtils.TEST_FILE_PATH,
         chunkVersions
       );
-      expect(props.selectedChunkVersionId).toBe("chunk-version-0");
+      expect(partialProgram.selectedChunkVersionId).toBe("chunk-version-0");
     });
 
     it("should be undefined without selections", () => {
       const state = testUtils.createStateWithChunks({ chunkVersionId: "chunk-version-0", line: 1 });
       const chunkVersions = ["chunk-version-0"];
-      const { props } = getCodeEditorBaseProps(
+      const { partialProgram } = getPartialProgram(
         state,
         testUtils.TEST_SNIPPET_ID,
         testUtils.TEST_FILE_PATH,
         chunkVersions
       );
-      expect(props.selectedChunkVersionId).toBeUndefined();
+      expect(partialProgram.selectedChunkVersionId).toBeUndefined();
     });
 
     it("should be undefined if there are selections in multiple chunk versions", () => {
@@ -158,13 +158,13 @@ describe("getCodeEditorProps", () => {
           relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: "chunk-version-1" }
         }
       ];
-      const { props } = getCodeEditorBaseProps(
+      const { partialProgram } = getPartialProgram(
         state,
         testUtils.TEST_SNIPPET_ID,
         testUtils.TEST_FILE_PATH,
         chunkVersions
       );
-      expect(props.selectedChunkVersionId).toBeUndefined();
+      expect(partialProgram.selectedChunkVersionId).toBeUndefined();
     });
 
     it("should be undefined if the chunk version isn't in the editor", () => {
@@ -181,7 +181,7 @@ describe("getCodeEditorProps", () => {
           relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: "chunk-version-0" }
         }
       ];
-      const { props } = getCodeEditorBaseProps(
+      const { partialProgram } = getPartialProgram(
         state,
         testUtils.TEST_SNIPPET_ID,
         testUtils.TEST_FILE_PATH,
@@ -194,7 +194,7 @@ describe("getCodeEditorProps", () => {
           return chunkVersionId === "chunk-version-1";
         }
       );
-      expect(props.selectedChunkVersionId).toBeUndefined();
+      expect(partialProgram.selectedChunkVersionId).toBeUndefined();
     });
   });
 });

@@ -1,14 +1,14 @@
 import { ChunkId, ChunkVersionId, Path, Position, SnippetId, visibility } from "santoku-store";
 
-export interface SnapshotEditorBaseProps extends CodeEditorBaseProps {
+export interface SnapshotEditorBaseProps extends PartialProgram {
   snippetOffsets: SnippetOffsets;
 }
 
-export interface SnippetEditorBaseProps extends CodeEditorBaseProps {
+export interface SnippetEditorBaseProps extends PartialProgram {
   lineNumbers: number[];
 }
 
-export interface CodeEditorBaseProps {
+export interface PartialProgram {
   text: string;
   visibilities: (visibility.Visibility | undefined)[];
   selections: SnippetSelection[];

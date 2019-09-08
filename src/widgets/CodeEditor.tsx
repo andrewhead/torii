@@ -13,7 +13,7 @@ import {
   SourceType,
   visibility
 } from "santoku-store";
-import { ChunkVersionOffsets, CodeEditorBaseProps, SnippetSelection } from "../selectors/types";
+import { ChunkVersionOffsets, PartialProgram, SnippetSelection } from "../selectors/types";
 import {
   IEditorConstructionOptions,
   IModelDeltaDecoration,
@@ -398,7 +398,7 @@ interface CodeEditorProps extends CodeEditorOwnProps, EditorActions {
   theme?: Theme;
 }
 
-export interface CodeEditorOwnProps extends CodeEditorBaseProps {
+export interface CodeEditorOwnProps extends PartialProgram {
   /**
    * Custom line numbers to put in the left margin. If line numbers are defined, there must be one
    * defined for every line of text.

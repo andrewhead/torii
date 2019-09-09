@@ -6,8 +6,7 @@ import _ from "lodash";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Path, SnippetId, State } from "santoku-store";
-import { getSnippetPaths } from "../selectors/snippet";
+import { Path, selectors, SnippetId, State } from "santoku-store";
 import SnapshotEditor from "./SnapshotEditor";
 import SnippetEditor from "./SnippetEditor";
 
@@ -123,7 +122,7 @@ export default connect(
   (state: State, ownProps: SnippetOwnProps): SnippetProps => {
     return {
       ...ownProps,
-      paths: getSnippetPaths(state, ownProps.id)
+      paths: selectors.code.getSnippetPaths(state, ownProps.id)
     };
   }
 )(MemoizedSnippet);

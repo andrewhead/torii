@@ -1,21 +1,36 @@
 import Button from "@material-ui/core/Button";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 import styled from "@material-ui/core/styles/styled";
 import MaterialUiToolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import CodeIcon from "@material-ui/icons/Code";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SaveIcon from "@material-ui/icons/Save";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
 import UndoIcon from "@material-ui/icons/Undo";
 import { saveAs } from "file-saver";
 import * as React from "react";
+import { useState } from "react";
 import { connect } from "react-redux";
 import { EditorAdapter, requests } from "santoku-editor-adapter";
-import { actions, State } from "santoku-store";
+import { actions, selectors, State } from "santoku-store";
 import { EditorContext } from "../contexts/editor";
 import { GetStateContext } from "../contexts/store";
 
 export function Toolbar(props: ToolbarProps) {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const isMenuOpen = Boolean(anchorEl);
+
+  function handleMenuClick(event: React.MouseEvent<HTMLElement>) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function closeMenu() {
+    setAnchorEl(null);
+  }
+
   return (
     <MaterialUiToolbar
       variant="dense"
@@ -84,6 +99,26 @@ export function Toolbar(props: ToolbarProps) {
             </Button>
           )}
         </GetStateContext.Consumer>
+        <GetStateContext.Consumer>
+          {getState => (
+            <>
+              <Button color="inherit" className="menu-button" onClick={handleMenuClick}>
+                <MoreVertIcon />
+              </Button>
+              <Menu anchorEl={anchorEl} keepMounted open={isMenuOpen} onClose={closeMenu}>
+                <MenuItem
+                  key="export-as-md"
+                  onClick={() => {
+                    exportAsMarkdown(getState());
+                    closeMenu();
+                  }}
+                >
+                  Export as Markdown
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+        </GetStateContext.Consumer>
       </div>
     </MaterialUiToolbar>
   );
@@ -128,6 +163,14 @@ function save(state: State) {
   const fileName = `Tutorial ${time}.json`;
   const data = JSON.stringify(state, undefined, 2);
   const blob = new Blob([data], { type: "text/plain;charset=utf-8" });
+  saveAs(blob, fileName);
+}
+
+function exportAsMarkdown(state: State) {
+  const time = new Date().toLocaleTimeString();
+  const fileName = `Tutorial ${time}.md`;
+  const markdown = selectors.state.getMarkdown(state);
+  const blob = new Blob([markdown], { type: "text/plain;charset=utf-8" });
   saveAs(blob, fileName);
 }
 

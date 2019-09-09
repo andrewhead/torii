@@ -6,14 +6,16 @@ import MonacoEditor from "react-monaco-editor";
 import { connect } from "react-redux";
 import {
   actions,
+  ChunkVersionOffsets,
+  PartialProgram,
   Path,
   Range,
   Selection,
+  SnippetSelection,
   SourcedRange,
   SourceType,
   visibility
 } from "santoku-store";
-import { ChunkVersionOffsets, PartialProgram, SnippetSelection } from "../selectors/types";
 import {
   IEditorConstructionOptions,
   IModelDeltaDecoration,

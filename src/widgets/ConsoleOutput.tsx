@@ -40,7 +40,7 @@ export default styled(ConsoleOutput)(({ theme }) => {
     "& pre": {
       margin: 0,
       whiteSpace: "pre-wrap",
-      maxHeight: "300px",
+      maxHeight: "500px",
       overflowY: "scroll",
       padding: theme.spacing(2) + "px !important",
       fontFamily: theme.typography.code.fontFamily + " !important",

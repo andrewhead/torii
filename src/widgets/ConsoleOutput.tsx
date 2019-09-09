@@ -8,7 +8,9 @@ export function ConsoleOutput(props: ConsoleOutputProps) {
 
   useEffect(() => {
     if (preRef.current !== null && props.output.log !== undefined) {
-      preRef.current.textContent = props.output.log.contents;
+      if (preRef.current.textContent !== props.output.log.contents) {
+        preRef.current.textContent = props.output.log.contents;
+      }
     }
   });
 
@@ -37,6 +39,9 @@ export default styled(ConsoleOutput)(({ theme }) => {
     },
     "& pre": {
       margin: 0,
+      whiteSpace: "pre-wrap",
+      maxHeight: "300px",
+      overflowY: "scroll",
       padding: theme.spacing(2) + "px !important",
       fontFamily: theme.typography.code.fontFamily + " !important",
       fontSize: theme.typography.code.fontSize,

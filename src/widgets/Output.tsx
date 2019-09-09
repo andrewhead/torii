@@ -1,9 +1,10 @@
+import _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Output as OutputState, OutputId, State } from "santoku-store";
+import { getOutput } from "../selectors/output-button";
 import ConsoleOutput from "./ConsoleOutput";
 import HtmlOutput from "./HtmlOutput";
-import { getOutput } from "../selectors/output-button";
 
 export function Output(props: OutputProps) {
   return (
@@ -27,5 +28,8 @@ export default connect(
     return {
       output: getOutput(state, ownProps.id)
     };
-  }
+  },
+  undefined,
+  undefined,
+  { pure: true, areStatePropsEqual: _.isEqual }
 )(Output);

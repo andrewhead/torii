@@ -2,6 +2,7 @@ import AppBar from "@material-ui/core/AppBar";
 import { styled } from "@material-ui/core/styles";
 import MaterialUiToolbar from "@material-ui/core/Toolbar";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
+import _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
 import { CellId, State } from "santoku-store";
@@ -52,6 +53,8 @@ interface SantokuProps {
 
 const StyledSantoku = styled(Santoku)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
+  width: "100%",
+  overflowX: "hidden",
   "& .cells": {
     marginTop: theme.spacing(4),
     /*
@@ -62,6 +65,11 @@ const StyledSantoku = styled(Santoku)(({ theme }) => ({
   }
 }));
 
-export default connect((state: State) => {
-  return { cellIds: state.undoable.present.cells.all };
-})(StyledSantoku);
+export default connect(
+  (state: State) => {
+    return { cellIds: state.undoable.present.cells.all };
+  },
+  undefined,
+  undefined,
+  { pure: true, areStatePropsEqual: _.isEqual }
+)(StyledSantoku);

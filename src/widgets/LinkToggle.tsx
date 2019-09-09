@@ -80,7 +80,9 @@ export function LinkSwitch(props: LinkSwitchProps) {
 }
 
 const StyledLinkSwitch = styled(withTheme(LinkSwitch))(({ theme }) => ({
-  paddingTop: theme.spacing(2)
+  paddingTop: theme.spacing(1),
+  paddingLeft: theme.spacing(1),
+  backgroundColor: theme.palette.secondaryScale[50]
 }));
 
 interface LinkSwitchOwnProps {

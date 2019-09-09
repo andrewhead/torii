@@ -124,5 +124,8 @@ export default connect(
       ...ownProps,
       paths: selectors.code.getSnippetPaths(state, ownProps.id)
     };
-  }
+  },
+  undefined,
+  undefined,
+  { pure: true, areStatePropsEqual: _.isEqual }
 )(MemoizedSnippet);

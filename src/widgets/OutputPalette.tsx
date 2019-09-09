@@ -1,4 +1,5 @@
 import { styled } from "@material-ui/core";
+import _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
 import { CommandId, OutputId, SnippetId, State } from "santoku-store";
@@ -40,5 +41,8 @@ export default connect(
       commandIds: getCommandIds(state, ownProps.snippetId),
       cellIndex: ownProps.cellIndex
     };
-  }
+  },
+  undefined,
+  undefined,
+  { pure: true, areStatePropsEqual: _.isEqual }
 )(StyledOutputPalette);

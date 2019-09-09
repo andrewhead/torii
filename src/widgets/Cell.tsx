@@ -1,4 +1,5 @@
 import { styled } from "@material-ui/core";
+import _ from "lodash";
 import * as React from "react";
 import { useImperativeHandle, useRef } from "react";
 import {
@@ -30,29 +31,39 @@ export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps
     props.connectDragSource(elementRef);
     props.connectDropTarget(elementRef);
 
-    useImperativeHandle<{}, CellInstance>(ref, () => ({
-      getNode: () => elementRef.current
-    }));
+    function handle() {
+      return {
+        getNode: () => elementRef.current
+      };
+    }
+
+    function dragStart() {
+      /*
+       * To generate a preview with the 'tranform' property, this class must be added before
+       * the preview is generated. This is one place where the class can be added early enough.
+       */
+      if (elementRef !== null && elementRef.current !== null) {
+        elementRef.current.classList.add("dragJustTriggered");
+      }
+    }
+
+    function selectCell() {
+      props.selectCell(props.id);
+    }
+
+    useImperativeHandle<{}, CellInstance>(ref, handle, [ref]);
     const propsWithoutStyles = { ...props };
     delete propsWithoutStyles.className;
     return (
       <div
         ref={elementRef}
-        onDragStart={() => {
-          /*
-           * To generate a preview with the 'tranform' property, this class must be added before
-           * the preview is generated. This is one place where the class can be added early enough.
-           */
-          if (elementRef !== null && elementRef.current !== null) {
-            elementRef.current.classList.add("dragJustTriggered");
-          }
-        }}
+        onDragStart={dragStart}
         className={`cell-container
           ${props.hidden === true && "hidden"}
           ${props.selected === true && "selected"}
           ${props.isDragging === true && "drag"}
           ${props.className !== undefined && props.className}`}
-        onClick={() => props.selectCell(props.id)}
+        onClick={selectCell}
       >
         <Cell {...propsWithoutStyles} />
       </div>
@@ -124,14 +135,13 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
 }));
 
 export function Cell(props: CellProps) {
+  function show() {
+    props.show(props.id);
+  }
+
   if (props.hidden) {
     return (
-      <div
-        className="cell-hidden"
-        onClick={() => {
-          props.show(props.id);
-        }}
-      >
+      <div className="cell-hidden" onClick={show}>
         <hr className="hidden-marker" />
       </div>
     );
@@ -139,20 +149,11 @@ export function Cell(props: CellProps) {
 
   return (
     <div className="cell">
-      {(() => {
-        switch (props.type) {
-          case ContentType.SNIPPET:
-            return (
-              <Snippet id={props.contentId} cellIndex={props.index} focused={props.selected} />
-            );
-          case ContentType.TEXT:
-            return <Text id={props.contentId} focused={props.selected} />;
-          case ContentType.OUTPUT:
-            return <Output id={props.contentId} />;
-          default:
-            return null;
-        }
-      })()}
+      {props.type === ContentType.SNIPPET && (
+        <Snippet id={props.contentId} cellIndex={props.index} focused={props.selected} />
+      )}
+      {props.type === ContentType.TEXT && <Text id={props.contentId} focused={props.selected} />}
+      {props.type === ContentType.OUTPUT && <Output id={props.contentId} />}
       <CellActionPalette
         cellId={props.id}
         contentType={props.type}
@@ -223,7 +224,9 @@ export default connect(
       selected: isSelected(state, id)
     };
   },
-  cellActionCreators
+  cellActionCreators,
+  undefined,
+  { pure: true, areStatePropsEqual: _.isEqual }
 )(
   DropTarget(
     DragItemTypes.CELL,

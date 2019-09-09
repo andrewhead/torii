@@ -105,7 +105,7 @@ export function Toolbar(props: ToolbarProps) {
               <Button color="inherit" className="menu-button" onClick={handleMenuClick}>
                 <MoreVertIcon />
               </Button>
-              <Menu anchorEl={anchorEl} keepMounted open={isMenuOpen} onClose={closeMenu}>
+              <Menu anchorEl={anchorEl} keepMounted={true} open={isMenuOpen} onClose={closeMenu}>
                 <MenuItem
                   key="export-as-md"
                   onClick={() => {

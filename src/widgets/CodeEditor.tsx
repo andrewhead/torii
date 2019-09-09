@@ -437,7 +437,7 @@ const StyledCodeEditor = styled(withTheme(CodeEditor))(({ theme }) => ({
    * the text partly invisible.
    */
   "& .requested-visible": {
-    opacity: 0.5
+    /* opacity: 0.5 */
   },
   /*
    * Give code cell a light left border so that it's obvious that this cell aligns with other cell

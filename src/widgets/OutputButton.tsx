@@ -1,12 +1,11 @@
 import Button from "@material-ui/core/Button";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { Theme } from "@material-ui/core/styles";
 import styled from "@material-ui/core/styles/styled";
 import withTheme from "@material-ui/core/styles/withTheme";
 import SubjectIcon from "@material-ui/icons/Subject";
 import * as React from "react";
 import { connect } from "react-redux";
-import { actions, Output, OutputId, State } from "santoku-store";
+import { actions, OutputId, OutputType, State } from "santoku-store";
 import { getOutput } from "../selectors/output-button";
 
 export function OutputButton(props: OutputButtonProps) {
@@ -23,45 +22,20 @@ export function OutputButton(props: OutputButtonProps) {
         e.stopPropagation();
       }}
     >
-      {props.output.type === "console" && <SubjectIcon />}
-      {props.output.type === "console" && "Add console output"}
-      {props.output.type === "html" && "Add HTML output"}
-      {props.output.state !== "finished" && <StyledContrastCircularProgress />}
+      {props.type === "console" && <SubjectIcon className="output-type-icon" />}
+      {props.type === "console" && "Add console output"}
+      {props.type === "html" && "Add HTML output"}
     </Button>
   );
 }
 
 const StyledOutputButton = styled(withTheme(OutputButton))(({ theme }) => ({
   fontFamily: theme.typography.button.fontFamily,
-  fontSize: theme.typography.button.fontSize
+  fontSize: theme.typography.button.fontSize,
+  "& .output-type-icon": {
+    marginRight: theme.spacing(1)
+  }
 }));
-
-function ContrastCircularProgress(props: ContrastCircularProgressProps) {
-  return (
-    <CircularProgress
-      className={`${props.className !== undefined && props.className}`}
-      color="primary"
-      size={props.theme !== undefined ? props.theme.typography.button.fontSize : undefined}
-    />
-  );
-}
-
-interface ContrastCircularProgressProps {
-  className?: string;
-  theme?: Theme;
-}
-
-export const StyledContrastCircularProgress = styled(withTheme(ContrastCircularProgress))(
-  ({ theme }) => ({
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    /*
-     * XXX(andrewhead): May be a hack. Preferred way to set color is to override 'colorPrimary'
-     * as described in https://material-ui.com/api/circular-progress/.
-     */
-    color: theme.palette.getContrastText(theme.palette.primary.main)
-  })
-);
 
 interface OutputButtonOwnProps {
   id: OutputId;
@@ -70,7 +44,7 @@ interface OutputButtonOwnProps {
 
 interface OutputButtonProps extends OutputButtonActions {
   id: OutputId;
-  output: Output;
+  type: OutputType;
   cellIndex: number;
   theme?: Theme;
   className?: string;
@@ -86,10 +60,11 @@ const outputButtonActionCreators = {
 
 export default connect(
   (state: State, ownProps: OutputButtonOwnProps) => {
+    const output = getOutput(state, ownProps.id);
     return {
       id: ownProps.id,
       cellIndex: ownProps.cellIndex,
-      output: getOutput(state, ownProps.id)
+      type: output.type
     };
   },
   outputButtonActionCreators

@@ -81,10 +81,10 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   borderLeftStyle: "solid",
   borderLeftWidth: theme.spacing(1),
   borderLeftColor: "transparent",
-  "&.selected:not(.hidden)": {
+  "&.cell-container.selected:not(.hidden)": {
     borderLeftColor: theme.palette.secondaryScale[300]
   },
-  "&:hover:not(.selected,.hidden)": {
+  "&.cell-container:hover:not(.hidden):not(.selected)": {
     borderLeftColor: theme.palette.secondaryScale[50]
   },
   "& .hidden-marker": {

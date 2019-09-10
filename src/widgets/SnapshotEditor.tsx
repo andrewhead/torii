@@ -34,14 +34,14 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
     if (props.hidden !== true) {
       updateSnippetRangeDecorations();
       updateSelectedChunkDecorations();
-      updateSnippetIndexWidgets();
+      // updateSnippetIndexWidgets();
       updateLinkToggleWidget();
     }
   }, [props.hidden]);
 
   useEffect(() => {
     updateSnippetRangeDecorations();
-    updateSnippetIndexWidgets();
+    // updateSnippetIndexWidgets();
   }, [props.snippetOffsets]);
 
   useEffect(() => {

@@ -68,6 +68,8 @@ interface SantokuProps extends SantokuActions {
 const StyledSantoku = styled(Santoku)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   width: "100%",
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(3),
   overflowX: "hidden",
   "& .cells": {
     marginTop: theme.spacing(4),

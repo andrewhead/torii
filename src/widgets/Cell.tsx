@@ -75,8 +75,6 @@ export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   cursor: "move",
   paddingTop: theme.spaces.cell.paddingTop,
   paddingBottom: theme.spaces.cell.paddingBottom,
-  marginLeft: theme.spacing(2),
-  marginRight: theme.spacing(3),
   paddingLeft: theme.spacing(2),
   borderLeftStyle: "solid",
   borderLeftWidth: theme.spacing(1),
@@ -267,7 +265,10 @@ export default connect(
 
         draggedCell.move(monitor.getItem().id, hoverIndex);
         monitor.getItem().index = hoverIndex;
-        draggedCell.index = hoverIndex;
+        /*
+         * TODO(andrewhead): Figure out why taking this out fixed drag-and-drop issue in debug mode.
+         */
+        // draggedCell.index = hoverIndex;
       }
     },
     (connector: DropTargetConnector) => ({

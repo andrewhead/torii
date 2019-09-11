@@ -9,11 +9,19 @@ import { actions, CellId, ContentType } from "santoku-store";
 import OutputPalette from "./OutputPalette";
 
 export function CellActionPalette(props: CellActionPaletteProps) {
-  function deleteCell() {
+  function deleteCell(event: React.MouseEvent) {
+    /*
+     * Prevent event from bubbling up to the parent and making it get selected.
+     */
+    event.stopPropagation();
     props.deleteCell(props.cellId, props.contentType, props.contentId);
   }
 
-  function hide() {
+  function hide(event: React.MouseEvent) {
+    /*
+     * Prevent event from bubbling up to the parent and making it get selected.
+     */
+    event.stopPropagation();
     props.hide(props.cellId);
   }
 

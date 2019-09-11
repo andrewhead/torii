@@ -119,6 +119,11 @@ export function Toolbar(props: ToolbarProps) {
                 <MenuItem
                   key="export-log"
                   onClick={() => {
+                    /*
+                     * TODO(andrewhead): Clean up export to log. May want to use context or a
+                     * property for passing in the log, so that this component doesn't have
+                     * dependencies on its imports.
+                     */
                     exportLog(actionLog);
                     closeMenu();
                   }}

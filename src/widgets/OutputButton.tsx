@@ -6,7 +6,6 @@ import SubjectIcon from "@material-ui/icons/Subject";
 import * as React from "react";
 import { connect } from "react-redux";
 import { actions, OutputId, OutputType, State } from "santoku-store";
-import { getOutput } from "../selectors/output-button";
 
 export function OutputButton(props: OutputButtonProps) {
   return (
@@ -60,7 +59,7 @@ const outputButtonActionCreators = {
 
 export default connect(
   (state: State, ownProps: OutputButtonOwnProps) => {
-    const output = getOutput(state, ownProps.id);
+    const output = state.outputs.byId[ownProps.id.snippetId][ownProps.id.commandId];
     return {
       id: ownProps.id,
       cellIndex: ownProps.cellIndex,

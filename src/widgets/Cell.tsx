@@ -151,7 +151,7 @@ export function Cell(props: CellProps) {
         <Snippet id={props.contentId} cellIndex={props.index} focused={props.selected} />
       )}
       {props.type === ContentType.TEXT && <Text id={props.contentId} focused={props.selected} />}
-      {props.type === ContentType.OUTPUT && <Output id={props.contentId} />}
+      {props.type === ContentType.OUTPUT && <Output id={props.contentId} cellIndex={props.index} />}
       <CellActionPalette
         cellId={props.id}
         contentType={props.type}

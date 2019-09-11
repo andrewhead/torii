@@ -17,6 +17,7 @@ export function Output(props: OutputProps) {
 
 interface OutputOwnProps {
   id: OutputId;
+  cellIndex: number;
 }
 
 interface OutputProps {
@@ -25,8 +26,16 @@ interface OutputProps {
 
 export default connect(
   (state: State, ownProps: OutputOwnProps): OutputProps => {
+    /*
+     * TODO(andrewhead): Clean this up, figure out better default behavior when no output found.
+     */
+    const emptyOutput: OutputState = {
+      commandId: ownProps.id.commandId,
+      state: "finished",
+      type: "console"
+    };
     return {
-      output: getOutput(state, ownProps.id)
+      output: getOutput(state, ownProps.id.commandId, ownProps.cellIndex) || emptyOutput
     };
   },
   undefined,

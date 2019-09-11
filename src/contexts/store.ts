@@ -1,5 +1,15 @@
 import React from "react";
-import { store } from "santoku-store";
+import { AnyAction, Dispatch, Middleware, MiddlewareAPI } from "redux";
+import { createStore } from "santoku-store";
+
+export const actionLog: AnyAction[] = [];
+
+const logger: Middleware = (api: MiddlewareAPI) => (next: Dispatch) => (action: AnyAction) => {
+  actionLog.push(action);
+  return next(action);
+};
+
+const store = createStore(undefined, logger);
 
 /*
  * To test this application standalone with pre-loaded data:

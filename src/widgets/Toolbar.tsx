@@ -14,10 +14,11 @@ import { saveAs } from "file-saver";
 import * as React from "react";
 import { useState } from "react";
 import { connect } from "react-redux";
+import { AnyAction } from "redux";
 import { EditorAdapter, requests } from "santoku-editor-adapter";
 import { actions, selectors, State } from "santoku-store";
 import { EditorContext } from "../contexts/editor";
-import { GetStateContext } from "../contexts/store";
+import { actionLog, GetStateContext } from "../contexts/store";
 
 export function Toolbar(props: ToolbarProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -115,6 +116,15 @@ export function Toolbar(props: ToolbarProps) {
                 >
                   Export as Markdown
                 </MenuItem>
+                <MenuItem
+                  key="export-log"
+                  onClick={() => {
+                    exportLog(actionLog);
+                    closeMenu();
+                  }}
+                >
+                  Export Log
+                </MenuItem>
               </Menu>
             </>
           )}
@@ -171,6 +181,13 @@ function exportAsMarkdown(state: State) {
   const fileName = `Tutorial ${time}.md`;
   const markdown = selectors.state.getMarkdown(state);
   const blob = new Blob([markdown], { type: "text/plain;charset=utf-8" });
+  saveAs(blob, fileName);
+}
+
+function exportLog(log: AnyAction[]) {
+  const time = new Date().toLocaleTimeString();
+  const fileName = `Tutorial ${time}.log`;
+  const blob = new Blob([JSON.stringify(log)], { type: "text/plain;charset=utf-8" });
   saveAs(blob, fileName);
 }
 

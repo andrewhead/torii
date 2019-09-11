@@ -4,14 +4,28 @@ import MaterialUiToolbar from "@material-ui/core/Toolbar";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import _ from "lodash";
 import * as React from "react";
+import { useRef } from "react";
 import { connect } from "react-redux";
-import { CellId, State } from "santoku-store";
+import { actions, CellId, State } from "santoku-store";
 import Cell from "./Cell";
 import Toolbar from "./Toolbar";
 
 export function Santoku(props: SantokuProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  function handleClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (e.target !== ref.current) {
+      return;
+    }
+    props.selectCell(undefined);
+  }
+
   return (
-    <div className={`Santoku ${props.className !== undefined && props.className}`}>
+    <div
+      ref={ref}
+      className={`Santoku ${props.className !== undefined && props.className}`}
+      onClick={handleClick}
+    >
       <ElevationScroll>
         <AppBar className="app-bar" position="fixed">
           <Toolbar />
@@ -46,7 +60,7 @@ interface ElevationScrollProps {
   children: React.ReactElement;
 }
 
-interface SantokuProps {
+interface SantokuProps extends SantokuActions {
   cellIds: CellId[];
   className?: string;
 }
@@ -65,11 +79,19 @@ const StyledSantoku = styled(Santoku)(({ theme }) => ({
   }
 }));
 
+interface SantokuActions {
+  selectCell: typeof actions.ui.selectCell;
+}
+
+const santokuActionCreators = {
+  selectCell: actions.ui.selectCell
+};
+
 export default connect(
   (state: State) => {
     return { cellIds: state.undoable.present.cells.all };
   },
-  undefined,
+  santokuActionCreators,
   undefined,
   { pure: true, areStatePropsEqual: _.isEqual }
 )(StyledSantoku);

@@ -100,7 +100,7 @@ const actionCreators = {
  * application. Some elements of the editor should be hidden when the editor is not selected.
  */
 const StyledText = styled(withTheme(Text))(({ theme }) => ({
-  fontFamily: theme.typography.text.fontFamily + " !important",
+  fontFamily: theme.typography.h6.fontFamily + " !important",
   border: "none",
   "& .mde-header": {
     border: "none",
@@ -115,7 +115,7 @@ const StyledText = styled(withTheme(Text))(({ theme }) => ({
     }
   },
   "& button": {
-    fontFamily: theme.typography.text.fontFamily + " !important"
+    fontFamily: theme.typography.h6.fontFamily + " !important"
   },
   "& .mde-preview": {
     "& h1,h2,h3": {

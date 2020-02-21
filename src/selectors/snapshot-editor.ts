@@ -8,8 +8,11 @@ import {
   selectors,
   SnippetId,
   State
-} from "santoku-store";
-import { IModelDecorationOptions, IModelDeltaDecoration } from "../types/monaco";
+} from "torii-store";
+import {
+  IModelDecorationOptions,
+  IModelDeltaDecoration
+} from "../types/monaco";
 import { SnapshotEditorBaseProps, SnippetOffsets } from "./types";
 
 export function getSnapshotEditorProps(
@@ -17,15 +20,20 @@ export function getSnapshotEditorProps(
   snippetId: SnippetId,
   path: Path
 ): SnapshotEditorBaseProps {
-  const { partialProgram, lineTexts } = selectors.code.getSnapshotPartialProgram(
-    state,
-    snippetId,
-    path
-  );
-  return { ...partialProgram, snippetOffsets: getSnippetOffsets(state, lineTexts) };
+  const {
+    partialProgram,
+    lineTexts
+  } = selectors.code.getSnapshotPartialProgram(state, snippetId, path);
+  return {
+    ...partialProgram,
+    snippetOffsets: getSnippetOffsets(state, lineTexts)
+  };
 }
 
-function getSnippetOffsets(state: State, lineTexts: LineText[]): SnippetOffsets {
+function getSnippetOffsets(
+  state: State,
+  lineTexts: LineText[]
+): SnippetOffsets {
   const cells = state.undoable.present.cells;
   const orderedSnippetIds = cells.all
     .map(id => cells.byId[id])
@@ -53,9 +61,12 @@ export function getSnippetRangeDecorations(
     const offset = snippetOffsets[i];
     const nextOffset = snippetOffsets[i + 1];
     const startLine = offset.line;
-    const endLine = nextOffset !== undefined ? nextOffset.line - 1 : Number.POSITIVE_INFINITY;
+    const endLine =
+      nextOffset !== undefined ? nextOffset.line - 1 : Number.POSITIVE_INFINITY;
     const isCurrentSnippet = offset.snippetId === currentSnippet;
-    const className = "snippet-range " + (isCurrentSnippet ? "current-snippet" : "past-snippet");
+    const className =
+      "snippet-range " +
+      (isCurrentSnippet ? "current-snippet" : "past-snippet");
     decorations.push(lineRangeDecoration(startLine, endLine, { className }));
   }
   return decorations;
@@ -69,7 +80,9 @@ export function getSelectedChunkVersionDecorations(
   if (chunkVersionId === undefined) {
     return [];
   }
-  const chunkVersionIndex = chunkVersionOffsets.map(o => o.chunkVersionId).indexOf(chunkVersionId);
+  const chunkVersionIndex = chunkVersionOffsets
+    .map(o => o.chunkVersionId)
+    .indexOf(chunkVersionId);
   if (chunkVersionIndex !== -1) {
     const topLine = chunkVersionOffsets[chunkVersionIndex].line;
     const bottomLine =
@@ -78,11 +91,15 @@ export function getSelectedChunkVersionDecorations(
         : Number.POSITIVE_INFINITY;
     if (chunkVersionIndex > 0) {
       decorations.push(
-        lineRangeDecoration(topLine, topLine, { className: "selected-chunk-version-top-boundary" })
+        lineRangeDecoration(topLine, topLine, {
+          className: "selected-chunk-version-top-boundary"
+        })
       );
     }
     decorations.push(
-      lineRangeDecoration(topLine, bottomLine, { className: "selected-chunk-version-body" })
+      lineRangeDecoration(topLine, bottomLine, {
+        className: "selected-chunk-version-body"
+      })
     );
     if (chunkVersionIndex < chunkVersionOffsets.length - 1) {
       decorations.push(

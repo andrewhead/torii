@@ -6,11 +6,11 @@ import _ from "lodash";
 import * as React from "react";
 import { useRef } from "react";
 import { connect } from "react-redux";
-import { actions, CellId, State } from "santoku-store";
+import { actions, CellId, State } from "torii-store";
 import Cell from "./Cell";
 import Toolbar from "./Toolbar";
 
-export function Santoku(props: SantokuProps) {
+export function Torii(props: ToriiProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   function handleClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -23,7 +23,7 @@ export function Santoku(props: SantokuProps) {
   return (
     <div
       ref={ref}
-      className={`Santoku ${props.className !== undefined && props.className}`}
+      className={`Torii ${props.className !== undefined && props.className}`}
       onClick={handleClick}
     >
       <ElevationScroll>
@@ -60,12 +60,12 @@ interface ElevationScrollProps {
   children: React.ReactElement;
 }
 
-interface SantokuProps extends SantokuActions {
+interface ToriiProps extends ToriiActions {
   cellIds: CellId[];
   className?: string;
 }
 
-const StyledSantoku = styled(Santoku)(({ theme }) => ({
+const StyledTorii = styled(Torii)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   width: "100%",
   paddingLeft: theme.spacing(2),
@@ -81,11 +81,11 @@ const StyledSantoku = styled(Santoku)(({ theme }) => ({
   }
 }));
 
-interface SantokuActions {
+interface ToriiActions {
   selectCell: typeof actions.ui.selectCell;
 }
 
-const santokuActionCreators = {
+const toriiActionCreators = {
   selectCell: actions.ui.selectCell
 };
 
@@ -93,7 +93,7 @@ export default connect(
   (state: State) => {
     return { cellIds: state.undoable.present.cells.all };
   },
-  santokuActionCreators,
+  toriiActionCreators,
   undefined,
   { pure: true, areStatePropsEqual: _.isEqual }
-)(StyledSantoku);
+)(StyledTorii);

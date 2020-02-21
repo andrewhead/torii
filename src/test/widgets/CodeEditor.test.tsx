@@ -2,15 +2,23 @@ import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
 import MonacoEditor from "react-monaco-editor";
-import { SourceType, textUtils, visibility } from "santoku-store";
-import { CodeEditor, getSelectionFromSnippetSelection } from "../../widgets/CodeEditor";
+import { SourceType, textUtils, visibility } from "torii-store";
+import {
+  CodeEditor,
+  getSelectionFromSnippetSelection
+} from "../../widgets/CodeEditor";
 
 Enzyme.configure({ adapter: new Adapter() });
 
 function setup() {
   const text = textUtils.join("Line 1", "Line 2");
-  const visibilities = [undefined, visibility.VISIBLE] as (visibility.Visibility | undefined)[];
-  const selections = [{ anchor: { line: 1, character: 0 }, active: { line: 1, character: 2 } }];
+  const visibilities = [undefined, visibility.VISIBLE] as (
+    | visibility.Visibility
+    | undefined
+  )[];
+  const selections = [
+    { anchor: { line: 1, character: 0 }, active: { line: 1, character: 2 } }
+  ];
   const path = "file-path";
   const chunkVersionOffsets = [{ line: 1, chunkVersionId: "chunk-version-0" }];
   const selectedChunkVersionId = undefined;
@@ -22,7 +30,14 @@ function setup() {
    */
   const wrapper = shallow(
     <CodeEditor
-      {...{ text, visibilities, selections, path, chunkVersionOffsets, selectedChunkVersionId }}
+      {...{
+        text,
+        visibilities,
+        selections,
+        path,
+        chunkVersionOffsets,
+        selectedChunkVersionId
+      }}
       edit={jest.fn()}
       setSelections={jest.fn()}
     />
@@ -56,11 +71,20 @@ describe("getSelectionFromSnippetSelection", () => {
       { line: 1, chunkVersionId: "chunk-version-0" },
       { line: 3, chunkVersionId: "chunk-version-1" }
     ];
-    expect(getSelectionFromSnippetSelection(snippetSelection, path, chunkVersionOffsets)).toEqual({
+    expect(
+      getSelectionFromSnippetSelection(
+        snippetSelection,
+        path,
+        chunkVersionOffsets
+      )
+    ).toEqual({
       anchor: { line: 1, character: 0 },
       active: { line: 1, character: 2 },
       path,
-      relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId: "chunk-version-1" }
+      relativeTo: {
+        source: SourceType.CHUNK_VERSION,
+        chunkVersionId: "chunk-version-1"
+      }
     });
   });
 });

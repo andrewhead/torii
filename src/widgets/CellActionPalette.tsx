@@ -5,7 +5,7 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
-import { actions, CellId, ContentType } from "santoku-store";
+import { actions, CellId, ContentType } from "torii-store";
 import OutputPalette from "./OutputPalette";
 
 export function CellActionPalette(props: CellActionPaletteProps) {
@@ -26,9 +26,15 @@ export function CellActionPalette(props: CellActionPaletteProps) {
   }
 
   return (
-    <div className={`cell-action-palette ${props.className !== undefined && props.className}`}>
+    <div
+      className={`cell-action-palette ${props.className !== undefined &&
+        props.className}`}
+    >
       {props.contentType === ContentType.SNIPPET && (
-        <OutputPalette cellIndex={props.cellIndex} snippetId={props.contentId} />
+        <OutputPalette
+          cellIndex={props.cellIndex}
+          snippetId={props.contentId}
+        />
       )}
       <Button className="action-button" onClick={hide}>
         <VisibilityOffIcon />
@@ -74,9 +80,7 @@ const actionCreators = {
   hide: actions.cells.hide
 };
 
-export default connect(
-  undefined,
-  actionCreators,
-  undefined,
-  { pure: true, areStatePropsEqual: _.isEqual }
-)(StyledCellActionPalette);
+export default connect(undefined, actionCreators, undefined, {
+  pure: true,
+  areStatePropsEqual: _.isEqual
+})(StyledCellActionPalette);

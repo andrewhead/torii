@@ -4,8 +4,8 @@ import { RefObject, useEffect, useRef, useState } from "react";
 import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
 import { connect } from "react-redux";
-import { actions, State, TextId, textUtils } from "santoku-store";
 import Showdown from "showdown";
+import { actions, State, TextId, textUtils } from "torii-store";
 import { getValue } from "../selectors/text";
 import { usePrevious } from "./hooks";
 
@@ -42,7 +42,9 @@ export function Text(props: TextProps) {
       onChange={value => props.setText(props.id, value)}
       selectedTab={selectedTab}
       onTabChange={setSelectedTab}
-      generateMarkdownPreview={markdown => Promise.resolve(markdownRenderer.makeHtml(markdown))}
+      generateMarkdownPreview={markdown =>
+        Promise.resolve(markdownRenderer.makeHtml(markdown))
+      }
       minPreviewHeight={0}
     />
   );
@@ -55,7 +57,10 @@ const markdownRenderer = new Showdown.Converter({
 });
 
 function focusTextArea(reactMdeRef: RefObject<ReactMde>) {
-  if (reactMdeRef.current !== null && reactMdeRef.current.textAreaRef !== null) {
+  if (
+    reactMdeRef.current !== null &&
+    reactMdeRef.current.textAreaRef !== null
+  ) {
     reactMdeRef.current.textAreaRef.focus();
   }
 }
@@ -63,7 +68,10 @@ function focusTextArea(reactMdeRef: RefObject<ReactMde>) {
 function resizeTextArea(reactMdeRef: RefObject<ReactMde>, theme?: Theme) {
   const padding = theme !== undefined ? theme.spaces.text.padding : 0;
   const maxHeight = 500;
-  if (reactMdeRef.current !== null && reactMdeRef.current.textAreaRef !== null) {
+  if (
+    reactMdeRef.current !== null &&
+    reactMdeRef.current.textAreaRef !== null
+  ) {
     /*
      * Text area resizing trick proposed at: https://stackoverflow.com/a/25621277/2096369.
      */
@@ -147,13 +155,10 @@ const StyledText = styled(withTheme(Text))(({ theme }) => ({
   }
 }));
 
-export default connect(
-  (state: State, ownProps: TextOwnProps) => {
-    return {
-      id: ownProps.id,
-      focused: ownProps.focused,
-      value: getValue(state, ownProps.id)
-    };
-  },
-  actionCreators
-)(StyledText);
+export default connect((state: State, ownProps: TextOwnProps) => {
+  return {
+    id: ownProps.id,
+    focused: ownProps.focused,
+    value: getValue(state, ownProps.id)
+  };
+}, actionCreators)(StyledText);

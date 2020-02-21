@@ -1,4 +1,4 @@
-import { ChunkVersionId, selectors, SnippetId, State } from "santoku-store";
+import { ChunkVersionId, selectors, SnippetId, State } from "torii-store";
 
 export function isLinked(
   state: State,
@@ -13,7 +13,10 @@ export function isLinked(
   return isReferenceImplementation(state, chunkVersionId);
 }
 
-function isReferenceImplementation(state: State, chunkVersionId: ChunkVersionId) {
+function isReferenceImplementation(
+  state: State,
+  chunkVersionId: ChunkVersionId
+) {
   const stateSlice = state.undoable.present;
   const chunkVersion = stateSlice.chunkVersions.byId[chunkVersionId];
   const chunk = stateSlice.chunks.byId[chunkVersion.chunk];

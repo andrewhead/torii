@@ -1,4 +1,4 @@
-import { testUtils, visibility } from "santoku-store";
+import { testUtils, visibility } from "torii-store";
 import { getSnippetEditorProps } from "../../selectors/snippet-editor";
 
 const FILE_PATH = "file-path";
@@ -9,8 +9,14 @@ describe("getSnippetEditorProps", () => {
       { line: 3, text: ["Line 3", "Line 4"].join("\n") },
       { line: 1, text: ["Line 1", "Line 2"].join("\n") }
     );
-    const props = getSnippetEditorProps(state, testUtils.TEST_SNIPPET_ID, testUtils.TEST_FILE_PATH);
-    expect(props.text).toEqual(["Line 1", "Line 2", "Line 3", "Line 4"].join("\n"));
+    const props = getSnippetEditorProps(
+      state,
+      testUtils.TEST_SNIPPET_ID,
+      testUtils.TEST_FILE_PATH
+    );
+    expect(props.text).toEqual(
+      ["Line 1", "Line 2", "Line 3", "Line 4"].join("\n")
+    );
   });
 
   it("should have line numbers relative to the current program snapshot", () => {

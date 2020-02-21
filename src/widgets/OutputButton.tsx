@@ -5,14 +5,15 @@ import withTheme from "@material-ui/core/styles/withTheme";
 import SubjectIcon from "@material-ui/icons/Subject";
 import * as React from "react";
 import { connect } from "react-redux";
-import { actions, OutputId, OutputType, State } from "santoku-store";
+import { actions, OutputId, OutputType, State } from "torii-store";
 
 export function OutputButton(props: OutputButtonProps) {
   return (
     <Button
       variant="text"
       color="secondary"
-      className={`output-button ${props.className !== undefined && props.className}`}
+      className={`output-button ${props.className !== undefined &&
+        props.className}`}
       onClick={e => {
         props.insertOutput(props.cellIndex + 1, props.id);
         /*
@@ -57,14 +58,12 @@ const outputButtonActionCreators = {
   insertOutput: actions.cells.insertOutput
 };
 
-export default connect(
-  (state: State, ownProps: OutputButtonOwnProps) => {
-    const output = state.outputs.byId[ownProps.id.snippetId][ownProps.id.commandId];
-    return {
-      id: ownProps.id,
-      cellIndex: ownProps.cellIndex,
-      type: output.type
-    };
-  },
-  outputButtonActionCreators
-)(StyledOutputButton);
+export default connect((state: State, ownProps: OutputButtonOwnProps) => {
+  const output =
+    state.outputs.byId[ownProps.id.snippetId][ownProps.id.commandId];
+  return {
+    id: ownProps.id,
+    cellIndex: ownProps.cellIndex,
+    type: output.type
+  };
+}, outputButtonActionCreators)(StyledOutputButton);

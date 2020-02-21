@@ -11,7 +11,14 @@ import Switch from "@material-ui/core/Switch";
 import * as React from "react";
 import { useContext, useState } from "react";
 import { connect } from "react-redux";
-import { actions, ChunkId, ChunkVersionId, MergeStrategy, SnippetId, State } from "santoku-store";
+import {
+  actions,
+  ChunkId,
+  ChunkVersionId,
+  MergeStrategy,
+  SnippetId,
+  State
+} from "torii-store";
 import { GetStateContext } from "../contexts/store";
 import { canInstantMerge, isLinked } from "../selectors/link";
 
@@ -20,7 +27,12 @@ export function LinkSwitch(props: LinkSwitchProps) {
   const getState = useContext(GetStateContext);
 
   function instantMerge() {
-    props.merge(getState(), props.snippetId, props.chunkVersionId, MergeStrategy.REVERT_CHANGES);
+    props.merge(
+      getState(),
+      props.snippetId,
+      props.chunkVersionId,
+      MergeStrategy.REVERT_CHANGES
+    );
   }
 
   function closeMergeDialog(strategy?: MergeStrategy) {
@@ -46,7 +58,11 @@ export function LinkSwitch(props: LinkSwitchProps) {
           <Switch
             checked={props.linked}
             onChange={event =>
-              event.target.checked ? (props.instantMerge ? instantMerge() : mergeDialog()) : fork()
+              event.target.checked
+                ? props.instantMerge
+                  ? instantMerge()
+                  : mergeDialog()
+                : fork()
             }
             color="secondary"
             size="small"
@@ -63,16 +79,21 @@ export function LinkSwitch(props: LinkSwitchProps) {
         <DialogTitle id="dialog-title">{"Merge your changes?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="dialog-description">
-            To sync this snippet, you must merge your changes into the code before it, or discard
-            your changes.
+            To sync this snippet, you must merge your changes into the code
+            before it, or discard your changes.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => closeMergeDialog()}>Cancel</Button>
-          <Button onClick={() => closeMergeDialog(MergeStrategy.REVERT_CHANGES)} autoFocus={true}>
+          <Button
+            onClick={() => closeMergeDialog(MergeStrategy.REVERT_CHANGES)}
+            autoFocus={true}
+          >
             Discard
           </Button>
-          <Button onClick={() => closeMergeDialog(MergeStrategy.SAVE_CHANGES)}>Merge</Button>
+          <Button onClick={() => closeMergeDialog(MergeStrategy.SAVE_CHANGES)}>
+            Merge
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
@@ -117,14 +138,16 @@ const linkSwitchActionCreators = {
   merge: actions.code.merge
 };
 
-export default connect(
-  (state: State, ownProps: LinkSwitchOwnProps) => {
-    return {
-      ...ownProps,
-      linked: isLinked(state, ownProps.chunkVersionId, ownProps.snippetId),
-      instantMerge: canInstantMerge(state, ownProps.chunkVersionId, ownProps.snippetId),
-      chunkId: state.undoable.present.chunkVersions.byId[ownProps.chunkVersionId].chunk
-    };
-  },
-  linkSwitchActionCreators
-)(StyledLinkSwitch);
+export default connect((state: State, ownProps: LinkSwitchOwnProps) => {
+  return {
+    ...ownProps,
+    linked: isLinked(state, ownProps.chunkVersionId, ownProps.snippetId),
+    instantMerge: canInstantMerge(
+      state,
+      ownProps.chunkVersionId,
+      ownProps.snippetId
+    ),
+    chunkId:
+      state.undoable.present.chunkVersions.byId[ownProps.chunkVersionId].chunk
+  };
+}, linkSwitchActionCreators)(StyledLinkSwitch);

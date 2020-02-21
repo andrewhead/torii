@@ -1,7 +1,7 @@
 import _ from "lodash";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Output as OutputState, OutputId, State } from "santoku-store";
+import { Output as OutputState, OutputId, State } from "torii-store";
 import { getOutput } from "../selectors/output-button";
 import ConsoleOutput from "./ConsoleOutput";
 import HtmlOutput from "./HtmlOutput";
@@ -9,7 +9,9 @@ import HtmlOutput from "./HtmlOutput";
 export function Output(props: OutputProps) {
   return (
     <div className={`output`}>
-      {props.output.type === "console" && <ConsoleOutput output={props.output} />}
+      {props.output.type === "console" && (
+        <ConsoleOutput output={props.output} />
+      )}
       {props.output.type === "html" && <HtmlOutput output={props.output} />}
     </div>
   );
@@ -35,7 +37,9 @@ export default connect(
       type: "console"
     };
     return {
-      output: getOutput(state, ownProps.id.commandId, ownProps.cellIndex) || emptyOutput
+      output:
+        getOutput(state, ownProps.id.commandId, ownProps.cellIndex) ||
+        emptyOutput
     };
   },
   undefined,

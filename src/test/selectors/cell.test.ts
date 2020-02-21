@@ -1,4 +1,4 @@
-import { Cell, ContentType, testUtils } from "santoku-store";
+import { Cell, ContentType, testUtils } from "torii-store";
 import { getCell, isSelected } from "../../../src/selectors/cell";
 
 describe("getCell", () => {
@@ -30,7 +30,9 @@ describe("isSelected", () => {
 
   it("detects an unselected cell", () => {
     const cellId = "cell-id";
-    const state = testUtils.createStateWithUndoable({ selectedCell: "other-cell-id" });
+    const state = testUtils.createStateWithUndoable({
+      selectedCell: "other-cell-id"
+    });
     expect(isSelected(state, cellId)).toBe(false);
   });
 });

@@ -1,7 +1,7 @@
 import LinearProgress from "@material-ui/core/LinearProgress";
 import styled from "@material-ui/core/styles/styled";
 import React from "react";
-import { Output } from "santoku-store";
+import { Output } from "torii-store";
 import HtmlPreview from "./HtmlPreview";
 
 export function HtmlOutput(props: HtmlOutputProps) {

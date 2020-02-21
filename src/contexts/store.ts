@@ -1,10 +1,12 @@
 import React from "react";
 import { AnyAction, Dispatch, Middleware, MiddlewareAPI } from "redux";
-import { createStore } from "santoku-store";
+import { createStore } from "torii-store";
 
 export const actionLog: AnyAction[] = [];
 
-const logger: Middleware = (api: MiddlewareAPI) => (next: Dispatch) => (action: AnyAction) => {
+const logger: Middleware = (api: MiddlewareAPI) => (next: Dispatch) => (
+  action: AnyAction
+) => {
   actionLog.push(action);
   return next(action);
 };

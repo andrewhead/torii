@@ -1,7 +1,7 @@
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
-import { Cell as CellState, ContentType } from "santoku-store";
+import { Cell as CellState, ContentType } from "torii-store";
 import { Cell } from "../../widgets/Cell";
 import Output from "../../widgets/Output";
 import Snippet from "../../widgets/Snippet";
@@ -33,7 +33,10 @@ describe("Cell", () => {
   }
 
   it("renders snippets", () => {
-    const cell = { type: ContentType.SNIPPET, contentId: "snippet-id" } as CellState;
+    const cell = {
+      type: ContentType.SNIPPET,
+      contentId: "snippet-id"
+    } as CellState;
     const id = "cell-id";
     const index = 1;
     const wrapper = createCell(cell, id, index);

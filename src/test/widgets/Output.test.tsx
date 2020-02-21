@@ -1,7 +1,7 @@
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
-import { Output as OutputState } from "santoku-store";
+import { Output as OutputState } from "torii-store";
 import ConsoleOutput from "../../widgets/ConsoleOutput";
 import HtmlOutput from "../../widgets/HtmlOutput";
 import { Output } from "../../widgets/Output";

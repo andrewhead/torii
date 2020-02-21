@@ -1,4 +1,4 @@
-import { createStore, testUtils } from "santoku-store";
+import { createStore, testUtils } from "torii-store";
 
 /**
  * Create store with interesting data. This store can be passed to the Redux 'Provider' when
@@ -33,7 +33,8 @@ export function createStoreWithFakeData() {
         chunkId: "chunk-3",
         chunkVersionId: "chunk-3-version-1",
         line: 3,
-        text: "Line 3 (Snippet 2, Chunk 1, Version 1)\nLine 4 (Snippet 2, Chunk 1, Version 1)"
+        text:
+          "Line 3 (Snippet 2, Chunk 1, Version 1)\nLine 4 (Snippet 2, Chunk 1, Version 1)"
       }
     )
   );

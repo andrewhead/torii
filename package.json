@@ -1,6 +1,6 @@
 {
-  "name": "santoku",
-  "version": "0.0.1",
+  "name": "torii-ui",
+  "version": "0.0.6",
   "publisher": "andrewhead",
   "dependencies": {
     "@material-ui/core": "^4.3.3",
@@ -19,6 +19,8 @@
     "redux-undo": "^1.0.0-beta9-9-7",
     "showdown": "^1.9.0",
     "terser": "3.16.0",
+    "torii-editor-adapter": "0.0.6",
+    "torii-store": "0.0.5",
     "uuid": "^3.3.2"
   },
   "resolutions": {
@@ -29,8 +31,12 @@
     "build": "./scripts/build-non-split.js",
     "//": "Build project with embedded source map using 'eval-source-map'",
     "build:debug": "./scripts/build-non-split.js --debug",
-    "test": "react-scripts test --env=jsdom --moduleNameMapper='{ \"monaco-editor\": \"<rootDir>/src/test/mock_modules/monaco-editor\", \"^dnd-core$\": \"dnd-core/dist/cjs\", \"^react-dnd$\": \"react-dnd/dist/cjs\", \"^react-dnd-html5-backend$\": \"react-dnd-html5-backend/dist/cjs\", \"^react-dnd-touch-backend$\": \"react-dnd-touch-backend/dist/cjs\", \"^react-dnd-test-backend$\": \"react-dnd-test-backend/dist/cjs\", \"^react-dnd-test-utils$\": \"react-dnd-test-utils/dist/cjs\" }'",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --coverage --forceExit --detectOpenHandles --env=jsdom --moduleNameMapper='{ \"monaco-editor\": \"<rootDir>/src/test/mock_modules/monaco-editor\", \"^dnd-core$\": \"dnd-core/dist/cjs\", \"^react-dnd$\": \"react-dnd/dist/cjs\", \"^react-dnd-html5-backend$\": \"react-dnd-html5-backend/dist/cjs\", \"^react-dnd-touch-backend$\": \"react-dnd-touch-backend/dist/cjs\", \"^react-dnd-test-backend$\": \"react-dnd-test-backend/dist/cjs\", \"^react-dnd-test-utils$\": \"react-dnd-test-utils/dist/cjs\" }'",
+    "test:watch": "react-scripts test --env=jsdom --moduleNameMapper='{ \"monaco-editor\": \"<rootDir>/src/test/mock_modules/monaco-editor\", \"^dnd-core$\": \"dnd-core/dist/cjs\", \"^react-dnd$\": \"react-dnd/dist/cjs\", \"^react-dnd-html5-backend$\": \"react-dnd-html5-backend/dist/cjs\", \"^react-dnd-touch-backend$\": \"react-dnd-touch-backend/dist/cjs\", \"^react-dnd-test-backend$\": \"react-dnd-test-backend/dist/cjs\", \"^react-dnd-test-utils$\": \"react-dnd-test-utils/dist/cjs\" }'",
+    "eject": "react-scripts eject",
+    "prepare": "npm build",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
     "//": [

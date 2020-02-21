@@ -1,7 +1,14 @@
 import { styled, Theme, withTheme } from "@material-ui/core";
 import _ from "lodash";
 import * as React from "react";
-import { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from "react";
 import MonacoEditor from "react-monaco-editor";
 import { connect } from "react-redux";
 import {
@@ -15,7 +22,7 @@ import {
   SourcedRange,
   SourceType,
   visibility
-} from "santoku-store";
+} from "torii-store";
 import {
   IEditorConstructionOptions,
   IModelDeltaDecoration,
@@ -36,8 +43,12 @@ export const CodeEditor = (props: CodeEditorProps) => {
   const [editor, setEditor] = useState<IStandaloneCodeEditor | undefined>();
   const [monacoApi, setMonacoApi] = useState<MonacoApiType | undefined>();
   const [decorations, setDecorations] = useState<string[]>([]);
-  const [editCallback, setEditCallback] = useState<monacoTypes.IDisposable | undefined>();
-  const [selectionCallback, setSelectionCallback] = useState<monacoTypes.IDisposable | undefined>();
+  const [editCallback, setEditCallback] = useState<
+    monacoTypes.IDisposable | undefined
+  >();
+  const [selectionCallback, setSelectionCallback] = useState<
+    monacoTypes.IDisposable | undefined
+  >();
   const editorOptions = useRef<IEditorConstructionOptions>();
 
   useImperativeHandle(props.editorRef, () => editor, [editor]);
@@ -74,7 +85,11 @@ export const CodeEditor = (props: CodeEditorProps) => {
   }, [props.visibilities, editor]);
 
   function updateValue() {
-    if (props.hidden !== true && editor !== undefined && editor.hasTextFocus() === false) {
+    if (
+      props.hidden !== true &&
+      editor !== undefined &&
+      editor.hasTextFocus() === false
+    ) {
       editor.setValue(props.text);
     }
   }
@@ -111,7 +126,10 @@ export const CodeEditor = (props: CodeEditorProps) => {
       const selectionsChanged =
         currentMonacoSelections === null
           ? monacoSelections.length > 0
-          : !monacoApi.Selection.selectionsArrEqual(monacoSelections, currentMonacoSelections);
+          : !monacoApi.Selection.selectionsArrEqual(
+              monacoSelections,
+              currentMonacoSelections
+            );
 
       if (selectionsChanged && monacoSelections.length > 0) {
         editor.setSelections(monacoSelections);
@@ -121,7 +139,10 @@ export const CodeEditor = (props: CodeEditorProps) => {
          * as the editor will throw an error. Instead, remove the selection by collapsing the
          * first selection to the start of the line.
          */
-        if (currentMonacoSelections !== null && currentMonacoSelections.length > 0) {
+        if (
+          currentMonacoSelections !== null &&
+          currentMonacoSelections.length > 0
+        ) {
           const firstSelection = currentMonacoSelections[0].collapseToStart();
           editor.setSelection(firstSelection);
         }
@@ -171,9 +192,11 @@ export const CodeEditor = (props: CodeEditorProps) => {
       const lineCount = textModel.getLineCount();
       if (container !== null) {
         const heightBefore = container.style.height;
-        const height = `${lineCount * lineHeight + horizontalScrollBarHeight}px`;
+        const height = `${lineCount * lineHeight +
+          horizontalScrollBarHeight}px`;
         if (height !== heightBefore) {
-          container.style.height = `${lineCount * lineHeight + horizontalScrollBarHeight}px`;
+          container.style.height = `${lineCount * lineHeight +
+            horizontalScrollBarHeight}px`;
           forceEditorLayoutUpdate();
         }
       }
@@ -210,12 +233,19 @@ export const CodeEditor = (props: CodeEditorProps) => {
 
   const onDidChangeCursorSelection = useCallback(
     (event: monacoTypes.editor.ICursorSelectionChangedEvent) => {
-      if (monacoApi !== undefined && editor !== undefined && editor.hasTextFocus() === true) {
+      if (
+        monacoApi !== undefined &&
+        editor !== undefined &&
+        editor.hasTextFocus() === true
+      ) {
         props.setSelections(
           ...[event.selection]
             .concat(event.secondarySelections)
             .map(monacoSelection => {
-              return getSnippetSelectionFromMonacoSelection(monacoApi, monacoSelection);
+              return getSnippetSelectionFromMonacoSelection(
+                monacoApi,
+                monacoSelection
+              );
             })
             .map(snippetSelection => {
               return getSelectionFromSnippetSelection(
@@ -237,11 +267,15 @@ export const CodeEditor = (props: CodeEditorProps) => {
         if (selectionCallback !== undefined) {
           selectionCallback.dispose();
         }
-        setSelectionCallback(editor.onDidChangeCursorSelection(onDidChangeCursorSelection));
+        setSelectionCallback(
+          editor.onDidChangeCursorSelection(onDidChangeCursorSelection)
+        );
         if (editCallback !== undefined) {
           editCallback.dispose();
         }
-        setEditCallback(editor.onDidChangeModelContent(onDidChangeModelContent));
+        setEditCallback(
+          editor.onDidChangeModelContent(onDidChangeModelContent)
+        );
       }
     },
     [editor, monacoApi, onDidChangeCursorSelection, onDidChangeModelContent]
@@ -250,7 +284,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
   useEffect(
     function setEditorTheme() {
       if (monacoApi !== undefined && props.theme !== undefined) {
-        monacoApi.editor.defineTheme("santoku", {
+        monacoApi.editor.defineTheme("torii", {
           base: "vs",
           inherit: true,
           rules: [],
@@ -258,7 +292,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
             "editor.background": props.theme.palette.background.paper
           }
         });
-        monacoApi.editor.setTheme("santoku");
+        monacoApi.editor.setTheme("torii");
       }
     },
     [monacoApi, props.theme]
@@ -319,8 +353,14 @@ export const CodeEditor = (props: CodeEditorProps) => {
 
 function getRangeFromMonacoRange(monacoRange: monacoTypes.IRange): Range {
   return {
-    start: { line: monacoRange.startLineNumber, character: monacoRange.startColumn - 1 },
-    end: { line: monacoRange.endLineNumber, character: monacoRange.endColumn - 1 }
+    start: {
+      line: monacoRange.startLineNumber,
+      character: monacoRange.startColumn - 1
+    },
+    end: {
+      line: monacoRange.endLineNumber,
+      character: monacoRange.endColumn - 1
+    }
   };
 }
 
@@ -354,10 +394,19 @@ export function getSelectionFromSnippetSelection(
 ): Selection | null {
   for (let i = chunkVersionOffsets.length - 1; i >= 0; i--) {
     const { line, chunkVersionId } = chunkVersionOffsets[i];
-    if (snippetSelection.active.line >= line && snippetSelection.anchor.line >= line) {
+    if (
+      snippetSelection.active.line >= line &&
+      snippetSelection.anchor.line >= line
+    ) {
       return {
-        anchor: { ...snippetSelection.anchor, line: snippetSelection.anchor.line - line + 1 },
-        active: { ...snippetSelection.active, line: snippetSelection.active.line - line + 1 },
+        anchor: {
+          ...snippetSelection.anchor,
+          line: snippetSelection.anchor.line - line + 1
+        },
+        active: {
+          ...snippetSelection.active,
+          line: snippetSelection.active.line - line + 1
+        },
         path,
         relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId }
       };
@@ -377,7 +426,10 @@ export function getSnippetSelectionFromMonacoSelection(
     line: monacoSelection.startLineNumber,
     character: monacoSelection.startColumn - 1
   };
-  const end = { line: monacoSelection.endLineNumber, character: monacoSelection.endColumn - 1 };
+  const end = {
+    line: monacoSelection.endLineNumber,
+    character: monacoSelection.endColumn - 1
+  };
   return monacoSelection.getDirection() === monacoApi.SelectionDirection.LTR
     ? { anchor: start, active: end }
     : { anchor: end, active: start };
@@ -457,7 +509,4 @@ const StyledCodeEditor = styled(withTheme(CodeEditor))(({ theme }) => ({
 
 const MemoizedCodeEditor = React.memo(StyledCodeEditor, _.isEqual);
 
-export default connect(
-  undefined,
-  editorActionCreators
-)(MemoizedCodeEditor);
+export default connect(undefined, editorActionCreators)(MemoizedCodeEditor);

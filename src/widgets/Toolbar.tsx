@@ -15,8 +15,8 @@ import * as React from "react";
 import { useState } from "react";
 import { connect } from "react-redux";
 import { AnyAction } from "redux";
-import { EditorAdapter, requests } from "santoku-editor-adapter";
-import { actions, selectors, State } from "santoku-store";
+import { EditorAdapter, requests } from "torii-editor-adapter";
+import { actions, selectors, State } from "torii-store";
 import { EditorContext } from "../contexts/editor";
 import { actionLog, GetStateContext } from "../contexts/store";
 
@@ -90,12 +90,20 @@ export function Toolbar(props: ToolbarProps) {
             type="file"
             accept=".json"
             onChange={event => load(event, props.setState)}
-            style={{ display: "none" } /* Hide the input; it will be rendered as Button */}
+            style={
+              {
+                display: "none"
+              } /* Hide the input; it will be rendered as Button */
+            }
           />
         </Button>
         <GetStateContext.Consumer>
           {getState => (
-            <Button color="inherit" className="action-button" onClick={() => save(getState())}>
+            <Button
+              color="inherit"
+              className="action-button"
+              onClick={() => save(getState())}
+            >
               <SaveIcon />
             </Button>
           )}
@@ -103,10 +111,19 @@ export function Toolbar(props: ToolbarProps) {
         <GetStateContext.Consumer>
           {getState => (
             <>
-              <Button color="inherit" className="menu-button" onClick={handleMenuClick}>
+              <Button
+                color="inherit"
+                className="menu-button"
+                onClick={handleMenuClick}
+              >
                 <MoreVertIcon />
               </Button>
-              <Menu anchorEl={anchorEl} keepMounted={true} open={isMenuOpen} onClose={closeMenu}>
+              <Menu
+                anchorEl={anchorEl}
+                keepMounted={true}
+                open={isMenuOpen}
+                onClose={closeMenu}
+              >
                 <MenuItem
                   key="export-as-md"
                   onClick={() => {
@@ -146,7 +163,10 @@ function addSnippet(getEditorAdapter: () => EditorAdapter | undefined) {
   }
 }
 
-function load(event: React.ChangeEvent<HTMLInputElement>, setState: typeof actions.state.setState) {
+function load(
+  event: React.ChangeEvent<HTMLInputElement>,
+  setState: typeof actions.state.setState
+) {
   const files = event.target.files;
   if (files !== null && files.length === 1) {
     const file = files[0];
@@ -192,7 +212,9 @@ function exportAsMarkdown(state: State) {
 function exportLog(log: AnyAction[]) {
   const time = new Date().toLocaleTimeString();
   const fileName = `Tutorial ${time}.log`;
-  const blob = new Blob([JSON.stringify(log)], { type: "text/plain;charset=utf-8" });
+  const blob = new Blob([JSON.stringify(log)], {
+    type: "text/plain;charset=utf-8"
+  });
   saveAs(blob, fileName);
 }
 
@@ -227,7 +249,4 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   }
 }));
 
-export default connect(
-  undefined,
-  toolbarActionCreators
-)(StyledToolbar);
+export default connect(undefined, toolbarActionCreators)(StyledToolbar);

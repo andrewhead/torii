@@ -14,7 +14,7 @@ import {
   XYCoord
 } from "react-dnd";
 import { connect } from "react-redux";
-import { actions, CellId, ContentType, State } from "santoku-store";
+import { actions, CellId, ContentType, State } from "torii-store";
 import { DragItemTypes } from "../contexts/drag-and-drop";
 import { getCell, isSelected } from "../selectors/cell";
 import CellActionPalette from "./CellActionPalette";
@@ -25,51 +25,52 @@ import Text from "./Text";
 /**
  * A 'cell' containing tutorial content. Can contain text, code, output, etc.
  */
-export const DraggableCell = React.forwardRef<HTMLDivElement, DraggableCellProps>(
-  (props: DraggableCellProps, ref) => {
-    const elementRef = useRef<HTMLDivElement>(null);
-    props.connectDragSource(elementRef);
-    props.connectDropTarget(elementRef);
+export const DraggableCell = React.forwardRef<
+  HTMLDivElement,
+  DraggableCellProps
+>((props: DraggableCellProps, ref) => {
+  const elementRef = useRef<HTMLDivElement>(null);
+  props.connectDragSource(elementRef);
+  props.connectDropTarget(elementRef);
 
-    function handle() {
-      return {
-        getNode: () => elementRef.current
-      };
+  function handle() {
+    return {
+      getNode: () => elementRef.current
+    };
+  }
+
+  function dragStart() {
+    /*
+     * To generate a preview with the 'tranform' property, this class must be added before
+     * the preview is generated. This is one place where the class can be added early enough.
+     */
+    if (elementRef !== null && elementRef.current !== null) {
+      elementRef.current.classList.add("dragJustTriggered");
     }
+  }
 
-    function dragStart() {
-      /*
-       * To generate a preview with the 'tranform' property, this class must be added before
-       * the preview is generated. This is one place where the class can be added early enough.
-       */
-      if (elementRef !== null && elementRef.current !== null) {
-        elementRef.current.classList.add("dragJustTriggered");
-      }
-    }
+  function selectCell() {
+    props.selectCell(props.id);
+  }
 
-    function selectCell() {
-      props.selectCell(props.id);
-    }
-
-    useImperativeHandle<{}, CellInstance>(ref, handle, [ref]);
-    const propsWithoutStyles = { ...props };
-    delete propsWithoutStyles.className;
-    return (
-      <div
-        ref={elementRef}
-        onDragStart={dragStart}
-        className={`cell-container
+  useImperativeHandle<{}, CellInstance>(ref, handle, [ref]);
+  const propsWithoutStyles = { ...props };
+  delete propsWithoutStyles.className;
+  return (
+    <div
+      ref={elementRef}
+      onDragStart={dragStart}
+      className={`cell-container
           ${props.hidden === true && "hidden"}
           ${props.selected === true && "selected"}
           ${props.isDragging === true && "drag"}
           ${props.className !== undefined && props.className}`}
-        onClick={selectCell}
-      >
-        <Cell {...propsWithoutStyles} />
-      </div>
-    );
-  }
-);
+      onClick={selectCell}
+    >
+      <Cell {...propsWithoutStyles} />
+    </div>
+  );
+});
 
 export const StyledDraggableCell = styled(DraggableCell)(({ theme }) => ({
   cursor: "move",
@@ -148,10 +149,18 @@ export function Cell(props: CellProps) {
   return (
     <div className="cell">
       {props.type === ContentType.SNIPPET && (
-        <Snippet id={props.contentId} cellIndex={props.index} focused={props.selected} />
+        <Snippet
+          id={props.contentId}
+          cellIndex={props.index}
+          focused={props.selected}
+        />
       )}
-      {props.type === ContentType.TEXT && <Text id={props.contentId} focused={props.selected} />}
-      {props.type === ContentType.OUTPUT && <Output id={props.contentId} cellIndex={props.index} />}
+      {props.type === ContentType.TEXT && (
+        <Text id={props.contentId} focused={props.selected} />
+      )}
+      {props.type === ContentType.OUTPUT && (
+        <Output id={props.contentId} cellIndex={props.index} />
+      )}
       <CellActionPalette
         cellId={props.id}
         contentType={props.type}
@@ -229,7 +238,11 @@ export default connect(
   DropTarget(
     DragItemTypes.CELL,
     {
-      hover: (draggedCell: CellProps, monitor: DropTargetMonitor, component: CellInstance) => {
+      hover: (
+        draggedCell: CellProps,
+        monitor: DropTargetMonitor,
+        component: CellInstance
+      ) => {
         if (component === null) {
           return;
         }
@@ -246,9 +259,11 @@ export default connect(
         }
 
         const hoverBoundingRect = node.getBoundingClientRect();
-        const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+        const hoverMiddleY =
+          (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
         const clientOffset = monitor.getClientOffset();
-        const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+        const hoverClientY =
+          (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
         /*
          * Note from the React-DnD example:

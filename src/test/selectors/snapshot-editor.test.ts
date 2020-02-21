@@ -1,4 +1,4 @@
-import { testUtils } from "santoku-store";
+import { testUtils } from "torii-store";
 import {
   getSelectedChunkVersionDecorations,
   getSnapshotEditorProps,
@@ -27,16 +27,37 @@ describe("getSnapshotEditorProps", () => {
         text: ["Line 1B", "Line 2B"].join("\n")
       }
     );
-    const props = getSnapshotEditorProps(state, "snippet-1", testUtils.TEST_FILE_PATH);
-    expect(props.text).toEqual(["Line 1B", "Line 2B", "Line 3", "Line 4"].join("\n"));
+    const props = getSnapshotEditorProps(
+      state,
+      "snippet-1",
+      testUtils.TEST_FILE_PATH
+    );
+    expect(props.text).toEqual(
+      ["Line 1B", "Line 2B", "Line 3", "Line 4"].join("\n")
+    );
   });
 
   it("gets offsets of snippets", () => {
     const path = "file-path";
     const state = testUtils.createStateWithChunks(
-      { snippetId: "snippet-0", line: 1, path, chunkVersionId: "chunk-version-0" },
-      { snippetId: "snippet-0", line: 3, path, chunkVersionId: "chunk-version-1" },
-      { snippetId: "snippet-1", line: 2, path, chunkVersionId: "chunk-version-2" }
+      {
+        snippetId: "snippet-0",
+        line: 1,
+        path,
+        chunkVersionId: "chunk-version-0"
+      },
+      {
+        snippetId: "snippet-0",
+        line: 3,
+        path,
+        chunkVersionId: "chunk-version-1"
+      },
+      {
+        snippetId: "snippet-1",
+        line: 2,
+        path,
+        chunkVersionId: "chunk-version-2"
+      }
     );
     const props = getSnapshotEditorProps(state, "snippet-1", path);
     expect(props).toMatchObject({
@@ -90,7 +111,12 @@ describe("getSelectedChunkVersionDecorations", () => {
       { chunkVersionId: "chunk-version-id", line: 2 },
       { chunkVersionId: "chunk-version-below-id", line: 4 }
     ];
-    expect(getSelectedChunkVersionDecorations("chunk-version-id", chunkVersionOffsets)).toEqual([
+    expect(
+      getSelectedChunkVersionDecorations(
+        "chunk-version-id",
+        chunkVersionOffsets
+      )
+    ).toEqual([
       {
         options: {
           isWholeLine: true,
@@ -135,8 +161,15 @@ describe("getSelectedChunkVersionDecorations", () => {
      * This is the only chunk versions. Any decorations created would coincide with the top and
      * the bottom of the editor. Don't bother making decorations for those bounds.
      */
-    const chunkVersionOffsets = [{ chunkVersionId: "chunk-version-id", line: 1 }];
-    expect(getSelectedChunkVersionDecorations("chunk-version-id", chunkVersionOffsets)).toEqual([
+    const chunkVersionOffsets = [
+      { chunkVersionId: "chunk-version-id", line: 1 }
+    ];
+    expect(
+      getSelectedChunkVersionDecorations(
+        "chunk-version-id",
+        chunkVersionOffsets
+      )
+    ).toEqual([
       {
         options: {
           isWholeLine: true,
@@ -153,7 +186,11 @@ describe("getSelectedChunkVersionDecorations", () => {
   });
 
   it("doesn't make deocrations for an undefined chunk version ID", () => {
-    const chunkVersionOffsets = [{ chunkVersionId: "chunk-version-id", line: 1 }];
-    expect(getSelectedChunkVersionDecorations(undefined, chunkVersionOffsets)).toEqual([]);
+    const chunkVersionOffsets = [
+      { chunkVersionId: "chunk-version-id", line: 1 }
+    ];
+    expect(
+      getSelectedChunkVersionDecorations(undefined, chunkVersionOffsets)
+    ).toEqual([]);
   });
 });

@@ -1,4 +1,4 @@
-import { State, TextId } from "santoku-store";
+import { State, TextId } from "torii-store";
 
 /**
  * Assumes text with ID is present in state.

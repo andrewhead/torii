@@ -2,7 +2,7 @@ import { LinearProgress } from "@material-ui/core";
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import * as React from "react";
-import { Output } from "santoku-store";
+import { Output } from "torii-store";
 import { HtmlOutput } from "../../widgets/HtmlOutput";
 import HtmlPreview from "../../widgets/HtmlPreview";
 

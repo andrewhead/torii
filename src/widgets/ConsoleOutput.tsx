@@ -1,7 +1,7 @@
 import { LinearProgress, styled } from "@material-ui/core";
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { Output } from "santoku-store";
+import { Output } from "torii-store";
 
 export function ConsoleOutput(props: ConsoleOutputProps) {
   const preRef = useRef<HTMLPreElement>(null);
@@ -15,7 +15,10 @@ export function ConsoleOutput(props: ConsoleOutputProps) {
   });
 
   return (
-    <div className={`console-output ${props.className !== undefined && props.className}`}>
+    <div
+      className={`console-output ${props.className !== undefined &&
+        props.className}`}
+    >
       <div className="buffer">
         <pre ref={preRef} />
         {props.output.state !== "finished" && (

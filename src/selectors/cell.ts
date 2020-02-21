@@ -1,4 +1,4 @@
-import { CellId, State } from "santoku-store";
+import { CellId, State } from "torii-store";
 
 /**
  * Assumes cell with ID is in the state.

@@ -1,4 +1,4 @@
-import { Path, selectors, SnippetId, State } from "santoku-store";
+import { Path, selectors, SnippetId, State } from "torii-store";
 import { SnippetEditorBaseProps } from "./types";
 
 export function getSnippetEditorProps(

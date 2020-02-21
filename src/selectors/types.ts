@@ -1,4 +1,4 @@
-import { PartialProgram, SnippetId } from "santoku-store";
+import { PartialProgram, SnippetId } from "torii-store";
 
 export interface SnapshotEditorBaseProps extends PartialProgram {
   snippetOffsets: SnippetOffsets;

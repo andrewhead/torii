@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { EditorAdapter } from "santoku-editor-adapter";
+import { EditorAdapter } from "torii-editor-adapter";
 
 let editorAdapter: EditorAdapter | undefined;
 
@@ -17,7 +17,11 @@ function getEditorAdapter() {
 export const EditorContext = React.createContext(getEditorAdapter);
 
 export function EditorProvider({ children }: EditorProviderProps) {
-  return <EditorContext.Provider value={getEditorAdapter}>{children}</EditorContext.Provider>;
+  return (
+    <EditorContext.Provider value={getEditorAdapter}>
+      {children}
+    </EditorContext.Provider>
+  );
 }
 
 interface EditorProviderProps {

@@ -1,16 +1,16 @@
-# Santoku
+# Torii
 
 Thank you to the https://github.com/rebornix/vscode-webview-react
 project for providing a starting point for this React app,
 and tips on how to integrate it into VSCode.
 
 VSCode integration is not handled in this repository. The
-Santoku editor is meant to be pluggable into arbitrary IDEs.
+Torii editor is meant to be pluggable into arbitrary IDEs.
 To see the code that integrates it with VSCode, check out
-https://github.com/andrewhead/vscode-santoku and
-https://github.com/andrewhead/santoku-editor-adapter.
+https://github.com/andrewhead/vscode-torii and
+https://github.com/andrewhead/torii-editor-adapter.
 
-To run the Santoku tutorial editor in your integrated
+To run the Torii tutorial editor in your integrated
 development environment of choice, build the project (see
 instructions below), open the `index.html` in an embedded
 browser in the environment, and run JavaScript initializing
@@ -24,7 +24,7 @@ new EditorAdapter(new MyEditorConnector(options));
 
 For an example of initializing a EditorAdapter with an
 IDE-specific connector, see the code in the webview for the
-VSCode extension in https://github.com/andrewhead/vscode-santoku.
+VSCode extension in https://github.com/andrewhead/vscode-torii.
 
 ## Development
 

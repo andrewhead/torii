@@ -4,15 +4,15 @@ import { DndProvider } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import * as santokuEditorAdapterClasses from "santoku-editor-adapter";
+import * as toriiEditorAdapterClasses from "torii-editor-adapter";
 import { EditorProvider, setEditorAdapter } from "./contexts/editor";
 import { GetStateContext, getStateFunction, store } from "./contexts/store";
 import createTheme from "./contexts/theme";
-import Santoku from "./widgets/Santoku";
+import Torii from "./widgets/Torii";
 
 declare global {
   interface Window {
-    santoku: any;
+    torii: any;
   }
 }
 
@@ -24,7 +24,7 @@ ReactDOM.render(
       <GetStateContext.Provider value={getStateFunction}>
         <DndProvider backend={HTML5Backend}>
           <ThemeProvider theme={theme}>
-            <Santoku />
+            <Torii />
           </ThemeProvider>
         </DndProvider>
       </GetStateContext.Provider>
@@ -34,10 +34,10 @@ ReactDOM.render(
 );
 
 /**
- * Assign Santoku globals to let IDE extensions take care of setup.
+ * Assign Torii globals to let IDE extensions take care of setup.
  */
-window.santoku = {
-  ...santokuEditorAdapterClasses,
+window.torii = {
+  ...toriiEditorAdapterClasses,
   setEditorAdapter,
   store
 };

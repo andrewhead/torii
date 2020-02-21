@@ -2,7 +2,7 @@ import styled from "@material-ui/core/styles/styled";
 import withTheme from "@material-ui/core/styles/withTheme";
 import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
-import { Path, SnippetId, State } from "santoku-store";
+import { Path, SnippetId, State } from "torii-store";
 import {
   getSelectedChunkVersionDecorations,
   getSnapshotEditorProps,
@@ -54,7 +54,10 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
       return;
     }
     const editor = editorRef.current;
-    const newDecorations = getSnippetRangeDecorations(props.snippetOffsets, props.snippetId);
+    const newDecorations = getSnippetRangeDecorations(
+      props.snippetOffsets,
+      props.snippetId
+    );
     snippetRangeDecorations.current = editor.deltaDecorations(
       snippetRangeDecorations.current,
       newDecorations
@@ -88,7 +91,10 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
     for (const oldWidget of snippetIndexWidgets.current) {
       editor.removeContentWidget(oldWidget);
     }
-    const newWidgets = getSnippetIndexContentWidgets(props.snippetOffsets, model.getLineCount());
+    const newWidgets = getSnippetIndexContentWidgets(
+      props.snippetOffsets,
+      model.getLineCount()
+    );
     snippetIndexWidgets.current = newWidgets;
     for (const newWidget of newWidgets) {
       editor.addContentWidget(newWidget);
@@ -119,7 +125,10 @@ export function SnapshotEditor(props: SnapshotEditorProps) {
       <CodeEditor {...{ ...props, editorRef, monacoApiRef }} />
       <div ref={linkWidgetRef} style={{ position: "absolute", right: 0 }}>
         {props.selectedChunkVersionId !== undefined && (
-          <LinkToggle snippetId={props.snippetId} chunkVersionId={props.selectedChunkVersionId} />
+          <LinkToggle
+            snippetId={props.snippetId}
+            chunkVersionId={props.selectedChunkVersionId}
+          />
         )}
       </div>
     </div>
@@ -146,7 +155,8 @@ export function getSnippetIndexContentWidgets(
   return snippetOffsets.map(
     (offset, i): IContentWidget => {
       const nextOffset = snippetOffsets[i + 1];
-      const lineNumber = nextOffset !== undefined ? nextOffset.line - 1 : maxLineNumber;
+      const lineNumber =
+        nextOffset !== undefined ? nextOffset.line - 1 : maxLineNumber;
       return {
         allowEditorOverflow: false,
         getId: () => {

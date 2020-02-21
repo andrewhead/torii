@@ -1,4 +1,4 @@
-import { testUtils } from "santoku-store";
+import { testUtils } from "torii-store";
 import { canInstantMerge, isLinked } from "../../selectors/link";
 
 describe("isLinked", () => {
@@ -25,7 +25,11 @@ describe("isLinked", () => {
   it("detects an unlinked chunk", () => {
     const state = testUtils.createStateWithChunks(
       { chunkId: "same-chunk-id", chunkVersionId: "chunk-version-0" },
-      { chunkId: "same-chunk-id", chunkVersionId: "chunk-version-1", snippetId: "snippet-id" }
+      {
+        chunkId: "same-chunk-id",
+        chunkVersionId: "chunk-version-1",
+        snippetId: "snippet-id"
+      }
     );
     expect(isLinked(state, "chunk-version-1", "snippet-id")).toBe(false);
   });
@@ -84,7 +88,9 @@ describe("canInstantMerge", () => {
         text: "Different text 2"
       }
     );
-    expect(canInstantMerge(state, "chunk-version-id", "snippet-id")).toBe(false);
+    expect(canInstantMerge(state, "chunk-version-id", "snippet-id")).toBe(
+      false
+    );
   });
 
   it("is false if the chunk versions are already linked", () => {
@@ -99,6 +105,8 @@ describe("canInstantMerge", () => {
     /*
      * Can't instant merge because there's nothing to merge!
      */
-    expect(canInstantMerge(state, "chunk-version-id", "snippet-id")).toBe(false);
+    expect(canInstantMerge(state, "chunk-version-id", "snippet-id")).toBe(
+      false
+    );
   });
 });

@@ -1,4 +1,4 @@
-import { SnippetId, State } from "santoku-store";
+import { SnippetId, State } from "torii-store";
 
 export function getCommandIds(state: State, snippetId: SnippetId) {
   const outputs = state.outputs.byId[snippetId];

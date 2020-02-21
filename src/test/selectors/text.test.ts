@@ -1,4 +1,4 @@
-import { testUtils } from "santoku-store";
+import { testUtils } from "torii-store";
 import { getValue } from "../../../src/selectors/text";
 
 describe("getValue", () => {

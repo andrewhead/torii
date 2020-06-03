@@ -7,7 +7,7 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState
+  useState,
 } from "react";
 import MonacoEditor from "react-monaco-editor";
 import { connect } from "react-redux";
@@ -21,14 +21,14 @@ import {
   SnippetSelection,
   SourcedRange,
   SourceType,
-  visibility
+  visibility,
 } from "torii-store";
 import {
   IEditorConstructionOptions,
   IModelDeltaDecoration,
   IStandaloneCodeEditor,
   MonacoApiType,
-  monacoTypes
+  monacoTypes,
 } from "../types/monaco";
 
 /**
@@ -120,7 +120,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
       monacoApi !== undefined
     ) {
       const currentMonacoSelections = editor.getSelections();
-      const monacoSelections = props.selections.map(s =>
+      const monacoSelections = props.selections.map((s) =>
         getMonacoSelectionFromSimpleSelection(monacoApi, s)
       );
       const selectionsChanged =
@@ -160,14 +160,14 @@ export const CodeEditor = (props: CodeEditorProps) => {
           ? {
               options: {
                 inlineClassName: "requested-visible",
-                isWholeLine: true
+                isWholeLine: true,
               },
               range: {
                 startLineNumber: i,
                 endLineNumber: i,
                 startColumn: 1,
-                endColumn: Number.POSITIVE_INFINITY
-              }
+                endColumn: Number.POSITIVE_INFINITY,
+              },
             }
           : undefined;
       })
@@ -176,27 +176,35 @@ export const CodeEditor = (props: CodeEditorProps) => {
   }
 
   function updateEditorHeight() {
-    if (props.hidden === true || editor === undefined) {
+    if (
+      props.hidden === true ||
+      editor === undefined ||
+      monacoApi === undefined
+    ) {
       return;
     }
     /*
      * Dynamically adjust the height of the editor to its content. Based on the fix suggested in
      * https://github.com/microsoft/monaco-editor/issues/103#issuecomment-438872047.
      */
-    const lineHeight = editor.getConfiguration().lineHeight;
+    const lineHeight = editor.getOption(
+      monacoApi.editor.EditorOption.lineHeight
+    );
     const container = editor.getDomNode();
     const textModel = editor.getModel();
-    const horizontalScrollBarHeight = editor.getConfiguration().layoutInfo
+    const horizontalScrollBarHeight = editor.getLayoutInfo()
       .horizontalScrollbarHeight;
     if (textModel !== null) {
       const lineCount = textModel.getLineCount();
       if (container !== null) {
         const heightBefore = container.style.height;
-        const height = `${lineCount * lineHeight +
-          horizontalScrollBarHeight}px`;
+        const height = `${
+          lineCount * lineHeight + horizontalScrollBarHeight
+        }px`;
         if (height !== heightBefore) {
-          container.style.height = `${lineCount * lineHeight +
-            horizontalScrollBarHeight}px`;
+          container.style.height = `${
+            lineCount * lineHeight + horizontalScrollBarHeight
+          }px`;
           forceEditorLayoutUpdate();
         }
       }
@@ -241,13 +249,13 @@ export const CodeEditor = (props: CodeEditorProps) => {
         props.setSelections(
           ...[event.selection]
             .concat(event.secondarySelections)
-            .map(monacoSelection => {
+            .map((monacoSelection) => {
               return getSnippetSelectionFromMonacoSelection(
                 monacoApi,
                 monacoSelection
               );
             })
-            .map(snippetSelection => {
+            .map((snippetSelection) => {
               return getSelectionFromSnippetSelection(
                 snippetSelection,
                 props.path,
@@ -289,8 +297,8 @@ export const CodeEditor = (props: CodeEditorProps) => {
           inherit: true,
           rules: [],
           colors: {
-            "editor.background": props.theme.palette.background.paper
-          }
+            "editor.background": props.theme.palette.background.paper,
+          },
         });
         monacoApi.editor.setTheme("torii");
       }
@@ -310,7 +318,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
     overviewRulerLanes: 0,
     renderLineHighlight: "none",
     hideCursorInOverviewRuler: true,
-    lineNumbers: "off"
+    lineNumbers: "off",
   };
 
   /*
@@ -355,12 +363,12 @@ function getRangeFromMonacoRange(monacoRange: monacoTypes.IRange): Range {
   return {
     start: {
       line: monacoRange.startLineNumber,
-      character: monacoRange.startColumn - 1
+      character: monacoRange.startColumn - 1,
     },
     end: {
       line: monacoRange.endLineNumber,
-      character: monacoRange.endColumn - 1
-    }
+      character: monacoRange.endColumn - 1,
+    },
   };
 }
 
@@ -376,7 +384,7 @@ function getSourcedRangeFromRange(
         start: { ...range.start, line: range.start.line - line + 1 },
         end: { ...range.end, line: range.end.line - line + 1 },
         path,
-        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId }
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId },
       };
     }
   }
@@ -401,14 +409,14 @@ export function getSelectionFromSnippetSelection(
       return {
         anchor: {
           ...snippetSelection.anchor,
-          line: snippetSelection.anchor.line - line + 1
+          line: snippetSelection.anchor.line - line + 1,
         },
         active: {
           ...snippetSelection.active,
-          line: snippetSelection.active.line - line + 1
+          line: snippetSelection.active.line - line + 1,
         },
         path,
-        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId }
+        relativeTo: { source: SourceType.CHUNK_VERSION, chunkVersionId },
       };
     }
   }
@@ -424,11 +432,11 @@ export function getSnippetSelectionFromMonacoSelection(
 ): SnippetSelection {
   const start = {
     line: monacoSelection.startLineNumber,
-    character: monacoSelection.startColumn - 1
+    character: monacoSelection.startColumn - 1,
   };
   const end = {
     line: monacoSelection.endLineNumber,
-    character: monacoSelection.endColumn - 1
+    character: monacoSelection.endColumn - 1,
   };
   return monacoSelection.getDirection() === monacoApi.SelectionDirection.LTR
     ? { anchor: start, active: end }
@@ -479,7 +487,7 @@ interface EditorActions {
 
 const editorActionCreators = {
   edit: actions.code.edit,
-  setSelections: actions.code.setSelections
+  setSelections: actions.code.setSelections,
 };
 
 const StyledCodeEditor = styled(withTheme(CodeEditor))(({ theme }) => ({
@@ -504,7 +512,7 @@ const StyledCodeEditor = styled(withTheme(CodeEditor))(({ theme }) => ({
   paddingTop: theme.spaces.cell.paddingTop,
   paddingBottom: theme.spaces.cell.paddingBottom,
   marginTop: -theme.spaces.cell.paddingTop,
-  marginBottom: -theme.spaces.cell.paddingBottom
+  marginBottom: -theme.spaces.cell.paddingBottom,
 }));
 
 const MemoizedCodeEditor = React.memo(StyledCodeEditor, _.isEqual);
